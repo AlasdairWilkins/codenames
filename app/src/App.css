@@ -1,0 +1,37 @@
+.App {
+    text-align: center;
+    display: flex;
+}
+
+#Board {
+    width: 100%
+}
+
+.Row {
+    display: table;
+    width: 100%
+}
+
+.Row>button {
+    width: 20%;
+    height: 50px;
+
+}
+
+.Red {
+    background-color: red;
+}
+
+.Blue {
+    background-color: blue;
+    color: white
+}
+
+.Assassin {
+    background-color: black;
+    color: white;
+}
+
+.Decoy {
+    background-color: gray;
+}
