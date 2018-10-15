@@ -16,7 +16,8 @@ class App extends Component {
         this.state = {
             words: colorCode(words, first),
             codemaster: true,
-            active: false
+            active: true,
+            remaining: 8
         }
     }
 
@@ -27,12 +28,13 @@ class App extends Component {
 
         let codemaster = this.state.codemaster
         let active = this.state.active
+        let remaining = this.state.remaining
 
         return (
             <div>
                 <Board words={this.state.words} codemaster={codemaster} active={active} />
                 <div>
-                    <CodeWord codemaster={codemaster} active = {active} />
+                    <CodeWord codemaster={codemaster} active = {active} remaining = {remaining} />
                 </div>
             </div>
 
