@@ -6,8 +6,6 @@ class Board extends Component {
 
     render() {
 
-        console.log("hi")
-
         let rows = split(this.props.words);
         let codemaster = this.props.codemaster;
         let active = this.props.active;

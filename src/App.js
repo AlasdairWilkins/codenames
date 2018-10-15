@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Board from './Board'
+import CodeWord from './CodeWord'
 
 class App extends Component {
     constructor(props) {
@@ -15,7 +16,7 @@ class App extends Component {
         this.state = {
             words: colorCode(words, first),
             codemaster: true,
-            active: true
+            active: false
         }
     }
 
@@ -23,10 +24,19 @@ class App extends Component {
 
 
     render() {
+
+        let codemaster = this.state.codemaster
+        let active = this.state.active
+
         return (
             <div>
-                <Board words={this.state.words} codemaster={this.state.codemaster} active={this.state.active} />
+                <Board words={this.state.words} codemaster={codemaster} active={active} />
+                <div>
+                    <CodeWord codemaster={codemaster} active = {active} />
+                </div>
             </div>
+
+
         );
     }
 }
