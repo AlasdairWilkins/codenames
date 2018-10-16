@@ -6,7 +6,7 @@ class Waiting extends Component {
     render() {
 
         return (
-            <p>Waiting for others to join!</p>
+            <p>Your game code is {this.props.gameCode}. Waiting for others to join!</p>
         )
 
     }

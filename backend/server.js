@@ -10,14 +10,17 @@
 // app.listen(port, () => console.log(`Listening on port ${port}`));
 
 const io = require('socket.io')();
+const shortid = require('shortid')
 
-io.on('connection', (client) => {
-    client.on('subscribeToTimer', (interval) => {
-        console.log('client is subscribing to timer with interval ', interval);
-        setInterval(() => {
-            client.emit('timer', new Date());
-        }, interval);
-    });
+io.on('connection', function(socket) {
+
+    socket.on('newCode', function() {
+        console.log("Request received!")
+        let gameCode = shortid.generate()
+        console.log(gameCode)
+        socket.emit('newCode', gameCode)
+    })
+
 })
 
 const port = 5000;

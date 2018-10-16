@@ -3,30 +3,34 @@ import './App.css';
 import Welcome from './Welcome'
 import Waiting from './Waiting'
 import Game from './Game'
+import { getGameCode } from "./Api";
 
 class App extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            welcome: false,
+            welcome: true,
             waiting: false,
-            game: true
+            game: true,
+            gameCode: null
         }
     }
 
     setDisplay() {
         if (this.state.welcome) {
-            return ( <Welcome /> )
+            return ( <Welcome onClickNewCode={() => getGameCode((err, code) => this.setState({gameCode: code, welcome: false, waiting: true}))}/> )
         }
         if (this.state.waiting) {
-            return ( <Waiting /> )
+            return ( <Waiting gameCode={this.state.gameCode}/> )
         }
         return ( <Game /> )
     }
 
 
     render() {
+
+        console.log("Game code: ", this.state.gameCode)
 
         let app = this.setDisplay()
 

@@ -3,10 +3,60 @@ import './App.css';
 
 class Welcome extends Component {
 
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            getNew: false,
+            enterExisting: false,
+            gameCode: null
+        }
+
+    }
+
+    setDisplay() {
+
+        if (this.state.gameCode) {
+            return (
+                <div>
+                    <p>Your game code is {this.state.gameCode}.</p>
+                </div>
+            )
+        }
+
+        if (this.state.getNew) {
+            return(
+                <div>
+                    <p>Hello!</p>
+                </div>
+            )
+        }
+        if (this.state.enterExisting) {
+            return (
+                <div>
+                    <p>Ahoy hoy!</p>
+                </div>
+            )
+        }
+        return (
+            <div>
+                <p>Welcome to Codenames!</p>
+                <button onClick={() => this.props.onClickNewCode()}>
+                    Get a new game code.
+                </button>
+                <button onClick={() => {this.setState({enterExisting: true})}}>
+                    Enter an existing code.
+                </button>
+            </div>
+        )
+    }
+
     render() {
 
+        let welcome = this.setDisplay()
+
         return (
-            <p>Welcome to Codenames!</p>
+            welcome
         )
 
     }

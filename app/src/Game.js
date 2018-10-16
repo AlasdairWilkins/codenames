@@ -2,15 +2,11 @@ import React, { Component } from 'react';
 import './App.css';
 import Board from './Board';
 import CodeWord from './CodeWord';
-import { subscribeToTimer } from "./Api";
+// import { subscribeToTimer } from "./Api";
 
 class Game extends Component {
     constructor(props) {
         super(props);
-
-        subscribeToTimer((err, timestamp) => this.setState({
-            timestamp
-        }))
 
         const words = ["utopian", "look", "polite", "wicked", "advice", "curtain", "tramp", "bad", "fabulous", "wool",
             "jog", "apologise", "heavy", "nest", "heat", "debt", "roof", "whole", "arithmetic", "bear", "ski",
@@ -23,7 +19,6 @@ class Game extends Component {
             codemaster: true,
             active: true,
             remaining: 8,
-            timestamp: 'no timestamp yet'
         }
     }
 
@@ -39,7 +34,6 @@ class Game extends Component {
                 <div>
                     <CodeWord codemaster={codemaster} active = {active} remaining = {remaining} />
                 </div>
-                <p className="App-intro">{this.state.timestamp}</p>
             </div>
 
 
