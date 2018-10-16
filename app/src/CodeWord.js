@@ -80,19 +80,22 @@ class CodeWord extends Component {
         )
     }
 
+    setDisplay() {
+        if (this.props.codemaster && this.props.active) {
+            return this.activeCodeMaster()
+        }
+        if (this.props.codemaster) {
+            return this.inactiveCodeMaster()
+        }
+        if (this.props.active) {
+            return this.activeTeam()
+        }
+        return this.inactiveTeam()
+    }
+
     render() {
 
-        let codeWord
-
-        if (this.props.codemaster && this.props.active) {
-            codeWord = this.activeCodeMaster()
-        } else if (this.props.codemaster) {
-            codeWord = this.inactiveCodeMaster()
-        } else if (this.props.active) {
-            codeWord = this.activeTeam()
-        } else {
-            codeWord = this.inactiveTeam()
-        }
+        let codeWord = this.setDisplay()
 
         return (
             <div>
