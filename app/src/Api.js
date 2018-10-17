@@ -1,34 +1,39 @@
-import openSocket from 'socket.io-client';
-const socket = openSocket('http://localhost:5000/');
+import io from 'socket.io-client';
+const url = 'http://localhost:5000/'
+const socket = io(url);
 
 class Api {
 
+    setNamespace(gameCode) {
+        let address = url + gameCode
+        return io(address)
+    }
+
     getGameCode(cb) {
-        socket.on('codeConfirmed', code => {
-            socket.off('codeConfirmed')
+        socket.on('code', code => {
+            socket.off('code')
             cb(null, code)
         })
-        socket.emit('newCode');
+        socket.emit('new');
     }
 
-    sendGameCode(code, cb) {
-        socket.on('codeConfirmed', codeConfirmed => {
-            socket.off('codeConfirmed')
-            cb(null, codeConfirmed)
+    sendGameCode(gameCode, cb) {
+        socket.on('code', code => {
+            socket.off('code')
+            cb(null, code)
         })
-        socket.emit('existingCode', code)
+        socket.emit('existing', gameCode)
     }
 
-    getPlayers(code, cb) {
-        console.log("Hi")
-        socket.on('players', players => {
+    getPlayers(nsp, cb) {
+        nsp.on('players', players => {
             cb(null, players)
         })
-        socket.emit('players', code)
+        nsp.emit('players')
     }
 
-    sendNewPlayer(code, player) {
-        socket.emit('newPlayer', {code: code, player: player})
+    sendNewPlayer(nsp, player) {
+        nsp.emit('newPlayer', player)
     }
 
 }

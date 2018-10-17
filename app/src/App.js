@@ -17,6 +17,7 @@ class App extends Component {
             waiting: false,
             game: false,
             gameCode: null,
+            namespace: null,
             displayName: null,
             players: []
         }
@@ -27,7 +28,7 @@ class App extends Component {
     }
 
     handleSubmitDisplayName(event) {
-        api.sendNewPlayer(this.state.gameCode, this.state.displayName)
+        api.sendNewPlayer(this.state.namespace, this.state.displayName)
     }
 
     handleChangeDisplayName(event) {
@@ -38,13 +39,20 @@ class App extends Component {
         if (this.state.welcome) {
             return ( <Welcome
                 onClickNewCode={() => api.getGameCode((err, code) => {
-                    this.setState({gameCode: code, welcome: false, waiting: true})
-                    api.getPlayers(this.state.gameCode, (err, players) => this.setState({players: players}))
+                    this.setState({gameCode: code, welcome: false, waiting: true, namespace: api.setNamespace(code)})
+                    api.getPlayers(this.state.namespace, (err, players) => this.setState({players: players}))
                 })}
                 onChange={(event) => this.setState({gameCode: event.target.value})}
                 onSubmit={(event) => {
-                    api.sendGameCode(this.state.gameCode, (err, code) => this.setState({gameCode: code, welcome: false, waiting: true}))
-                    api.getPlayers(this.state.gameCode, (err, players) => this.setState({players: players}))
+                    api.sendGameCode(this.state.gameCode, (err, status) => {
+                        if (status) {
+                            this.setState({welcome: false, waiting: true, namespace: api.setNamespace(this.state.gameCode)})
+                            api.getPlayers(this.state.namespace, (err, players) => this.setState({players: players}))
+                        } else {
+                            console.log("Whoops")
+                            //Handle incorrect game code
+                        }
+                    })
                     event.preventDefault()
                 }}
             /> )

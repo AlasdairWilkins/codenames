@@ -14,35 +14,26 @@ const shortid = require('shortid')
 
 const Game = require('./game')
 const Server = require('./server')
+const Namespace = require('./namespace')
 
 const server = new Server()
 
 io.on('connection', function(socket) {
 
-    socket.on('newCode', function() {
+    socket.on('new', () => {
         let gameCode = shortid.generate()
-        socket.join(gameCode)
-        server.games[gameCode] = new Game(gameCode)
-        socket.emit('codeConfirmed', gameCode)
+        server.namespaces[gameCode] = new Namespace(io, gameCode, socket)
+        socket.emit('code', gameCode)
     })
 
-    socket.on('existingCode', function(gameCode) {
-        if (server.games[gameCode]) {
-            socket.join(gameCode)
-            socket.emit('codeConfirmed', gameCode)
+    socket.on('existing', gameCode => {
+        if (server.namespaces[gameCode]) {
+            socket.emit('code', true)
         }
+        socket.emit('code', false)
     })
 
-    socket.on('players', function(gameCode) {
-        console.log("Players request received!")
-        console.log(server)
-        socket.emit('players', server.games[gameCode].players)
-    })
-
-    socket.on('newPlayer', function(msg) {
-        let [gameCode, player] = [msg.code, msg.player]
-        server.games[gameCode].players.push(player)
-    })
+    // socket.on('recover')
 
 })
 
