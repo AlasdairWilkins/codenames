@@ -24,6 +24,7 @@ class App extends Component {
 
         this.handleChangeDisplayName = this.handleChangeDisplayName.bind(this)
         this.handleSubmitDisplayName = this.handleSubmitDisplayName.bind(this)
+        this.handleSendGameCode = this.handleSendGameCode.bind(this)
 
     }
 
@@ -35,6 +36,16 @@ class App extends Component {
         this.setState({displayName: event.target.value})
     }
 
+    handleSendGameCode(err, status) {
+        if (status) {
+            this.setState({welcome: false, waiting: true, namespace: api.setNamespace(this.state.gameCode)})
+            api.getPlayers(this.state.namespace, (err, players) => this.setState({players: players}))
+        } else {
+            console.log("Whoops")
+            //Handle incorrect game code
+        }
+    }
+
     setDisplay() {
         if (this.state.welcome) {
             return ( <Welcome
@@ -44,15 +55,7 @@ class App extends Component {
                 })}
                 onChange={(event) => this.setState({gameCode: event.target.value})}
                 onSubmit={(event) => {
-                    api.sendGameCode(this.state.gameCode, (err, status) => {
-                        if (status) {
-                            this.setState({welcome: false, waiting: true, namespace: api.setNamespace(this.state.gameCode)})
-                            api.getPlayers(this.state.namespace, (err, players) => this.setState({players: players}))
-                        } else {
-                            console.log("Whoops")
-                            //Handle incorrect game code
-                        }
-                    })
+                    api.sendGameCode(this.state.gameCode, this.handleSendGameCode)
                     event.preventDefault()
                 }}
             /> )
