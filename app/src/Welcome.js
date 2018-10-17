@@ -9,20 +9,11 @@ class Welcome extends Component {
         this.state = {
             getNew: false,
             enterExisting: false,
-            gameCode: null
         }
 
     }
 
     setDisplay() {
-
-        if (this.state.gameCode) {
-            return (
-                <div>
-                    <p>Your game code is {this.state.gameCode}.</p>
-                </div>
-            )
-        }
 
         if (this.state.getNew) {
             return(

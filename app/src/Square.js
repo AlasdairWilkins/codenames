@@ -3,7 +3,6 @@ import './App.css';
 
 class Square extends Component {
 
-
     handleClick() {
         if (this.props.active) {
             let value = this.props.item.value

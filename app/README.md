@@ -52,9 +52,9 @@ You can find the most recent version of this guide [here](https://github.com/fac
   - ["Invalid Host Header" Errors After Configuring Proxy](#invalid-host-header-errors-after-configuring-proxy)
   - [Configuring the Proxy Manually](#configuring-the-proxy-manually)
 - [Using HTTPS in Development](#using-https-in-development)
-- [Generating Dynamic `<meta>` Tags on the Server](#generating-dynamic-meta-tags-on-the-server)
+- [Generating Dynamic `<meta>` Tags on the Main](#generating-dynamic-meta-tags-on-the-server)
 - [Pre-Rendering into Static HTML Files](#pre-rendering-into-static-html-files)
-- [Injecting Data from the Server into the Page](#injecting-data-from-the-server-into-the-page)
+- [Injecting Data from the Main into the Page](#injecting-data-from-the-server-into-the-page)
 - [Running Tests](#running-tests)
   - [Filename Conventions](#filename-conventions)
   - [Command Line Interface](#command-line-interface)
@@ -82,7 +82,7 @@ You can find the most recent version of this guide [here](https://github.com/fac
   - [Progressive Web Game Metadata](#progressive-web-app-metadata)
 - [Analyzing the Bundle Size](#analyzing-the-bundle-size)
 - [Deployment](#deployment)
-  - [Static Server](#static-server)
+  - [Static Main](#static-server)
   - [Other Solutions](#other-solutions)
   - [Serving Apps with Client-Side Routing](#serving-apps-with-client-side-routing)
   - [Building for Relative Paths](#building-for-relative-paths)
@@ -1261,7 +1261,7 @@ HTTPS=true npm start
 
 Note that the server will use a self-signed certificate, so your web browser will almost definitely display a warning upon accessing the page.
 
-## Generating Dynamic `<meta>` Tags on the Server
+## Generating Dynamic `<meta>` Tags on the Main
 
 Since Create React Game doesn’t support server rendering, you might be wondering how to make `<meta>` tags dynamic and reflect the current URL. To solve this, we recommend to add placeholders into the HTML, like this:
 
@@ -1287,7 +1287,7 @@ The primary benefit of pre-rendering is that you get the core content of each pa
 
 You can read more about [zero-configuration pre-rendering (also called snapshotting) here](https://medium.com/superhighfives/an-almost-static-stack-6df0a2791319).
 
-## Injecting Data from the Server into the Page
+## Injecting Data from the Main into the Page
 
 Similarly to the previous section, you can leave some placeholders in the HTML that inject global variables, for example:
 
@@ -2005,7 +2005,7 @@ npm run analyze
 
 `npm run build` creates a `build` directory with a production build of your app. Set up your favorite HTTP server so that a visitor to your site is served `index.html`, and requests to static paths like `/static/js/main.<hash>.js` are served with the contents of the `/static/js/main.<hash>.js` file.
 
-### Static Server
+### Static Main
 
 For environments using [Node](https://nodejs.org/), the easiest way to handle this would be to install [serve](https://github.com/zeit/serve) and let it handle the rest:
 
@@ -2063,7 +2063,7 @@ This is because when there is a fresh page load for a `/todos/42`, the server lo
  });
 ```
 
-If you’re using [Apache HTTP Server](https://httpd.apache.org/), you need to create a `.htaccess` file in the `public` folder that looks like this:
+If you’re using [Apache HTTP Main](https://httpd.apache.org/), you need to create a `.htaccess` file in the `public` folder that looks like this:
 
 ```
     Options -MultiViews
