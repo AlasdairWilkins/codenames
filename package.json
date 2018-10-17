@@ -1,0 +1,10 @@
+{
+  "scripts": {
+  "client": "cd app && yarn start",
+  "server": "nodemon backend/main.js",
+  "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+},
+  "dependencies": {
+    "concurrently": "^4.0.1"
+  }
+}

@@ -21,8 +21,16 @@ io.on('connection', function(socket) {
 
     socket.on('newCode', function() {
         let gameCode = shortid.generate()
+        socket.join(gameCode)
         server.games[gameCode] = new Game(gameCode)
-        socket.emit('newCode', gameCode)
+        socket.emit('codeConfirmed', gameCode)
+    })
+
+    socket.on('existingCode', function(gameCode) {
+        if (server.games[gameCode]) {
+            socket.join(gameCode)
+            socket.emit('codeConfirmed', gameCode)
+        }
     })
 
     socket.on('players', function(gameCode) {
@@ -32,7 +40,7 @@ io.on('connection', function(socket) {
     })
 
     socket.on('newPlayer', function(msg) {
-        let [gameCode, player] = [msg.gameCode, msg.player]
+        let [gameCode, player] = [msg.code, msg.player]
         server.games[gameCode].players.push(player)
     })
 

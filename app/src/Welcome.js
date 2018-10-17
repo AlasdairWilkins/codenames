@@ -7,7 +7,6 @@ class Welcome extends Component {
         super(props)
 
         this.state = {
-            getNew: false,
             enterExisting: false,
         }
 
@@ -15,17 +14,18 @@ class Welcome extends Component {
 
     setDisplay() {
 
-        if (this.state.getNew) {
-            return(
-                <div>
-                    <p>Hello!</p>
-                </div>
-            )
-        }
         if (this.state.enterExisting) {
             return (
                 <div>
-                    <p>Ahoy hoy!</p>
+                    <div>
+                        <p>Enter your game code below!</p>
+                        <form onSubmit={this.props.onSubmit}>
+                            <label htmlFor="code">
+                                <input onChange={this.props.onChange} placeholder="Game Code" type="text" />
+                            </label>
+                            <input type="submit" value="Submit" />
+                        </form>
+                    </div>
                 </div>
             )
         }

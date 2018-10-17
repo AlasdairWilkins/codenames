@@ -32,7 +32,6 @@ class App extends Component {
 
     handleChangeDisplayName(event) {
         this.setState({displayName: event.target.value})
-        console.log(this.state.displayName)
     }
 
     setDisplay() {
@@ -41,7 +40,14 @@ class App extends Component {
                 onClickNewCode={() => api.getGameCode((err, code) => {
                     this.setState({gameCode: code, welcome: false, waiting: true})
                     api.getPlayers(this.state.gameCode, (err, players) => this.setState({players: players}))
-                })}/> )
+                })}
+                onChange={(event) => this.setState({gameCode: event.target.value})}
+                onSubmit={(event) => {
+                    api.sendGameCode(this.state.gameCode, (err, code) => this.setState({gameCode: code, welcome: false, waiting: true}))
+                    api.getPlayers(this.state.gameCode, (err, players) => this.setState({players: players}))
+                    event.preventDefault()
+                }}
+            /> )
         }
         if (this.state.waiting) {
             return ( <Waiting
