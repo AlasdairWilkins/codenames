@@ -3,6 +3,7 @@ import './App.css';
 import Welcome from './Welcome'
 import Waiting from './Waiting'
 import Game from './Game'
+import Chat from './Chat'
 import Api from "./Api";
 
 const api = new Api()
@@ -17,9 +18,9 @@ class App extends Component {
             waiting: false,
             game: false,
             gameCode: null,
-            namespace: null,
             displayName: null,
-            players: []
+            players: [],
+            total: null
         }
 
         this.handleChangeDisplayName = this.handleChangeDisplayName.bind(this)
@@ -28,8 +29,8 @@ class App extends Component {
 
     }
 
-    handleSubmitDisplayName(event) {
-        api.sendNewPlayer(this.state.namespace, this.state.displayName)
+    handleSubmitDisplayName() {
+        api.sendNewPlayer(this.state.displayName)
     }
 
     handleChangeDisplayName(event) {
@@ -38,8 +39,9 @@ class App extends Component {
 
     handleSendGameCode(err, status) {
         if (status) {
-            this.setState({welcome: false, waiting: true, namespace: api.setNamespace(this.state.gameCode)})
-            api.getPlayers(this.state.namespace, (err, players) => this.setState({players: players}))
+            this.setState({welcome: false, waiting: true})
+            api.setNamespace(this.state.gameCode)
+            api.getPlayers((err, msg) => this.setState({players: msg.players, total: msg.total}))
         } else {
             console.log("Whoops")
             //Handle incorrect game code
@@ -50,8 +52,9 @@ class App extends Component {
         if (this.state.welcome) {
             return ( <Welcome
                 onClickNewCode={() => api.getGameCode((err, code) => {
-                    this.setState({gameCode: code, welcome: false, waiting: true, namespace: api.setNamespace(code)})
-                    api.getPlayers(this.state.namespace, (err, players) => this.setState({players: players}))
+                    this.setState({gameCode: code, welcome: false, waiting: true})
+                    api.setNamespace(this.state.gameCode)
+                    api.getPlayers((err, msg) => this.setState({players: msg.players, total: msg.total}))
                 })}
                 onChange={(event) => this.setState({gameCode: event.target.value})}
                 onSubmit={(event) => {
@@ -61,15 +64,27 @@ class App extends Component {
             /> )
         }
         if (this.state.waiting) {
-            return ( <Waiting
-                gameCode={this.state.gameCode}
-                displayName={this.state.displayName}
-                players={this.state.players}
-                onChange={this.handleChangeDisplayName}
-                onSubmit={this.handleSubmitDisplayName}
-            /> )
+            let chat = (this.state.players.length) ? <Chat /> : null
+            return (
+                <div>
+                    <Waiting
+                        gameCode={this.state.gameCode}
+                        displayName={this.state.displayName}
+                        players={this.state.players}
+                        total={this.state.total}
+                        onChange={this.handleChangeDisplayName}
+                        onSubmit={this.handleSubmitDisplayName}
+                    />
+                    {chat}
+                </div>
+            )
         }
-        return ( <Game /> )
+        return (
+            <div>
+                <Game />
+                <Chat />
+            </div>
+        )
     }
 
 

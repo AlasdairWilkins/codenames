@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import Pluralize from 'react-pluralize'
 
 class Waiting extends Component {
     constructor(props) {
@@ -37,6 +38,7 @@ class Waiting extends Component {
     }
 
     setDisplayPlayers(players) {
+
         if (!players.length || (this.state.nameSubmitted && players.length <= 1)) {
             return (
                 <div>
@@ -47,19 +49,30 @@ class Waiting extends Component {
 
         return (
             <div>
-                {players.map((player) => <p key={player}>{player}</p>)}
+                {players.map((player) => <p key={player.name}>{player.name}</p>)}
             </div>
         )
+    }
+
+    setDisplayOthers(players, total) {
+        console.log(players, total)
+        let others = (this.state.nameSubmitted) ? total - players.length : total - players.length - 1
+        if (others) {
+            return <div><Pluralize singular="other player" count={others}/> joining!</div>
+        }
+        return null
     }
 
     render() {
 
         let waiting = this.setDisplayName()
         let players = this.setDisplayPlayers(this.props.players)
+        let others = this.setDisplayOthers(this.props.players, this.props.total)
         return (
             <div>
                 {waiting}
                 {players}
+                {others}
             </div>
         )
 

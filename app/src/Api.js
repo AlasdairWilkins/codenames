@@ -3,10 +3,13 @@ const url = 'http://localhost:5000/'
 const socket = io(url);
 
 class Api {
+    constructor(){
+        this.namespace = null
+    }
 
     setNamespace(gameCode) {
         let address = url + gameCode
-        return io(address)
+        this.namespace = io(address)
     }
 
     getGameCode(cb) {
@@ -25,15 +28,16 @@ class Api {
         socket.emit('existing', gameCode)
     }
 
-    getPlayers(nsp, cb) {
-        nsp.on('players', players => {
-            cb(null, players)
+    getPlayers(cb) {
+        this.namespace.on('players', msg => {
+            console.log(cb, msg)
+            cb(null, msg)
         })
-        nsp.emit('players')
+        this.namespace.emit('players')
     }
 
-    sendNewPlayer(nsp, player) {
-        nsp.emit('newPlayer', player)
+    sendNewPlayer(player) {
+        this.namespace.emit('players', player)
     }
 
 }

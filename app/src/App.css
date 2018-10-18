@@ -35,3 +35,11 @@
 .Decoy {
     background-color: gray;
 }
+
+
+#message { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+#message input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+#message button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+#chatroom { list-style-type: none; margin: 0; padding: 0; }
+#chatroom li { padding: 5px 10px; }
+#chatroom li:nth-child(odd) { background: #eee; }
