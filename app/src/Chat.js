@@ -26,6 +26,7 @@ class Chat extends Component {
 
     handleSubmit(event) {
         this.props.api.sendMessage({name: this.props.displayName, entry: this.state.entry})
+        this.setState({entry: ""})
         event.preventDefault()
     }
 
@@ -33,7 +34,7 @@ class Chat extends Component {
         if (this.props.displayName) {
             return (
                 <form id="message" onSubmit={this.handleSubmit}>
-                    <input id="m" autoComplete="off" onChange={this.handleChange} /><input id="s" type="submit" value="Send" />
+                    <input id="m" autoComplete="off" onChange={this.handleChange} value={this.state.entry} /><input id="s" type="submit" value="Send" />
                 </form>
             )
         }
@@ -42,7 +43,14 @@ class Chat extends Component {
 
     render() {
 
-        let messages = (this.state.messages.map((item, i) => <li key={i}>{item.name}: {item.entry}</li>))
+        let messages = (this.state.messages.map((item, i) => {
+            if (this.props.displayName === item.name) {
+                return <li key={i} className="own">{item.entry}</li>
+            } else {
+                return <li key={i}>{item.name}: {item.entry}</li>
+            }
+        }))
+
         let entry = this.setDisplay()
 
         return (

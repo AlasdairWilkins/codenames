@@ -59,9 +59,8 @@ class Waiting extends Component {
     }
 
     setDisplayOthers(players, total) {
-        console.log(players, total)
         let others = (this.state.nameSubmitted) ? total - players.length : total - players.length - 1
-        if (others) {
+        if (others > 1) {
             return <div><Pluralize singular="other player" count={others}/> joining!</div>
         }
         return null

@@ -42,4 +42,5 @@
 #s { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
 #chatroom { list-style-type: none; margin: 0; padding: 0; }
 #chatroom li { padding: 5px 10px; }
+#chatroom .own { text-align: right}
 #chatroom li:nth-child(odd) { background: #eee; }
