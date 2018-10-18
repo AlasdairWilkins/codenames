@@ -15,10 +15,18 @@ module.exports = class Namespace {
             socket.on('players', displayName => {
                 if (displayName) {
                     players.push(new Player(displayName))
+
                 } else {
                     total++
                 }
                 nsp.emit('players', {players: players, total: total})
+            })
+
+            socket.on('message', message => {
+                if (message) {
+                    chat.push(message)
+                }
+                nsp.emit('message', chat)
             })
 
         })

@@ -29,15 +29,26 @@ class Api {
     }
 
     getPlayers(cb) {
-        this.namespace.on('players', msg => {
-            console.log(cb, msg)
-            cb(null, msg)
+        this.namespace.on('players', res => {
+            console.log(cb, res)
+            cb(null, res)
         })
         this.namespace.emit('players')
     }
 
     sendNewPlayer(player) {
         this.namespace.emit('players', player)
+    }
+
+    sendMessage(message) {
+        this.namespace.emit('message', message)
+    }
+
+    getMessages(cb) {
+        this.namespace.on('message', res => {
+            cb(null, res)
+        })
+        this.namespace.emit('message')
     }
 
 }

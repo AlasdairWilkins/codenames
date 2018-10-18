@@ -23,18 +23,14 @@ class App extends Component {
             total: null
         }
 
-        this.handleChangeDisplayName = this.handleChangeDisplayName.bind(this)
         this.handleSubmitDisplayName = this.handleSubmitDisplayName.bind(this)
         this.handleSendGameCode = this.handleSendGameCode.bind(this)
 
     }
 
-    handleSubmitDisplayName() {
-        api.sendNewPlayer(this.state.displayName)
-    }
-
-    handleChangeDisplayName(event) {
-        this.setState({displayName: event.target.value})
+    handleSubmitDisplayName(displayName) {
+        this.setState({displayName: displayName})
+        api.sendNewPlayer(displayName)
     }
 
     handleSendGameCode(err, status) {
@@ -64,7 +60,7 @@ class App extends Component {
             /> )
         }
         if (this.state.waiting) {
-            let chat = (this.state.players.length) ? <Chat /> : null
+            let chat = (this.state.players.length) ? <Chat api={api} displayName = {this.state.displayName}/> : null
             return (
                 <div>
                     <Waiting
@@ -72,7 +68,6 @@ class App extends Component {
                         displayName={this.state.displayName}
                         players={this.state.players}
                         total={this.state.total}
-                        onChange={this.handleChangeDisplayName}
                         onSubmit={this.handleSubmitDisplayName}
                     />
                     {chat}
