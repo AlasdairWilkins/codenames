@@ -16,9 +16,19 @@ const Game = require('./game')
 const Server = require('./server')
 const Namespace = require('./namespace')
 
+const url = 'http://localhost:3000/'
+
 const server = new Server()
 
 io.on('connection', function(socket) {
+
+    if (socket.handshake.query.code) {
+        let gameCode = socket.handshake.query.code
+        if (server.namespaces[gameCode]) {
+            socket.emit('code', gameCode)
+        } else {
+        }
+    }
 
     socket.on('new', () => {
         let gameCode = shortid.generate()

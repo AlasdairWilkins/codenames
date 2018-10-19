@@ -26,6 +26,22 @@ class App extends Component {
         this.handleSubmitDisplayName = this.handleSubmitDisplayName.bind(this)
         this.handleSendGameCode = this.handleSendGameCode.bind(this)
 
+        let loc = new URL(window.location)
+        let params = new URLSearchParams(loc.search)
+        if (params.has('code')) {
+            api.sendGameCode(params.get('code'), (err, status) => {
+                if (status) {
+                    this.setState({welcome: false, waiting: true, gameCode: params.get('code')})
+                    console.log(this.state.gameCode)
+                    api.setNamespace(this.state.gameCode)
+                    api.getPlayers((err, msg) => this.setState({players: msg.players, total: msg.total}))
+                } else {
+                    console.log("Whoops")
+                    //Handle incorrect game code
+                }
+            })
+        }
+
     }
 
     handleSubmitDisplayName(displayName) {
