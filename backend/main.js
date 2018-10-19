@@ -1,13 +1,5 @@
-// const express = require('express');
-//
-// const app = express();
-// const port = process.env.PORT || 5000;
-//
-// app.get('/api/hello', (req, res) => {
-//     res.send({ express: 'Hello From Express' });
-// });
-//
-// app.listen(port, () => console.log(`Listening on port ${port}`));
+require('dotenv').config()
+
 
 const io = require('socket.io')();
 const shortid = require('shortid')
@@ -16,7 +8,7 @@ const Game = require('./game')
 const Server = require('./server')
 const Namespace = require('./namespace')
 
-const url = 'http://localhost:3000/'
+const url = process.env.DEVURL
 
 const server = new Server()
 
