@@ -29,6 +29,14 @@ module.exports = class Namespace {
                 nsp.emit('message', chat)
             })
 
+            socket.on('ready', () => {
+
+            })
+
+            socket.on('disconnect', () => {
+                total--
+            })
+
         })
     }
 

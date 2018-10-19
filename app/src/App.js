@@ -69,6 +69,7 @@ class App extends Component {
                         players={this.state.players}
                         total={this.state.total}
                         onSubmit={this.handleSubmitDisplayName}
+                        api={api}
                     />
                     {chat}
                 </div>

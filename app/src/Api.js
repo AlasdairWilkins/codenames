@@ -40,6 +40,10 @@ class Api {
         this.namespace.emit('players', player)
     }
 
+    sendReady() {
+        this.namespace.emit('ready')
+    }
+
     sendMessage(message) {
         this.namespace.emit('message', message)
     }
