@@ -9,14 +9,15 @@ class Waiting extends Component {
         this.state = {
             entry: null,
             ready: false,
-            invites: []
+            invites: [""]
         }
 
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.handleClick = this.handleClick.bind(this)
         this.handleChangeInvite = this.handleChangeInvite.bind(this)
-        this.handleClickInvite = this.handleClickInvite.bind(this)
+        this.handleClickInvitePlus = this.handleClickInvitePlus.bind(this)
+        this.handleClickInviteMinus = this.handleClickInviteMinus.bind(this)
     }
 
     handleSubmit(event) {
@@ -45,7 +46,7 @@ class Waiting extends Component {
         this.setState({invites: invites})
     }
 
-    handleClickInvite(event) {
+    handleClickInvitePlus(event) {
         console.log(event.target.getAttribute('i'))
         let invites = this.state.invites
         if (!invites.length) {
@@ -53,8 +54,30 @@ class Waiting extends Component {
         }
         invites.push("")
         this.setState({invites: invites})
-        event.preventDefault()
     }
+
+    handleClickInviteMinus(event) {
+        let invites = this.state.invites
+        let lastBlank = this.findLastBlank(invites)
+        console.log(lastBlank)
+        invites.splice(lastBlank, 1)
+        console.log(invites)
+        this.setState({invites: invites})
+    }
+
+    findLastBlank(invites) {
+        console.log(invites)
+        for (let i = invites.length - 1; 0 <= i; i-- ) {
+            console.log(invites[i])
+            if (!invites[i].length) {
+                console.log("hey hey")
+                return [i]
+            }
+        }
+        console.log('ahoy hoy')
+        return invites.length - 1
+    }
+
 
     setDisplayName() {
         if (!this.props.displayName) {
@@ -99,29 +122,47 @@ class Waiting extends Component {
 
     setDisplayInvites(invites) {
 
-        let inputs = (invites.length) ?
-            invites.map((invite, i) => this.setDisplayInviteInput(i)) :
-            this.setDisplayInviteInput()
-
+        let inputs = invites.map((invite, i) => {
+            let input = this.setDisplayInviteInput(invite, i)
+            let button = this.setDisplayInviteButton(i, invites)
+            return (
+                <div key={i}>
+                    {input}
+                    {button}
+                </div>
+            )
+        })
         return (
             <div>
-                <form>
-                    {inputs}
-                </form>
+                <p>Invite others to join!</p>
+                {inputs}
+                <button>Click to send invitations!</button>
             </div>
+
         )
+
     }
 
-    setDisplayInviteInput(i) {
-        let key = (i) ? i : 0
-        return <div key={key}>
-            <input
-                i={key}
-                placeholder="Enter email address"
-                onChange={this.handleChangeInvite}
-                type="text" />
-            <button i={key} onClick={this.handleClickInvite}>+</button>
-        </div>
+    setDisplayInviteInput(invite, i) {
+
+        let value = (invite.length) ? this.state.invites[i] : null
+
+        return <input
+            i={i}
+            placeholder="Enter email address"
+            value={value}
+            onChange={this.handleChangeInvite}
+            type="text" />
+    }
+
+    setDisplayInviteButton(i, invites) {
+        if (i === 0) {
+            return <button i={i} onClick={this.handleClickInvitePlus}>+</button>
+        }
+        if (i === invites.length - 1) {
+            return <button i={i} onClick={this.handleClickInviteMinus}>-</button>
+        }
+        return null
     }
 
     setDisplayOthers(players, total) {
@@ -140,6 +181,8 @@ class Waiting extends Component {
     }
 
     render() {
+
+        console.log(this.state.invites)
 
         let waiting = this.setDisplayName()
         let players = this.setDisplayPlayers(this.props.players)
