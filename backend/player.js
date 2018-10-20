@@ -1,6 +1,7 @@
 module.exports = class Player {
-    constructor(displayName) {
+    constructor(displayName, cookie) {
         this.name = displayName
+        this.cookie = cookie
         this.ready = false
     }
 
