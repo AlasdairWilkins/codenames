@@ -17,10 +17,10 @@ io.on('connection', function(socket) {
 
     if (socket.handshake.headers.cookie && cookie.parse(socket.handshake.headers.cookie).id) {
         let idCookie = cookie.parse(socket.handshake.headers.cookie).id
-        let [namespace, player] = findPlayer(server.namespaces, idCookie)
-
-        if (namespace && player) {
+        if (server.cookies[idCookie]) {
             console.log("Success!")
+            let namespace = server.cookies[idCookie]
+            let player = findPlayer(server.namespaces[namespace], idCookie)
             socket.emit('namespace', {namespace: namespace, player: player})
         }
     }
@@ -47,20 +47,26 @@ io.on('connection', function(socket) {
         socket.emit('code', false)
     })
 
+    socket.on('cookie', gameCode => {
+        let newCookie = shortid.generate()
+        server.cookies[newCookie] = gameCode
+        socket.emit('cookie', "id=" + newCookie)
+    })
+
     // socket.on('recover')
 
 })
 
-function findPlayer(namespaces, cookie) {
-    for (let namespace in namespaces) {
-        let players = namespaces[namespace].players
-        for (let i in players) {
-            if (players[i].cookie === cookie) {
-                return [namespace, players[i]]
-            }
+function findPlayer(namespace, cookie) {
+    console.log(cookie)
+    let players = namespace.players
+    for (let i in players) {
+        console.log(players[i])
+        if (players[i].cookie === cookie) {
+            return players[i]
         }
     }
-    return [null, null]
+    return null
 }
 
 

@@ -1,7 +1,7 @@
 const Player = require('./player')
 
+const cookie = require('cookie')
 const nodemailer = require('nodemailer')
-const shortid = require('shortid')
 
 module.exports = class Namespace {
 
@@ -19,11 +19,9 @@ module.exports = class Namespace {
 
     setListeners(socket) {
 
-        socket.on('players', displayName => {
-            if (displayName) {
-                let cookie = shortid.generate()
-                this.players.push(new Player(displayName, cookie))
-                socket.emit('cookie', "id=" + cookie)
+        socket.on('players', req => {
+            if (req) {
+                this.players.push(new Player(req.name, cookie.parse(req.cookie).id))
             } else {
                 this.total++
             }
