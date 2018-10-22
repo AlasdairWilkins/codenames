@@ -13,6 +13,11 @@ const url = process.env.DEVURL
 
 const server = new Server()
 
+
+console.log("hiya")
+
+new Game()
+
 io.on('connection', function(socket) {
 
     if (socket.handshake.headers.cookie && cookie.parse(socket.handshake.headers.cookie).id) {
