@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import Pluralize from 'react-pluralize'
 
+import Invite from './Waiting/Invite'
+
 class Waiting extends Component {
     constructor(props) {
         super(props)
@@ -9,15 +11,11 @@ class Waiting extends Component {
         this.state = {
             entry: null,
             ready: false,
-            invites: [""]
         }
 
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.handleClick = this.handleClick.bind(this)
-        this.handleChangeInvite = this.handleChangeInvite.bind(this)
-        this.handleClickInvitePlus = this.handleClickInvitePlus.bind(this)
-        this.handleClickInviteMinus = this.handleClickInviteMinus.bind(this)
     }
 
     handleSubmit(event) {
@@ -31,53 +29,9 @@ class Waiting extends Component {
 
     handleClick(event) {
         this.setState({ready: true})
-        this.props.api.sendReady()
+        this.props.handleReady()
         event.preventDefault()
     }
-
-    handleChangeInvite(event) {
-        let index = event.target.getAttribute('i')
-        let invites = this.state.invites
-        if (invites.length === index) {
-            invites.push(event.target.value)
-        } else {
-            invites[index] = event.target.value
-        }
-        this.setState({invites: invites})
-    }
-
-    handleClickInvitePlus(event) {
-        console.log(event.target.getAttribute('i'))
-        let invites = this.state.invites
-        if (!invites.length) {
-            invites.push("")
-        }
-        invites.push("")
-        this.setState({invites: invites})
-    }
-
-    handleClickInviteMinus(event) {
-        let invites = this.state.invites
-        let lastBlank = this.findLastBlank(invites)
-        console.log(lastBlank)
-        invites.splice(lastBlank, 1)
-        console.log(invites)
-        this.setState({invites: invites})
-    }
-
-    findLastBlank(invites) {
-        console.log(invites)
-        for (let i = invites.length - 1; 0 <= i; i-- ) {
-            console.log(invites[i])
-            if (!invites[i].length) {
-                console.log("hey hey")
-                return [i]
-            }
-        }
-        console.log('ahoy hoy')
-        return invites.length - 1
-    }
-
 
     setDisplayName() {
         if (!this.props.displayName) {
@@ -120,55 +74,11 @@ class Waiting extends Component {
         )
     }
 
-    setDisplayInvites(invites) {
-
-        let inputs = invites.map((invite, i) => {
-            let input = this.setDisplayInviteInput(invite, i)
-            let button = this.setDisplayInviteButton(i, invites)
-            return (
-                <div key={i}>
-                    {input}
-                    {button}
-                </div>
-            )
-        })
-        return (
-            <div>
-                <p>Invite others to join!</p>
-                {inputs}
-                <button>Click to send invitations!</button>
-            </div>
-
-        )
-
-    }
-
-    setDisplayInviteInput(invite, i) {
-
-        let value = (invite.length) ? this.state.invites[i] : null
-
-        return <input
-            i={i}
-            placeholder="Enter email address"
-            value={value}
-            onChange={this.handleChangeInvite}
-            type="text" />
-    }
-
-    setDisplayInviteButton(i, invites) {
-        if (i === 0) {
-            return <button i={i} onClick={this.handleClickInvitePlus}>+</button>
-        }
-        if (i === invites.length - 1) {
-            return <button i={i} onClick={this.handleClickInviteMinus}>-</button>
-        }
-        return null
-    }
-
     setDisplayOthers(players, total) {
-        let others = (this.state.nameSubmitted) ? total - players.length : total - players.length - 1
-        if (others > 1) {
-            return <div><Pluralize singular="other player" count={others}/> joining!</div>
+        let others = (this.props.displayName) ? total - players.length : total - players.length - 1
+        console.log(others)
+        if (others > 0) {
+            return <div><p><Pluralize singular="other player" count={others}/> joining!</p></div>
         }
         return null
     }
@@ -182,11 +92,9 @@ class Waiting extends Component {
 
     render() {
 
-        console.log(this.state.invites)
-
         let waiting = this.setDisplayName()
         let players = this.setDisplayPlayers(this.props.players)
-        let invite = (this.props.displayName) ? this.setDisplayInvites(this.state.invites) : null
+        let invite = (this.props.displayName) ? <Invite /> : null
         let others = this.setDisplayOthers(this.props.players, this.props.total)
         let ready = (this.props.displayName) ? this.setDisplayReady() : null
         return (

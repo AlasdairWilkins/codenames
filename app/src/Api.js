@@ -9,6 +9,12 @@ class Api {
         this.namespace = null
     }
 
+    getNamespace(cb) {
+        socket.on('namespace', namespace => {
+            socket.off('namespace')
+            cb(null, namespace)
+        })
+    }
     setNamespace(gameCode) {
         let address = url + gameCode
         this.namespace = io(address)
@@ -30,20 +36,31 @@ class Api {
         socket.emit('existing', gameCode)
     }
 
+    getCookie(gameCode) {
+        socket.on('cookie', cookie => {
+            socket.off('cookie')
+            document.cookie = cookie
+        })
+        socket.emit('cookie', gameCode)
+    }
+
     getPlayers(cb) {
         this.namespace.on('players', res => {
-            console.log(cb, res)
             cb(null, res)
         })
         this.namespace.emit('players')
     }
 
     sendNewPlayer(player) {
-        this.namespace.emit('players', player)
+        this.namespace.emit('players', {name: player, cookie: document.cookie})
     }
 
-    sendReady() {
-        this.namespace.emit('ready')
+    sendReady(cb) {
+        this.namespace.on('ready', () => {
+            this.namespace.off('ready')
+            cb(null)
+        })
+        this.namespace.emit('ready', document.cookie)
     }
 
     sendMessage(message) {
