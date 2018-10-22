@@ -1,4 +1,5 @@
 const Player = require('./player')
+const Game = require('./game')
 
 const cookie = require('cookie')
 const nodemailer = require('nodemailer')
@@ -10,6 +11,7 @@ module.exports = class Namespace {
         this.players = []
         this.chat = []
         this.total = 0
+        this.games = []
 
         this.namespace = io.of("/" + gameCode)
 
@@ -19,9 +21,11 @@ module.exports = class Namespace {
 
     setListeners(socket) {
 
+        console.log(this.total)
+
         socket.on('players', req => {
             if (req) {
-                this.players.push(new Player(req.name, cookie.parse(req.cookie).id))
+                this.players.push(new Player(req.name, cookie.parse(req.cookie).id, socket.client.id))
             } else {
                 this.total++
             }
@@ -36,11 +40,23 @@ module.exports = class Namespace {
         })
 
         socket.on('ready', () => {
-
+            let player = this.findPlayer('socketID', socket.client.id)
+            if (player != null) {
+                this.players[player].ready = true
+            }
+            if (this.players.length === this.total) {
+                if (this.checkReady) {
+                    socket.emit('ready')
+                    this.games.push(new Game)
+                }
+            }
         })
 
         socket.on('disconnect', () => {
+            let player = this.findPlayer('socketID', socket.client.id)
+            this.players[player].socketID = null
             this.total--
+            console.log(this.players)
         })
 
         // socket.on('email', () => {
@@ -71,6 +87,24 @@ module.exports = class Namespace {
         //             //
         //             //         });
         // })
+    }
+
+    findPlayer(key, value) {
+        for (let i in this.players) {
+            if (this.players[i][key] === value) {
+                return i
+            }
+        }
+        return null
+    }
+
+    checkReady() {
+        for (let i in this.players) {
+            if (!this.players[i].ready) {
+                return false
+            }
+        }
+        return true
     }
 
 }

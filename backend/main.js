@@ -20,8 +20,10 @@ io.on('connection', function(socket) {
         if (server.cookies[idCookie]) {
             console.log("Success!")
             let namespace = server.cookies[idCookie]
-            let player = findPlayer(server.namespaces[namespace], idCookie)
-            socket.emit('namespace', {namespace: namespace, player: player})
+            let i = server.namespaces[namespace].findPlayer('cookie', idCookie)
+            console.log(socket.client.id)
+            server.namespaces[namespace].players[i].socketID = socket.client.id
+            socket.emit('namespace', {namespace: namespace, player: server.namespaces[namespace].players[i]})
         }
     }
 
@@ -56,19 +58,6 @@ io.on('connection', function(socket) {
     // socket.on('recover')
 
 })
-
-function findPlayer(namespace, cookie) {
-    console.log(cookie)
-    let players = namespace.players
-    for (let i in players) {
-        console.log(players[i])
-        if (players[i].cookie === cookie) {
-            return players[i]
-        }
-    }
-    return null
-}
-
 
 const port = 5000;
 io.listen(port);
