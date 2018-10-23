@@ -7,7 +7,7 @@ const url = 'http://localhost:5000/'
 
 const socket = io(url);
 
-class Api {
+class API {
     constructor(){
         this.namespace = null
 
@@ -62,12 +62,21 @@ class Api {
         this.namespace.emit('players', {name: player, cookie: document.cookie})
     }
 
-    sendReady(cb) {
+    sendReady(cbReady, cbPlayers) {
+        console.log(cbReady)
         this.namespace.on('ready', () => {
             this.namespace.off('ready')
-            cb(null)
+            cbReady(null)
+
+            this.namespace.on('select', () => {
+                cbPlayers(null)
+            })
         })
         this.namespace.emit('ready', document.cookie)
+    }
+
+    sendSelect(team) {
+        this.namespace.emit('select', team)
     }
 
     sendMessage(message) {
@@ -83,4 +92,6 @@ class Api {
 
 }
 
-export default Api
+const api = new API()
+
+export default api

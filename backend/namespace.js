@@ -43,10 +43,18 @@ module.exports = class Namespace {
                 this.players[player].ready = true
             }
             if (this.players.length === this.total) {
-                if (this.checkReady) {
-                    socket.emit('ready')
-                    this.games.push(new Game(this.players))
+                if (this.checkReady()) {
+                    this.namespace.emit('ready')
+                    // this.games.push(new Game(this.players))
                 }
+            }
+        })
+
+        socket.on('select', (team) => {
+            let player = this.findPlayer('socketID', socket.client.id)
+            if (player!= null) {
+                this.players[player].team = (team) ? team : null
+                this.namespace.emit('players', {players: this.players})
             }
         })
 
@@ -54,7 +62,6 @@ module.exports = class Namespace {
             let player = this.findPlayer('socketID', socket.client.id)
             this.players[player].socketID = null
             this.total--
-            console.log(this.players)
         })
 
         // socket.on('email', () => {
@@ -98,6 +105,7 @@ module.exports = class Namespace {
 
     checkReady() {
         for (let i in this.players) {
+            console.log(this.players[i])
             if (!this.players[i].ready) {
                 return false
             }

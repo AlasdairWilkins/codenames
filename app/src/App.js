@@ -5,9 +5,7 @@ import Waiting from './Waiting'
 import Select from './Select'
 import Game from './Game'
 import Chat from './Chat'
-import Api from "./Api";
-
-const api = new Api()
+import api from "./Api";
 
 class App extends Component {
 
@@ -88,7 +86,9 @@ class App extends Component {
     }
 
     handleReady() {
-        api.sendReady((err) => this.setState({display: 'select'}))
+        api.sendReady(
+            (err) => this.setState({display: 'select'}),
+            (err, players) => this.setState({players: players}))
     }
 
     set(display) {
@@ -127,15 +127,15 @@ class App extends Component {
             case 'select':
                 return (
                     <div>
-                        <Select players={this.state.players}/>
-                        <Chat api={api} displayName={this.state.displayName}/>
+                        <Select players={this.state.players} handleClick={this.handleClickSelect}/>
+                        <Chat displayName={this.state.displayName}/>
                     </div>
                 )
             case 'game':
                 return (
                     <div>
                         <Game/>
-                        <Chat api={api} displayName={this.state.displayName}/>
+                        <Chat displayName={this.state.displayName}/>
                     </div>
                 )
         }

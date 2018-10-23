@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import store from './store/store'
+import api from "./Api";
 
 class Select extends Component {
     // constructor(props) {
@@ -9,13 +10,22 @@ class Select extends Component {
     //
     // }
 
+    handleClick(event) {
+
+        let currentTeam = event.target.parentNode.className
+        let click = event.target.value
+        if (currentTeam === 'blue' || currentTeam === 'red') {
+            api.sendSelect(null)
+        } else if (click === 'left') {
+            api.sendSelect('blue')
+        } else {
+            api.sendSelect('red')
+        }
+    }
+
     setDisplay(players) {
 
-
-
         return players.map((player, i) => {
-
-            console.log(player, store.getState())
 
             if (player.socketID !== store.getState().id) {
                 let className = (player.team) ? player.team : 'unsorted'
@@ -26,15 +36,19 @@ class Select extends Component {
 
             if (player.team === 'blue') {
                 return (
-                    <div key={i} className='blue'>{player.name}<button>&gt;</button></div>
+                    <div key={i} className='blue'>{player.name}<button onClick={this.handleClick} >&gt;</button></div>
                 )
             } else if (player.team === 'red') {
                 return (
-                    <div key={i} className='red'><button>&lt;</button>{player.name}</div>
+                    <div key={i} className='red'><button onClick={this.handleClick} >&lt;</button>{player.name}</div>
                 )
             } else {
                 return (
-                    <div key={i} className='unsorted'><button>&lt;</button>{player.name}<button>&gt;</button></div>
+                    <div key={i} className='unsorted'>
+                        <button value="left" onClick={this.handleClick} >&lt;</button>
+                        {player.name}
+                        <button value="right" onClick={this.handleClick} >&gt;</button>
+                    </div>
                 )
             }
         })
@@ -46,7 +60,7 @@ class Select extends Component {
 
 
         return (
-            <div>
+            <div id="select-container">
                 <div className="row">
                     <div className="column">Blue Team</div>
                     <div className="column"><strong>Pick your team!</strong></div>
@@ -54,6 +68,10 @@ class Select extends Component {
                 </div>
                 <div className="select">
                     {select}
+                </div>
+                <div>
+                    <button>Click when ready!</button>
+                    <button>Or pick my team at random!</button>
                 </div>
             </div>
         )
