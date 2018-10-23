@@ -1,4 +1,9 @@
-import {ADD_ARTICLE} from "../constants/index";
+//action types
 
+export const SET_ID = "SET_ID";
 
-export const addArticle = article => ({ type: ADD_ARTICLE, payload: article });
+//action creators
+
+export function setID(id) {
+    return {type: SET_ID, id}
+}

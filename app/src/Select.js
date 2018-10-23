@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import './App.css';
 
 class Select extends Component {
-    constructor(props) {
-        super(props)
-
-
-    }
+    // constructor(props) {
+    //     super(props)
+    //
+    //
+    // }
 
     setDisplay(players) {
 

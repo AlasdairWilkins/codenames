@@ -1,5 +1,8 @@
 import io from 'socket.io-client';
 
+import store from "./store/store"
+import {setID} from "./store/actions";
+
 const url = 'http://localhost:5000/'
 
 const socket = io(url);
@@ -7,6 +10,10 @@ const socket = io(url);
 class Api {
     constructor(){
         this.namespace = null
+
+        socket.on('connect', () => {
+            store.dispatch(setID(socket.id))
+        })
     }
 
     getNamespace(cb) {

@@ -20,7 +20,6 @@ class App extends Component {
             displayName: null,
             players: [],
             total: null,
-            id: null,
         }
 
         this.handleSubmitDisplayName = this.handleSubmitDisplayName.bind(this)
