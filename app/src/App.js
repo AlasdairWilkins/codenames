@@ -86,9 +86,8 @@ class App extends Component {
     }
 
     handleReady() {
-        api.sendReady(
-            (err) => this.setState({display: 'select'}),
-            (err, players) => this.setState({players: players}))
+        api.sendReady((err) => this.setState({display: 'select'}))
+        api.getSelects((err, players) => this.setState({players: players}))
     }
 
     set(display) {

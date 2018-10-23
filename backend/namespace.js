@@ -51,11 +51,13 @@ module.exports = class Namespace {
         })
 
         socket.on('select', (team) => {
-            let player = this.findPlayer('socketID', socket.client.id)
-            if (player!= null) {
-                this.players[player].team = (team) ? team : null
-                this.namespace.emit('players', {players: this.players})
+            if (team) {
+                let player = this.findPlayer('socketID', socket.client.id)
+                if (player != null) {
+                    this.players[player].team = (team) ? team : null
+                }
             }
+            this.namespace.emit('players', {players: this.players})
         })
 
         socket.on('disconnect', () => {

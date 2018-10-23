@@ -51,6 +51,18 @@ class API {
         socket.emit('cookie', gameCode)
     }
 
+    sendReady(cb) {
+        this.namespace.on('ready', () => {
+            this.namespace.off('ready')
+            cb(null)
+        })
+        this.namespace.emit('ready', document.cookie)
+    }
+
+    sendNewPlayer(player) {
+        this.namespace.emit('players', {name: player, cookie: document.cookie})
+    }
+
     getPlayers(cb) {
         this.namespace.on('players', res => {
             cb(null, res)
@@ -58,25 +70,15 @@ class API {
         this.namespace.emit('players')
     }
 
-    sendNewPlayer(player) {
-        this.namespace.emit('players', {name: player, cookie: document.cookie})
-    }
-
-    sendReady(cbReady, cbPlayers) {
-        console.log(cbReady)
-        this.namespace.on('ready', () => {
-            this.namespace.off('ready')
-            cbReady(null)
-
-            this.namespace.on('select', () => {
-                cbPlayers(null)
-            })
-        })
-        this.namespace.emit('ready', document.cookie)
-    }
-
     sendSelect(team) {
         this.namespace.emit('select', team)
+    }
+
+    getSelects(cb) {
+        this.namespace.on('select', res => {
+            cb(null, res)
+        })
+        this.namespace.emit('select')
     }
 
     sendMessage(message) {
@@ -93,5 +95,8 @@ class API {
 }
 
 const api = new API()
+const players = 'players'
+const select = 'select'
+const message = 'message'
 
 export default api

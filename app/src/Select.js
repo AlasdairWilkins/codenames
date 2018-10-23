@@ -70,8 +70,10 @@ class Select extends Component {
                     {select}
                 </div>
                 <div>
-                    <button>Click when ready!</button>
-                    <button>Or pick my team at random!</button>
+                    <p>
+                        <button>Click when ready!</button>
+                        <button>Or pick my team at random!</button>
+                    </p>
                 </div>
             </div>
         )
