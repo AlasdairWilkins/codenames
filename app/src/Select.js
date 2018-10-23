@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import store from './store/store'
 
 class Select extends Component {
     // constructor(props) {
@@ -14,28 +15,29 @@ class Select extends Component {
 
         return players.map((player, i) => {
 
-            console.log(player)
+            console.log(player, store.getState())
 
-            let className = (player.team) ? player.team : 'unsorted'
-            return (
-                <div key={i} className={className}>{player.name}<button>&gt;</button></div>
-            )
+            if (player.socketID !== store.getState().id) {
+                let className = (player.team) ? player.team : 'unsorted'
+                return (
+                    <div key={i} className={className}>{player.name}</div>
+                )
+            }
+
+            if (player.team === 'blue') {
+                return (
+                    <div key={i} className='blue'>{player.name}<button>&gt;</button></div>
+                )
+            } else if (player.team === 'red') {
+                return (
+                    <div key={i} className='red'><button>&lt;</button>{player.name}</div>
+                )
+            } else {
+                return (
+                    <div key={i} className='unsorted'><button>&lt;</button>{player.name}<button>&gt;</button></div>
+                )
+            }
         })
-
-        //     if (player.team === 'blue') {
-        //         return (
-        //             <div key={i} className='blue'>{player.name}<button>&gt;</button></div>
-        //         )
-        //     } else if (player.team === 'red') {
-        //         return (
-        //             <div key={i} className='red'><button>&lt;</button>{player.name}</div>
-        //         )
-        //     } else {
-        //         return (
-        //             <div key={i} className='unsorted'><button>&lt;</button>{player.name}<button>&gt;</button></div>
-        //         )
-        //     }
-        // })
     }
 
     render() {
