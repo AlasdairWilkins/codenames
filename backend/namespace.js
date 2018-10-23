@@ -21,8 +21,6 @@ module.exports = class Namespace {
 
     setListeners(socket) {
 
-        console.log(this.total)
-
         socket.on('players', req => {
             if (req) {
                 this.players.push(new Player(req.name, cookie.parse(req.cookie).id, socket.client.id))
@@ -47,7 +45,7 @@ module.exports = class Namespace {
             if (this.players.length === this.total) {
                 if (this.checkReady) {
                     socket.emit('ready')
-                    this.games.push(new Game)
+                    this.games.push(new Game(this.players))
                 }
             }
         })
