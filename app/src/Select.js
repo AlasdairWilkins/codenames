@@ -9,21 +9,33 @@ class Select extends Component {
     }
 
     setDisplay(players) {
+
+
+
         return players.map((player, i) => {
-            if (player.team === 'blue') {
-                return (
-                    <div key={i} className='blue'>{player.name}<button>&gt;</button></div>
-                )
-            } else if (player.team === 'red') {
-                return (
-                    <div key={i} className='red'><button>&lt;</button>{player.name}</div>
-                )
-            } else {
-                return (
-                    <div key={i} className='unsorted'><button>&lt;</button>{player.name}<button>&gt;</button></div>
-                )
-            }
+
+            console.log(player)
+
+            let className = (player.team) ? player.team : 'unsorted'
+            return (
+                <div key={i} className={className}>{player.name}<button>&gt;</button></div>
+            )
         })
+
+        //     if (player.team === 'blue') {
+        //         return (
+        //             <div key={i} className='blue'>{player.name}<button>&gt;</button></div>
+        //         )
+        //     } else if (player.team === 'red') {
+        //         return (
+        //             <div key={i} className='red'><button>&lt;</button>{player.name}</div>
+        //         )
+        //     } else {
+        //         return (
+        //             <div key={i} className='unsorted'><button>&lt;</button>{player.name}<button>&gt;</button></div>
+        //         )
+        //     }
+        // })
     }
 
     render() {
