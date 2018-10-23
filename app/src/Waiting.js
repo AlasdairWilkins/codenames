@@ -76,7 +76,6 @@ class Waiting extends Component {
 
     setDisplayOthers(players, total) {
         let others = (this.props.displayName) ? total - players.length : total - players.length - 1
-        console.log(others)
         if (others > 0) {
             return <div><p><Pluralize singular="other player" count={others}/> joining!</p></div>
         }

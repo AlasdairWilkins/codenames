@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Welcome from './Welcome'
 import Waiting from './Waiting'
+import Select from './Select'
 import Game from './Game'
 import Chat from './Chat'
 import Api from "./Api";
@@ -87,7 +88,7 @@ class App extends Component {
     }
 
     handleReady() {
-        api.sendReady((err) => this.setState({display: 'game'}))
+        api.sendReady((err) => this.setState({display: 'select'}))
     }
 
     set(display) {
@@ -124,6 +125,12 @@ class App extends Component {
                 )
 
             case 'select':
+                return (
+                    <div>
+                        <Select players={this.state.players}/>
+                        <Chat api={api} displayName={this.state.displayName}/>
+                    </div>
+                )
             case 'game':
                 return (
                     <div>

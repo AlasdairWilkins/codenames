@@ -11,9 +11,7 @@ class Chat extends Component {
             //handle allowed in chat yes or no
         }
 
-
         this.props.api.getMessages((err, messages) => this.setState({messages: messages}))
-        console.log(this.state)
 
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)

@@ -36,6 +36,31 @@
     background-color: gray;
 }
 
+.row {
+    display: flex;
+}
+
+.column {
+    flex: 33.3%;
+    text-align: center;
+}
+
+.select div {
+    width: 33.3%;
+    text-align: center;
+}
+
+.select .blue {
+    margin: 0 66.7% 0 0
+}
+
+.select .unsorted {
+    margin: 0 auto
+}
+
+.select .red {
+    margin: 0 0 0 66.7%;
+}
 
 #message { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
 #m { border: 0; padding: 10px 0; width: 90%; margin-right: .5%; }
