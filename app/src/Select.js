@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import store from './store/store'
-import api from "./Api";
+import {api, select} from "./Api";
 
 class Select extends Component {
     // constructor(props) {
@@ -15,11 +15,12 @@ class Select extends Component {
         let currentTeam = event.target.parentNode.className
         let click = event.target.value
         if (currentTeam === 'blue' || currentTeam === 'red') {
-            api.sendSelect(null)
+            console.log("hiya")
+            api.set(select, 'unsorted')
         } else if (click === 'left') {
-            api.sendSelect('blue')
+            api.set(select, 'blue')
         } else {
-            api.sendSelect('red')
+            api.set(select, 'red')
         }
     }
 

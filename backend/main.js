@@ -15,13 +15,13 @@ const server = new Server()
 
 io.on('connection', function(socket) {
 
+    console.log(socket.handshake.headers.cookie)
+
     if (socket.handshake.headers.cookie && cookie.parse(socket.handshake.headers.cookie).id) {
         let idCookie = cookie.parse(socket.handshake.headers.cookie).id
         if (server.cookies[idCookie]) {
-            console.log("Success!")
             let namespace = server.cookies[idCookie]
             let i = server.namespaces[namespace].findPlayer('cookie', idCookie)
-            console.log(socket.client.id)
             server.namespaces[namespace].players[i].socketID = socket.client.id
             socket.emit('namespace', {namespace: namespace, player: server.namespaces[namespace].players[i]})
         }

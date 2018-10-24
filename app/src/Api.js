@@ -5,98 +5,107 @@ import {setID} from "./store/actions";
 
 const url = 'http://localhost:5000/'
 
-const socket = io(url);
+// const socket = io(url);
 
 class API {
     constructor(){
-        this.namespace = null
+        this.socket = io(url)
+        // this.namespace = null
 
-        socket.on('connect', () => {
-            store.dispatch(setID(socket.id))
+        this.socket.on('connect', () => {
+            store.dispatch(setID(this.socket.id))
         })
+    }
+
+    set(header, payload, cb) {
+
+        switch (header) {
+
+            case namespace:
+                let address = url + payload
+                this.socket = io(address)
+                break
+
+            case ready:
+                this.socket.on(header, res => {
+                    this.socket.off(header)
+                    cb(null, res)
+                })
+                this.socket.emit(header, payload)
+                break
+
+            case cookie:
+                this.socket.on(header, res => {
+                    this.socket.off(header)
+                    document.cookie = res
+                })
+                this.socket.emit(header, payload)
+                break
+
+            default:
+                this.socket.emit(header, payload)
+
+        }
+    }
+
+    get(header, cb) {
+
+
+        switch (header) {
+
+            case namespace:
+                this.socket.on(header, res => {
+                    this.socket.off(header)
+                    cb(null, res)
+                })
+                break
+
+            default:
+                this.socket.on(header, res => {
+                    cb(null, res)
+                })
+                this.socket.emit(header)
+        }
+
     }
 
     getNamespace(cb) {
-        socket.on('namespace', namespace => {
-            socket.off('namespace')
-            cb(null, namespace)
-        })
-    }
-    setNamespace(gameCode) {
-        let address = url + gameCode
-        this.namespace = io(address)
+
     }
 
     getGameCode(cb) {
-        socket.on('code', code => {
-            socket.off('code')
+        this.socket.on('code', code => {
+            this.socket.off('code')
             cb(null, code)
         })
-        socket.emit('new');
+        this.socket.emit('new');
     }
 
     sendGameCode(gameCode, cb) {
-        socket.on('code', code => {
-            socket.off('code')
+        this.socket.on('code', code => {
+            this.socket.off('code')
             cb(null, code)
         })
-        socket.emit('existing', gameCode)
+        this.socket.emit('existing', gameCode)
     }
 
-    getCookie(gameCode) {
-        socket.on('cookie', cookie => {
-            socket.off('cookie')
-            document.cookie = cookie
-        })
-        socket.emit('cookie', gameCode)
-    }
 
-    sendReady(cb) {
-        this.namespace.on('ready', () => {
-            this.namespace.off('ready')
-            cb(null)
-        })
-        this.namespace.emit('ready', document.cookie)
-    }
-
-    sendNewPlayer(player) {
-        this.namespace.emit('players', {name: player, cookie: document.cookie})
-    }
-
-    getPlayers(cb) {
-        this.namespace.on('players', res => {
-            cb(null, res)
-        })
-        this.namespace.emit('players')
-    }
-
-    sendSelect(team) {
-        this.namespace.emit('select', team)
-    }
-
-    getSelects(cb) {
-        this.namespace.on('select', res => {
-            cb(null, res)
-        })
-        this.namespace.emit('select')
-    }
-
-    sendMessage(message) {
-        this.namespace.emit('message', message)
-    }
-
-    getMessages(cb) {
-        this.namespace.on('message', res => {
-            cb(null, res)
-        })
-        this.namespace.emit('message')
-    }
-
+    // getCookie(gameCode) {
+    //     this.socket.on('cookie', cookie => {
+    //         this.socket.off('cookie')
+    //         document.cookie = cookie
+    //     })
+    //     this.socket.emit('cookie', gameCode)
+    // }
 }
 
 const api = new API()
 const players = 'players'
 const select = 'select'
 const message = 'message'
+const namespace = 'namespace'
+const cookie = 'cookie'
+const ready = 'ready'
 
-export default api
+
+export {api, players, select, message, namespace, cookie, ready}

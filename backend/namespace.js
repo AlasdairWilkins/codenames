@@ -54,7 +54,7 @@ module.exports = class Namespace {
             if (team) {
                 let player = this.findPlayer('socketID', socket.client.id)
                 if (player != null) {
-                    this.players[player].team = (team) ? team : null
+                    this.players[player].team = (team !== 'unsorted') ? team : null
                 }
             }
             this.namespace.emit('players', {players: this.players})
@@ -62,8 +62,11 @@ module.exports = class Namespace {
 
         socket.on('disconnect', () => {
             let player = this.findPlayer('socketID', socket.client.id)
-            this.players[player].socketID = null
-            this.total--
+            if (player != null) {
+                this.players[player].socketID = null
+                this.total--
+            }
+
         })
 
         // socket.on('email', () => {

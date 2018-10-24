@@ -5,7 +5,7 @@ import Waiting from './Waiting'
 import Select from './Select'
 import Game from './Game'
 import Chat from './Chat'
-import api from "./Api";
+import { api, players, select, namespace, cookie, ready } from "./Api";
 
 class App extends Component {
 
@@ -27,15 +27,16 @@ class App extends Component {
         this.handleReady = this.handleReady.bind(this)
 
         if (document.cookie) {
-            api.getNamespace((err, res) => {
+            api.get(namespace, (err, res) => {
 
                 if (res.player) {
                     this.setState({displayName: res.player.name})
                 }
 
+                //set display to current agreed state
                 this.setState({display: 'waiting', gameCode: res.namespace})
-                api.setNamespace(this.state.gameCode)
-                api.getPlayers((err, msg) => this.setState({players: msg.players, total: msg.total}))
+                api.set(namespace, this.state.gameCode)
+                api.get(players, (err, msg) => this.setState({players: msg.players, total: msg.total}))
             })
         }
 
@@ -49,7 +50,7 @@ class App extends Component {
 
     handleSubmitDisplayName(displayName) {
         this.setState({displayName: displayName})
-        api.sendNewPlayer(displayName)
+        api.set(players, {name: displayName, cookie: document.cookie})
     }
 
     handleGetGameCode(err, code) {
@@ -80,14 +81,14 @@ class App extends Component {
 
     handleSetWaiting() {
         this.setState({display: 'waiting'})
-        api.setNamespace(this.state.gameCode)
-        api.getCookie(this.state.gameCode)
-        api.getPlayers((err, msg) => this.setState({players: msg.players, total: msg.total}))
+        api.set(cookie, this.state.gameCode)
+        api.set(namespace, this.state.gameCode)
+        api.get(players, (err, msg) => this.setState({players: msg.players, total: msg.total}))
     }
 
     handleReady() {
-        api.sendReady((err) => this.setState({display: 'select'}))
-        api.getSelects((err, players) => this.setState({players: players}))
+        api.set(ready, document.cookie, (err) => this.setState({display: 'select'}))
+        api.get(select, (err, players) => this.setState({players: players}))
     }
 
     set(display) {
