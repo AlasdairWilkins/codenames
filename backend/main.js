@@ -15,38 +15,41 @@ const server = new Server()
 
 io.on('connection', function(socket) {
 
-    console.log(socket.handshake.headers.cookie)
-
     if (socket.handshake.headers.cookie && cookie.parse(socket.handshake.headers.cookie).id) {
         let idCookie = cookie.parse(socket.handshake.headers.cookie).id
         if (server.cookies[idCookie]) {
             let namespace = server.cookies[idCookie]
             let i = server.namespaces[namespace].findPlayer('cookie', idCookie)
-            server.namespaces[namespace].players[i].socketID = socket.client.id
-            socket.emit('namespace', {namespace: namespace, player: server.namespaces[namespace].players[i]})
+            console.log(server.namespaces[namespace])
+            let player = null
+            if (i) {
+                server.namespaces[namespace].players[i].socketID = socket.client.id
+                player = server.namespaces[namespace].players[i]
+            }
+            socket.emit('resume', {namespace: namespace, player: player})
         }
     }
 
     if (socket.handshake.query.code) {
         let gameCode = socket.handshake.query.code
         if (server.namespaces[gameCode]) {
-            socket.emit('code', gameCode)
+            socket.emit('namespace', gameCode)
         } else {
             console.log("whoops")
         }
     }
 
-    socket.on('new', () => {
-        let gameCode = shortid.generate()
-        server.namespaces[gameCode] = new Namespace(io, gameCode, socket)
-        socket.emit('code', gameCode)
-    })
-
-    socket.on('existing', gameCode => {
-        if (server.namespaces[gameCode]) {
-            socket.emit('code', true)
+    socket.on('namespace', namespace => {
+        if (namespace) {
+            if (server.namespaces[namespace]) {
+                socket.emit('namespace', true)
+            }
+            socket.emit('namespace', false)
+        } else {
+            let namespace = shortid.generate()
+            server.namespaces[namespace] = new Namespace(io, namespace, socket)
+            socket.emit('namespace', namespace)
         }
-        socket.emit('code', false)
     })
 
     socket.on('cookie', gameCode => {

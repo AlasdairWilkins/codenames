@@ -23,6 +23,7 @@ module.exports = class Namespace {
 
         socket.on('players', req => {
             if (req) {
+                console.log(req)
                 this.players.push(new Player(req.name, cookie.parse(req.cookie).id, socket.client.id))
             } else {
                 this.total++

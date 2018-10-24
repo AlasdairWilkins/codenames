@@ -10,11 +10,11 @@ const url = 'http://localhost:5000/'
 class API {
     constructor(){
         this.socket = io(url)
-        // this.namespace = null
 
         this.socket.on('connect', () => {
             store.dispatch(setID(this.socket.id))
         })
+
     }
 
     set(header, payload, cb) {
@@ -22,8 +22,12 @@ class API {
         switch (header) {
 
             case namespace:
-                let address = url + payload
-                this.socket = io(address)
+                this.socket.on('namespace', res => {
+                    this.socket.off('namespace')
+                    let address = url + res
+                    this.socket = io(address)
+                })
+                this.socket.emit(header, payload)
                 break
 
             case ready:
@@ -50,14 +54,16 @@ class API {
 
     get(header, cb) {
 
-
         switch (header) {
 
             case namespace:
                 this.socket.on(header, res => {
                     this.socket.off(header)
+                    let address = url + res
+                    this.socket = io(address)
                     cb(null, res)
                 })
+                this.socket.emit(header)
                 break
 
             default:
@@ -69,34 +75,6 @@ class API {
 
     }
 
-    getNamespace(cb) {
-
-    }
-
-    getGameCode(cb) {
-        this.socket.on('code', code => {
-            this.socket.off('code')
-            cb(null, code)
-        })
-        this.socket.emit('new');
-    }
-
-    sendGameCode(gameCode, cb) {
-        this.socket.on('code', code => {
-            this.socket.off('code')
-            cb(null, code)
-        })
-        this.socket.emit('existing', gameCode)
-    }
-
-
-    // getCookie(gameCode) {
-    //     this.socket.on('cookie', cookie => {
-    //         this.socket.off('cookie')
-    //         document.cookie = cookie
-    //     })
-    //     this.socket.emit('cookie', gameCode)
-    // }
 }
 
 const api = new API()
