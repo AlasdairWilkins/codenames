@@ -4,6 +4,8 @@ const Game = require('./game')
 const cookie = require('cookie')
 const nodemailer = require('nodemailer')
 
+const server = require('./main')
+
 module.exports = class Namespace {
 
     constructor(io, gameCode) {
@@ -17,13 +19,14 @@ module.exports = class Namespace {
 
         this.namespace.on('connection', this.setListeners.bind(this))
 
+        console.log("Hey hey", server)
+
     }
 
     setListeners(socket) {
 
         socket.on('players', req => {
             if (req) {
-                console.log(req)
                 this.players.push(new Player(req.name, cookie.parse(req.cookie).id, socket.client.id))
             } else {
                 this.total++
@@ -65,9 +68,8 @@ module.exports = class Namespace {
             let player = this.findPlayer('socketID', socket.client.id)
             if (player != null) {
                 this.players[player].socketID = null
-                this.total--
             }
-
+            this.total--
         })
 
         // socket.on('email', () => {

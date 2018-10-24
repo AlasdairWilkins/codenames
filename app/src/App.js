@@ -5,9 +5,8 @@ import Waiting from './Waiting'
 import Select from './Select'
 import Game from './Game'
 import Chat from './Chat'
-import { api, players, select, namespace, cookie, ready } from "./Api";
+import { api, players, select, namespace, cookie, ready, resume } from "./Api";
 
-console.log(api)
 
 class App extends Component {
 
@@ -29,13 +28,10 @@ class App extends Component {
         this.handleReady = this.handleReady.bind(this)
 
         if (document.cookie) {
-            api.socket.on('resume', res => {
-
+            api.get(resume, (err, res) => {
                 if (res.player) {
                     this.setState({displayName: res.player.name})
                 }
-
-                //set display to current agreed state
                 this.setState({display: 'waiting', gameCode: res.namespace})
                 api.get(players, (err, msg) => this.setState({players: msg.players, total: msg.total}))
             })
@@ -51,12 +47,11 @@ class App extends Component {
 
     handleSubmitDisplayName(displayName) {
         this.setState({displayName: displayName})
-        console.log("Hiya!")
         api.set(players, {name: displayName, cookie: document.cookie})
     }
 
-    handleGetGameCode(err, code) {
-        this.setState({gameCode: code})
+    handleGetGameCode(err, res) {
+        this.setState({gameCode: res.namespace})
         this.handleSetWaiting()
     }
 
@@ -83,7 +78,9 @@ class App extends Component {
 
     handleSetWaiting() {
         this.setState({display: 'waiting'})
-        api.set(cookie, this.state.gameCode)
+        api.set(cookie, this.state.gameCode, (err, cookie) => {
+            document.cookie = cookie
+        })
         api.get(players, (err, msg) => this.setState({players: msg.players, total: msg.total}))
     }
 

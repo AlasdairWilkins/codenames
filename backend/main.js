@@ -33,7 +33,7 @@ io.on('connection', function(socket) {
     if (socket.handshake.query.code) {
         let gameCode = socket.handshake.query.code
         if (server.namespaces[gameCode]) {
-            socket.emit('namespace', gameCode)
+            socket.emit('namespace', {namespace: namespace})
         } else {
             console.log("whoops")
         }
@@ -48,7 +48,7 @@ io.on('connection', function(socket) {
         } else {
             let namespace = shortid.generate()
             server.namespaces[namespace] = new Namespace(io, namespace, socket)
-            socket.emit('namespace', namespace)
+            socket.emit('namespace', {namespace: namespace})
         }
     })
 
