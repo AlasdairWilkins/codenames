@@ -19,8 +19,6 @@ module.exports = class Namespace {
 
         this.namespace.on('connection', this.setListeners.bind(this))
 
-        console.log("Hey hey", server)
-
     }
 
     setListeners(socket) {

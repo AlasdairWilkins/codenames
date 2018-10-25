@@ -5,8 +5,6 @@ import {setID} from "./store/actions";
 
 const url = 'http://localhost:5000/'
 
-// const socket = io(url);
-
 class API {
     constructor(){
         this.socket = io(url)
