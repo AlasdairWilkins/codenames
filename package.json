@@ -1,7 +1,7 @@
 {
   "scripts": {
   "client": "cd app && yarn start",
-  "server": "nodemon backend/main.js",
+  "server": "nodemon backend/main.js --ignore db/",
   "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
 },
   "dependencies": {

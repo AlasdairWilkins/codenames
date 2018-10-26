@@ -13,21 +13,62 @@ const url = process.env.DEVURL
 
 const server = new Server()
 
+const sqlite3 = require('sqlite3').verbose()
+
+const db = new sqlite3.Database('./db/sqlite.db', err => {
+    if (err) {
+        console.error(err.message)
+    } else {
+        console.log("Connected to the database.")
+    }
+})
+
+let sql =
+    `CREATE TABLE IF NOT EXISTS sessions (
+        session_id   TEXT PRIMARY KEY,
+        namespace   TEXT
+    );`
+
+db.run(sql)
+
 io.on('connection', function(socket) {
 
     if (socket.handshake.headers.cookie && cookie.parse(socket.handshake.headers.cookie).id) {
-        let idCookie = cookie.parse(socket.handshake.headers.cookie).id
-        if (server.cookies[idCookie]) {
-            let namespace = server.cookies[idCookie]
-            let i = server.namespaces[namespace].findPlayer('cookie', idCookie)
-            console.log(server.namespaces[namespace])
-            let player = null
-            if (i) {
-                server.namespaces[namespace].players[i].socketID = socket.client.id
-                player = server.namespaces[namespace].players[i]
+        let sessionID = cookie.parse(socket.handshake.headers.cookie).id
+
+        let sql =
+            `SELECT namespace FROM sessions WHERE session_id = ?`
+
+        let params = [sessionID]
+
+        db.get(sql, params, function(err, row) {
+            if (err) {
+                console.log("Select error:", err)
+            } else {
+                let namespace = row.namespace
+                let i = server.namespaces[namespace].findPlayer('cookie', sessionID)
+                console.log(server.namespaces[namespace])
+                let player = null
+                
+                if (i) {
+                    server.namespaces[namespace].players[i].socketID = socket.client.id
+                    player = server.namespaces[namespace].players[i]
+                }
+                socket.emit('resume', {namespace: namespace, player: player})
             }
-            socket.emit('resume', {namespace: namespace, player: player})
-        }
+        })
+
+        // if (server.cookies[idCookie]) {
+        //     let namespace = server.cookies[idCookie]
+        //     let i = server.namespaces[namespace].findPlayer('cookie', idCookie)
+        //     console.log(server.namespaces[namespace])
+        //     let player = null
+        //     if (i) {
+        //         server.namespaces[namespace].players[i].socketID = socket.client.id
+        //         player = server.namespaces[namespace].players[i]
+        //     }
+        //     socket.emit('resume', {namespace: namespace, player: player})
+        // }
     }
 
     if (socket.handshake.query.code) {
@@ -52,10 +93,28 @@ io.on('connection', function(socket) {
         }
     })
 
-    socket.on('cookie', gameCode => {
-        let newCookie = shortid.generate()
-        server.cookies[newCookie] = gameCode
-        socket.emit('cookie', "id=" + newCookie)
+    socket.on('cookie', namespace => {
+        let sessionID = shortid.generate()
+
+
+        let sql =
+            `INSERT INTO sessions(session_id, namespace) VALUES(?, ?)`
+
+        let params = [sessionID, namespace]
+
+        db.run(sql, params, function(err) {
+            if (err) {
+                console.error("Insert error:", err.message)
+
+            } else {
+                console.log("Success!")
+                socket.emit('cookie', "id=" + sessionID)
+            }
+        })
+
+
+        // server.cookies[newCookie] = namespace
+
     })
 
     // socket.on('recover')
