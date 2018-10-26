@@ -6,7 +6,7 @@ const cookie = require('cookie')
 const nodemailer = require('nodemailer')
 
 const server = require('./main')
-const db = require('./db')
+const dao = require('./dao')
 
 module.exports = class Namespace {
 
@@ -29,20 +29,9 @@ module.exports = class Namespace {
         socket.on('cookie', () => {
             let sessionID = shortid.generate()
 
-            let sql =
-                `INSERT INTO sessions(session_id, namespace) VALUES(?, ?)`
-
             let params = [sessionID, this.address]
 
-            db.run(sql, params, function (err) {
-                if (err) {
-                    console.error("Insert error:", err.message)
-
-                } else {
-                    console.log("Success!")
-                    socket.emit('cookie', "id=" + sessionID)
-                }
-            })
+            dao.insert('sessions', params, () => socket.emit('cookie', "id=" + sessionID))
         })
 
         socket.on('players', req => {

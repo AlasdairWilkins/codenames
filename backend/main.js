@@ -13,15 +13,7 @@ const url = process.env.DEVURL
 
 const server = new Server()
 
-const db = require('./db')
-
-let sql =
-    `CREATE TABLE IF NOT EXISTS sessions (
-        session_id   TEXT PRIMARY KEY,
-        namespace   TEXT
-    );`
-
-db.run(sql)
+const dao = require('./dao')
 
 io.on('connection', function(socket) {
 
@@ -33,19 +25,21 @@ io.on('connection', function(socket) {
 
         let params = [sessionID]
 
-        db.get(sql, params, function(err, row) {
+        dao.db.get(sql, params, function(err, row) {
             if (err) {
                 console.log("Select error:", err)
             } else {
-                let namespace = row.namespace
-                if (server.namespaces[namespace]) {
-                    let i = server.namespaces[namespace].findPlayer('cookie', sessionID)
-                    let player = null
-                    if (i) {
-                        server.namespaces[namespace].players[i].socketID = socket.client.id
-                        player = server.namespaces[namespace].players[i]
+                if (row) {
+                    let namespace = row.namespace
+                    if (server.namespaces[namespace]) {
+                        let i = server.namespaces[namespace].findPlayer('cookie', sessionID)
+                        let player = null
+                        if (i) {
+                            server.namespaces[namespace].players[i].socketID = socket.client.id
+                            player = server.namespaces[namespace].players[i]
+                        }
+                        socket.emit('resume', {namespace: namespace, player: player})
                     }
-                    socket.emit('resume', {namespace: namespace, player: player})
                 }
             }
         })
@@ -90,20 +84,9 @@ io.on('connection', function(socket) {
         let sessionID = shortid.generate()
 
 
-        let sql =
-            `INSERT INTO sessions(session_id, namespace) VALUES(?, ?)`
-
+        let table = `sessions(session_id, namespace)`
         let params = [sessionID, namespace]
-
-        db.run(sql, params, function(err) {
-            if (err) {
-                console.error("Insert error:", err.message)
-
-            } else {
-                console.log("Success!")
-                socket.emit('cookie', "id=" + sessionID)
-            }
-        })
+        dao.insert(table, params, () => socket.emit('cookie', "id=" + sessionID))
 
 
         // server.cookies[newCookie] = namespace
