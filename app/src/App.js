@@ -78,7 +78,7 @@ class App extends Component {
 
     handleSetWaiting() {
         this.setState({display: 'waiting'})
-        api.set(cookie, this.state.gameCode, (err, cookie) => {
+        api.get(cookie, (err, cookie) => {
             document.cookie = cookie
         })
         api.get(players, (err, msg) => this.setState({players: msg.players, total: msg.total}))

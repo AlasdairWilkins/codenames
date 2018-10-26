@@ -1,27 +1,49 @@
 const Player = require('./player')
 const Game = require('./game')
 
+const shortid = require('shortid')
 const cookie = require('cookie')
 const nodemailer = require('nodemailer')
 
 const server = require('./main')
+const db = require('./db')
 
 module.exports = class Namespace {
 
-    constructor(io, gameCode) {
+    constructor(io, namespace) {
 
         this.players = []
         this.chat = []
         this.total = 0
         this.games = []
+        this.address = namespace
 
-        this.namespace = io.of("/" + gameCode)
+        this.namespace = io.of("/" + namespace)
 
         this.namespace.on('connection', this.setListeners.bind(this))
 
     }
 
     setListeners(socket) {
+
+        socket.on('cookie', () => {
+            let sessionID = shortid.generate()
+
+            let sql =
+                `INSERT INTO sessions(session_id, namespace) VALUES(?, ?)`
+
+            let params = [sessionID, this.address]
+
+            db.run(sql, params, function (err) {
+                if (err) {
+                    console.error("Insert error:", err.message)
+
+                } else {
+                    console.log("Success!")
+                    socket.emit('cookie', "id=" + sessionID)
+                }
+            })
+        })
 
         socket.on('players', req => {
             if (req) {

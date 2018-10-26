@@ -13,15 +13,7 @@ const url = process.env.DEVURL
 
 const server = new Server()
 
-const sqlite3 = require('sqlite3').verbose()
-
-const db = new sqlite3.Database('./db/sqlite.db', err => {
-    if (err) {
-        console.error(err.message)
-    } else {
-        console.log("Connected to the database.")
-    }
-})
+const db = require('./db')
 
 let sql =
     `CREATE TABLE IF NOT EXISTS sessions (
@@ -46,15 +38,15 @@ io.on('connection', function(socket) {
                 console.log("Select error:", err)
             } else {
                 let namespace = row.namespace
-                let i = server.namespaces[namespace].findPlayer('cookie', sessionID)
-                console.log(server.namespaces[namespace])
-                let player = null
-                
-                if (i) {
-                    server.namespaces[namespace].players[i].socketID = socket.client.id
-                    player = server.namespaces[namespace].players[i]
+                if (server.namespaces[namespace]) {
+                    let i = server.namespaces[namespace].findPlayer('cookie', sessionID)
+                    let player = null
+                    if (i) {
+                        server.namespaces[namespace].players[i].socketID = socket.client.id
+                        player = server.namespaces[namespace].players[i]
+                    }
+                    socket.emit('resume', {namespace: namespace, player: player})
                 }
-                socket.emit('resume', {namespace: namespace, player: player})
             }
         })
 
@@ -77,6 +69,7 @@ io.on('connection', function(socket) {
             socket.emit('namespace', {namespace: namespace})
         } else {
             console.log("whoops")
+
         }
     }
 

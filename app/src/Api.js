@@ -34,14 +34,14 @@ class API {
                 this.socket.emit(header, payload)
                 break
 
-            case cookie:
-                let socket = io(url);
-                socket.on(header, res => {
-                    socket.off(header)
-                    cb(null, res)
-                })
-                socket.emit(header, payload)
-                break
+            // case cookie:
+            //     let socket = io(url);
+            //     socket.on(header, res => {
+            //         socket.off(header)
+            //         cb(null, res)
+            //     })
+            //     socket.emit(header, payload)
+            //     break
 
             default:
                 this.socket.emit(header, payload)
