@@ -25,22 +25,26 @@ io.on('connection', function(socket) {
 
         let params = [sessionID]
 
+        dao.get(sql, params, row => {
+            if (row) {
+                let namespace = row.namespace
+                if (server.namespaces[namespace]) {
+                    let i = server.namespaces[namespace].findPlayer('cookie', sessionID)
+                    let player = null
+                    if (i) {
+                        server.namespaces[namespace].players[i].socketID = socket.client.id
+                        player = server.namespaces[namespace].players[i]
+                    }
+                    socket.emit('resume', {namespace: namespace, player: player})
+                }
+            }
+        })
+
         dao.db.get(sql, params, function(err, row) {
             if (err) {
                 console.log("Select error:", err)
             } else {
-                if (row) {
-                    let namespace = row.namespace
-                    if (server.namespaces[namespace]) {
-                        let i = server.namespaces[namespace].findPlayer('cookie', sessionID)
-                        let player = null
-                        if (i) {
-                            server.namespaces[namespace].players[i].socketID = socket.client.id
-                            player = server.namespaces[namespace].players[i]
-                        }
-                        socket.emit('resume', {namespace: namespace, player: player})
-                    }
-                }
+
             }
         })
 

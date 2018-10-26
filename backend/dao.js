@@ -38,6 +38,18 @@ class DAO {
             }
         })
     }
+
+    get(sql, params, cb) {
+        this.db.get(sql, params, function(err, row) {
+            if (err) {
+                console.log("Get error:", err.message)
+            } else if (row) {
+                cb(row)
+            } else {
+                console.log("No such row!")
+            }
+        })
+    }
 }
 
 module.exports = new DAO(dbFilePath)
