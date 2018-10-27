@@ -3,7 +3,7 @@ const sqlite3 = require('sqlite3').verbose()
 const dbFilePath = './db/sqlite.db'
 
 const tables = {
-    sessions: `sessions(session_id, namespace)`
+    sessions: `sessions(session_id, nsp_id)`
 }
 
 class DAO {
@@ -19,7 +19,7 @@ class DAO {
         let sql =
             `CREATE TABLE IF NOT EXISTS sessions (
                 session_id   TEXT PRIMARY KEY,
-                namespace   TEXT
+                nsp_id   TEXT
             );`
 
         this.db.run(sql)
@@ -31,7 +31,7 @@ class DAO {
 
         this.db.run(sql, params, function (err) {
             if (err) {
-                console.error("Insert error:", err.message)
+                console.error("Insert error:", sql, params, err.message)
             } else {
                 console.log("Success!")
                 cb()
@@ -42,11 +42,9 @@ class DAO {
     get(sql, params, cb) {
         this.db.get(sql, params, function(err, row) {
             if (err) {
-                console.log("Get error:", err.message)
+                console.log("Get error:", sql, params, err.message)
             } else if (row) {
                 cb(row)
-            } else {
-                console.log("No such row!")
             }
         })
     }

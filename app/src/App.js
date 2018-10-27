@@ -56,6 +56,7 @@ class App extends Component {
     }
 
     handleSendGameCode(err, status) {
+        console.log(status)
         if (status) {
             this.handleSetWaiting()
         } else {
@@ -81,7 +82,11 @@ class App extends Component {
         api.get(cookie, (err, cookie) => {
             document.cookie = cookie
         })
-        api.get(players, (err, msg) => this.setState({players: msg.players, total: msg.total}))
+        console.log("Hiya!", api.socket)
+        api.get(players, (err, msg) => {
+            console.log(msg)
+            this.setState({players: msg.players, total: msg.total})
+        })
     }
 
     handleReady() {

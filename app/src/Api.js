@@ -20,8 +20,12 @@ class API {
         switch (header) {
 
             case namespace:
-                this.socket.on('namespace', res => {
-                    this.socket.off('namespace')
+                this.socket.on(header, res => {
+                    console.log(res)
+                    this.socket.off(header)
+                    let address = url + payload
+                    this.socket = io(address)
+                    cb(null, res)
                 })
                 this.socket.emit(header, payload)
                 break
@@ -33,15 +37,6 @@ class API {
                 })
                 this.socket.emit(header, payload)
                 break
-
-            // case cookie:
-            //     let socket = io(url);
-            //     socket.on(header, res => {
-            //         socket.off(header)
-            //         cb(null, res)
-            //     })
-            //     socket.emit(header, payload)
-            //     break
 
             default:
                 this.socket.emit(header, payload)
@@ -59,7 +54,6 @@ class API {
                     this.socket.off(header)
                     let address = url + res.namespace
                     this.socket = io(address)
-                    console.log(res)
                     cb(null, res)
                 })
                 this.socket.emit(header)

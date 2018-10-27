@@ -21,13 +21,14 @@ io.on('connection', function(socket) {
         let sessionID = cookie.parse(socket.handshake.headers.cookie).id
 
         let sql =
-            `SELECT namespace FROM sessions WHERE session_id = ?`
+            `SELECT nsp_id FROM sessions WHERE session_id = ?`
 
         let params = [sessionID]
 
         dao.get(sql, params, row => {
+            console.log(row)
             if (row) {
-                let namespace = row.namespace
+                let namespace = row.nsp_id
                 if (server.namespaces[namespace]) {
                     let i = server.namespaces[namespace].findPlayer('cookie', sessionID)
                     let player = null
@@ -40,34 +41,14 @@ io.on('connection', function(socket) {
             }
         })
 
-        dao.db.get(sql, params, function(err, row) {
-            if (err) {
-                console.log("Select error:", err)
-            } else {
-
-            }
-        })
-
-        // if (server.cookies[idCookie]) {
-        //     let namespace = server.cookies[idCookie]
-        //     let i = server.namespaces[namespace].findPlayer('cookie', idCookie)
-        //     console.log(server.namespaces[namespace])
-        //     let player = null
-        //     if (i) {
-        //         server.namespaces[namespace].players[i].socketID = socket.client.id
-        //         player = server.namespaces[namespace].players[i]
-        //     }
-        //     socket.emit('resume', {namespace: namespace, player: player})
-        // }
     }
 
     if (socket.handshake.query.code) {
-        let gameCode = socket.handshake.query.code
-        if (server.namespaces[gameCode]) {
+        let namespace = socket.handshake.query.code
+        if (server.namespaces[namespace]) {
             socket.emit('namespace', {namespace: namespace})
         } else {
             console.log("whoops")
-
         }
     }
 
@@ -86,18 +67,10 @@ io.on('connection', function(socket) {
 
     socket.on('cookie', namespace => {
         let sessionID = shortid.generate()
-
-
-        let table = `sessions(session_id, namespace)`
+        let table = `sessions(session_id, nsp_id)`
         let params = [sessionID, namespace]
         dao.insert(table, params, () => socket.emit('cookie', "id=" + sessionID))
-
-
-        // server.cookies[newCookie] = namespace
-
     })
-
-    // socket.on('recover')
 
 })
 
