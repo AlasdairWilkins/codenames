@@ -19,7 +19,9 @@ class DAO {
         let sql =
             `CREATE TABLE IF NOT EXISTS sessions (
                 session_id   TEXT PRIMARY KEY,
-                nsp_id   TEXT
+                nsp_id   TEXT,
+                display_name    TEXT,
+                socket_id   TEXT
             );`
 
         this.db.run(sql)
@@ -35,6 +37,20 @@ class DAO {
             } else {
                 console.log("Success!")
                 cb()
+            }
+        })
+    }
+
+    update(sql, params, cb) {
+        this.db.run(sql, params, function(err) {
+            if (err) {
+                console.error("Update error", sql, params, err.message)
+            } else {
+                console.log("Updated!")
+                if (cb) {
+                    cb()
+                }
+
             }
         })
     }

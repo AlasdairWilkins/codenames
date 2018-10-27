@@ -36,10 +36,30 @@ module.exports = class Namespace {
 
         socket.on('players', req => {
             if (req) {
+                let sql =
+                    `UPDATE sessions
+                    SET display_name = ?, socket_id = ?
+                    WHERE session_id = ?`
+
+                let params = [req.name, socket.client.id, cookie.parse(req.cookie).id]
+
+                dao.update(sql, params)
+
                 this.players.push(new Player(req.name, cookie.parse(req.cookie).id, socket.client.id))
+
             } else {
                 this.total++
             }
+            let sql =
+                `SELECT display_name displayName,
+                        socket_id socketID,
+                        session_id sessionID
+                FROM sessions
+                WHERE nsp_id = ? ;`
+            let params = [this.address]
+            dao.db.each(sql, params, (err, result) => {
+                console.log("Result:", result)
+            })
             this.namespace.emit('players', {players: this.players, total: this.total})
         })
 
@@ -74,6 +94,15 @@ module.exports = class Namespace {
         })
 
         socket.on('disconnect', () => {
+            let sql=
+                `UPDATE sessions
+                SET socket_id = ?
+                WHERE socket_id = ?`
+
+            let params = [null, socket.client.id]
+
+            dao.update(sql, params)
+
             let player = this.findPlayer('socketID', socket.client.id)
             if (player != null) {
                 this.players[player].socketID = null

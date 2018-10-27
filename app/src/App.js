@@ -29,8 +29,8 @@ class App extends Component {
 
         if (document.cookie) {
             api.get(resume, (err, res) => {
-                if (res.player) {
-                    this.setState({displayName: res.player.name})
+                if (res.displayName) {
+                    this.setState({displayName: res.displayName})
                 }
                 this.setState({display: 'waiting', gameCode: res.namespace})
                 api.get(players, (err, msg) => this.setState({players: msg.players, total: msg.total}))

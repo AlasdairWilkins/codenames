@@ -21,23 +21,26 @@ io.on('connection', function(socket) {
         let sessionID = cookie.parse(socket.handshake.headers.cookie).id
 
         let sql =
-            `SELECT nsp_id FROM sessions WHERE session_id = ?`
+            `SELECT nsp_id nspID, display_name displayName FROM sessions WHERE session_id = ?`
 
         let params = [sessionID]
 
         dao.get(sql, params, row => {
             console.log(row)
             if (row) {
-                let namespace = row.nsp_id
-                if (server.namespaces[namespace]) {
-                    let i = server.namespaces[namespace].findPlayer('cookie', sessionID)
-                    let player = null
-                    if (i) {
-                        server.namespaces[namespace].players[i].socketID = socket.client.id
-                        player = server.namespaces[namespace].players[i]
-                    }
-                    socket.emit('resume', {namespace: namespace, player: player})
-                }
+                let sql =
+                    `UPDATE sessions
+                    SET socket_id = ?
+                    WHERE session_id = ?`
+
+                let params = [socket.client.id, sessionID]
+
+                dao.update(sql, params)
+
+                let namespace = row.nspID
+                let displayName = row.displayName
+
+                socket.emit('resume', {namespace: namespace, displayName: displayName})
             }
         })
 
