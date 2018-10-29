@@ -31,12 +31,11 @@ module.exports = class Namespace {
 
         socket.on('players', req => {
             if (req) {
-                let params = [req.name, socket.client.id, cookie.parse(req.cookie).id];
-                dao.update('displayName', params)
+                dao.query('update', 'displayName', req.name, socket.client.id, cookie.parse(req.cookie).id)
             }
 
-            dao.all('players', [this.address], rows => {
-                dao.get('joining', [this.address], row => {
+            dao.query('all', 'players', this.address, rows => {
+                dao.query('get', 'joining', this.address, row => {
                     this.namespace.emit('players', {players: rows, total: row.count})
                 })
             })
@@ -46,14 +45,13 @@ module.exports = class Namespace {
 
             if (message) {
 
-                let params = [this.address, message, socket.client.id, socket.client.id];
-                dao.insert('chat', params, () => {
-                    dao.all('messages', [this.address], rows => {
+                dao.query('insert', 'chat', this.address, message, socket.client.id, socket.client.id, () => {
+                    dao.query('all', 'messages', this.address, rows => {
                         this.namespace.emit('message', rows)
                     })
                 })
             } else {
-                dao.all('messages', [this.address], rows => {
+                dao.query('all', 'messages', [this.address], rows => {
                     this.namespace.emit('message', rows)
                 })
             }
@@ -61,13 +59,8 @@ module.exports = class Namespace {
 
         socket.on('ready', () => {
 
-            let params = [socket.client.id];
-
-            dao.update('ready', params, () => {
-
-                let getParams = [this.address];
-
-                dao.get('ready', getParams, (row) => {
+            dao.query('update', 'ready', socket.client.id, () => {
+                dao.query('get', 'ready', this.address, (row) => {
                     if (!row.count) {
                         this.namespace.emit('ready')
                     }
@@ -78,49 +71,17 @@ module.exports = class Namespace {
 
         socket.on('select', (team) => {
 
-
-            let params = [team, socket.client.id];
-
-            dao.update('team', params, () => {
-                dao.all('teams', [this.address], rows => {
+            dao.query('update', 'team', team, socket.client.id, () => {
+                dao.query('all', 'teams', this.address, rows => {
                     this.namespace.emit('players', {players: rows})
                 })
             })
         });
 
         socket.on('disconnect', () => {
-            let params = [null, socket.client.id];
-            dao.update('disconnect', params)
+            dao.query('update', 'disconnect', null, socket.client.id)
         })
 
-        // socket.on('email', () => {
-        //     socket.on('sendcode', function(msg){
-        //         let link = `${url}/?code=${msg.code}`
-        //         let transporter = nodemailer.createTransport({
-        //             service: 'gmail',
-        //             auth: {
-        //                 user: process.env.EMAIL,
-        //                 pass: process.env.EMAIL_PW
-        //             },
-        //             tls: {
-        //                 rejectUnauthorized: false
-        //             }
-        //         });
-        //
-        //         let mailOptions = {
-        //             to: ...invites,
-        //             subject: "You've been invited to play a game of The Fox in the Forest!",
-        //             text: `Go to http://fox-forest.alasdairwilkins.com and enter ${msg.code} when it asks for a game code.`,
-        //             html: `Go to <a href="${url}?code=${msg.code}">fox-forest.alasdairwilkins.com</a> and enter ${msg.code} when it asks for a game code. Good luck!`
-        //             //         };
-        //             //
-        //             //         transporter.sendMail(mailOptions, (error, info) => {
-        //             //             if (error) {
-        //             //                 return console.log(error);
-        //             //             }
-        //             //
-        //             //         });
-        // })
     }
 
 };

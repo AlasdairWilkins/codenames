@@ -22,16 +22,11 @@ io.on('connection', function(socket) {
 
         let params = [sessionID];
 
-        dao.get('resume', params, row => {
+        dao.query('get', 'resume', params, row => {
             if (row) {
-
-                let params = [socket.client.id, sessionID];
-
-                dao.update('socketID', params);
-
+                dao.query('update', 'socketID', socket.client.id, sessionID);
                 let namespace = row.nspID;
                 let displayName = row.displayName;
-
                 socket.emit('resume', {namespace: namespace, displayName: displayName})
             }
         })
@@ -40,9 +35,7 @@ io.on('connection', function(socket) {
 
     if (socket.handshake.query.code) {
         let namespace = socket.handshake.query.code;
-        let params = [namespace];
-
-        dao.get('namespace', params, row => {
+        dao.query('get', 'namespace', namespace, row => {
             if (row) {
                 socket.emit('namespace', {namespace: namespace})
             } else {
@@ -53,26 +46,19 @@ io.on('connection', function(socket) {
 
     socket.on('namespace', namespace => {
         if (namespace) {
-
-
-            let params = [namespace];
-
-            dao.get('namespace', params, row => {
+            dao.query('get', 'namespace', namespace, row => {
                 if (row) {
                     socket.emit('namespace', true)
                 } else {
                     socket.emit('namespace', false)
                 }
             })
-
         } else {
             let namespace = shortid.generate();
-            let params = [namespace];
-            dao.insert('namespace', params, () => {
+            dao.query('insert', 'namespace', namespace, () => {
                 new Namespace(io, namespace, socket);
                 socket.emit('namespace', {namespace: namespace})
             })
-
         }
     })
 

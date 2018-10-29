@@ -2,11 +2,6 @@ const sqlite3 = require('sqlite3').verbose();
 
 const dbFilePath = './db/sqlite.db';
 
-// const tables = {
-//     sessions: `sessions(session_id, nsp_id)`,
-//     namespaces: `namespaces(nsp_id)`
-// }
-
 class DAO {
     constructor(dbFilePath) {
 
@@ -26,7 +21,7 @@ class DAO {
         };
 
         this.gets = {
-            joining: `SELECT count(*) count FROM sessions WHERE nsp_id = ? AND display_name IS NULL`,
+            joining: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND display_name IS NULL`,
             ready: `SELECT COUNT(*) count FROM sessions WHERE nsp_id = (?) AND ready = 0`,
             namespace: `SELECT nsp_id nspID FROM namespaces WHERE nsp_id = ?`,
             resume: `SELECT nsp_id nspID, display_name displayName FROM sessions WHERE session_id = ?`
@@ -117,25 +112,13 @@ class DAO {
         let header = arguments[1];
         let hasCB = (typeof arguments[arguments.length - 1] === "function");
         let params = [];
-        for (let i = 2; (hasCB) ? i < arguments.length - 1 : arguments.length; i++) {
+        for (let i = 2; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
             params.push(arguments[i])
         }
         let cb = (hasCB) ? arguments[arguments.length - 1] : null;
 
-        switch(type) {
-            case 'insert':
-                this.insert(header, params, cb);
-                break;
-            case 'update':
-                this.update(header, params, cb);
-                break;
-            case 'get':
-                this.get(header, params, cb);
-                break;
-            case 'all':
-                this.all(header, params, cb);
-                break;
-        }
+        this[type](header, params, cb)
+
     }
 
     insert(header, params, cb) {
