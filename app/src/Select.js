@@ -12,8 +12,8 @@ class Select extends Component {
 
     handleClick(event) {
 
-        let currentTeam = event.target.parentNode.className
-        let click = event.target.value
+        let currentTeam = event.target.parentNode.className;
+        let click = event.target.value;
         if (currentTeam === 'blue' || currentTeam === 'red') {
             api.set(select, null)
         } else if (click === 'left') {
@@ -28,7 +28,7 @@ class Select extends Component {
         return players.map((player, i) => {
 
             if (player.socketID !== store.getState().id) {
-                let className = player.team
+                let className = player.team;
                 return (
                     <div key={i} className={className}>{player.name}</div>
                 )
@@ -56,7 +56,7 @@ class Select extends Component {
 
     render() {
 
-        let select = this.setDisplay(this.props.players)
+        let select = this.setDisplay(this.props.players);
 
 
         return (

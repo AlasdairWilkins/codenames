@@ -1,7 +1,7 @@
 
 module.exports = class Server {
     constructor() {
-        this.namespaces = {}
+        this.namespaces = {};
         this.cookies = {}
     }
-}
+};

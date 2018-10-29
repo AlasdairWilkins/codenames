@@ -1,22 +1,22 @@
-const Player = require('./player')
-const Game = require('./game')
+const Player = require('./player');
+const Game = require('./game');
 
-const shortid = require('shortid')
-const cookie = require('cookie')
-const nodemailer = require('nodemailer')
+const shortid = require('shortid');
+const cookie = require('cookie');
+const nodemailer = require('nodemailer');
 
-const server = require('./main')
-const dao = require('./dao')
+const server = require('./main');
+const dao = require('./dao');
 
 module.exports = class Namespace {
 
     constructor(io, namespace) {
 
-        this.chat = []
-        this.games = []
-        this.address = namespace
+        this.chat = [];
+        this.games = [];
+        this.address = namespace;
 
-        this.namespace = io.of("/" + namespace)
+        this.namespace = io.of("/" + namespace);
 
         this.namespace.on('connection', this.setListeners.bind(this))
 
@@ -24,158 +24,73 @@ module.exports = class Namespace {
 
     setListeners(socket) {
 
-        //do i still need this?
         socket.on('cookie', () => {
-            let sessionID = shortid.generate()
-
-            let sql = `INSERT INTO sessions(session_id, nsp_id) VALUES (?, ?);`
-            let params = [sessionID, this.address]
-
-            dao.insert(sql, params, () => socket.emit('cookie', "id=" + sessionID))
-        })
+            let sessionID = shortid.generate();
+            dao.query('insert', 'session', sessionID, this.address, () => socket.emit('cookie', "id=" + sessionID));
+        });
 
         socket.on('players', req => {
             if (req) {
-                let sql =
-                    `UPDATE sessions
-                    SET display_name = ?, socket_id = ?
-                    WHERE session_id = ?`
-
-                let params = [req.name, socket.client.id, cookie.parse(req.cookie).id]
-
-                dao.update(sql, params)
-
+                let params = [req.name, socket.client.id, cookie.parse(req.cookie).id];
+                dao.update('displayName', params)
             }
-            let sql =
-                `SELECT display_name name,
-                        socket_id socketID,
-                        session_id sessionID
-                FROM sessions
-                WHERE nsp_id = ? AND display_name IS NOT NULL
-                ORDER BY display_name;`
-            let params = [this.address]
-            dao.db.all(sql, params, (err, rows) => {
-                if (err) {
-                    console.error(err.message)
-                } else {
-                    let selectSQL =
-                        `SELECT count(*) count
-                        FROM sessions
-                        WHERE nsp_id = ? AND display_name IS NULL`
-                    let selectParams = [this.address]
-                    dao.db.get(selectSQL, selectParams, (err, row) => {
-                        if (err) {
-                            console.error(err.message)
-                        } else {
-                            //make it so the front end just uses row.count
-                            this.namespace.emit('players', {players: rows, total: rows.length + row.count})
-                        }
-                    })
-                }
+
+            dao.all('players', [this.address], rows => {
+                dao.get('joining', [this.address], row => {
+                    this.namespace.emit('players', {players: rows, total: row.count})
+                })
             })
-        })
+        });
 
         socket.on('message', message => {
 
             if (message) {
 
-                let sql =
-                    `INSERT INTO chats(nsp_id, message, socket_id, session_id, display_name) 
-                    SELECT (?), (?), (?), session_id, display_name FROM sessions WHERE socket_id = (?);`
-                let params = [this.address, message, socket.client.id, socket.client.id]
-
-                dao.insert(sql, params, () => {
-                    let allSql =
-                        `SELECT message entry,
-                        socket_id socketID,
-                        display_name name
-                        FROM chats
-                        WHERE nsp_id = ?
-                        ;`
-                    let allParams = [this.address]
-                    dao.db.all(allSql, allParams, (err, rows) => {
-                        console.log(rows)
+                let params = [this.address, message, socket.client.id, socket.client.id];
+                dao.insert('chat', params, () => {
+                    dao.all('messages', [this.address], rows => {
                         this.namespace.emit('message', rows)
                     })
                 })
             } else {
-                let allSql =
-                    `SELECT message entry,
-                        socket_id socketID,
-                        display_name name
-                        FROM chats
-                        WHERE nsp_id = ?
-                        ;`
-                let allParams = [this.address]
-                dao.db.all(allSql, allParams, (err, rows) => {
-                    console.log(rows)
+                dao.all('messages', [this.address], rows => {
                     this.namespace.emit('message', rows)
                 })
             }
-        })
+        });
 
         socket.on('ready', () => {
 
-            let sql = `
-            UPDATE sessions
-            SET ready = 1
-            WHERE socket_id = ?
-            `
+            let params = [socket.client.id];
 
-            let params = [socket.client.id]
+            dao.update('ready', params, () => {
 
-            dao.update(sql, params, () => {
-                let getSQL = `
-                SELECT COUNT(*) count
-                FROM sessions
-                WHERE nsp_id = (?) AND ready = 0
-                `
+                let getParams = [this.address];
 
-                let getParams = [this.address]
-
-                dao.get(getSQL, getParams, (row) => {
+                dao.get('ready', getParams, (row) => {
                     if (!row.count) {
                         this.namespace.emit('ready')
                     }
                 })
             })
 
-        })
+        });
 
         socket.on('select', (team) => {
 
-            let sql = `
-            UPDATE sessions
-            SET team = (?)
-            WHERE socket_id = (?)
-            `
 
-            let params = [team, socket.client.id]
+            let params = [team, socket.client.id];
 
-            dao.update(sql, params, () => {
-                let allSql =
-                    `SELECT display_name name,
-                        socket_id socketID,
-                        team
-                    FROM sessions
-                    WHERE nsp_id = ?
-                    ORDER BY display_name;`
-                let allParams = [this.address]
-                dao.db.all(allSql, allParams, (err, rows) => {
+            dao.update('team', params, () => {
+                dao.all('teams', [this.address], rows => {
                     this.namespace.emit('players', {players: rows})
                 })
             })
-        })
+        });
 
         socket.on('disconnect', () => {
-            let sql=
-                `UPDATE sessions
-                SET socket_id = ?
-                WHERE socket_id = ?`
-
-            let params = [null, socket.client.id]
-
-            dao.update(sql, params)
+            let params = [null, socket.client.id];
+            dao.update('disconnect', params)
         })
 
         // socket.on('email', () => {
@@ -208,4 +123,4 @@ module.exports = class Namespace {
         // })
     }
 
-}
+};

@@ -11,7 +11,7 @@ import { api, players, select, namespace, cookie, ready, resume } from "./Api";
 class App extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             display: 'welcome',
@@ -19,26 +19,26 @@ class App extends Component {
             displayName: null,
             players: [],
             total: null,
-        }
+        };
 
-        this.handleSubmitDisplayName = this.handleSubmitDisplayName.bind(this)
-        this.handleGetGameCode = this.handleGetGameCode.bind(this)
-        this.handleSendGameCode = this.handleSendGameCode.bind(this)
-        this.handleSetWaiting = this.handleSetWaiting.bind(this)
-        this.handleReady = this.handleReady.bind(this)
+        this.handleSubmitDisplayName = this.handleSubmitDisplayName.bind(this);
+        this.handleGetGameCode = this.handleGetGameCode.bind(this);
+        this.handleSendGameCode = this.handleSendGameCode.bind(this);
+        this.handleSetWaiting = this.handleSetWaiting.bind(this);
+        this.handleReady = this.handleReady.bind(this);
 
         if (document.cookie) {
             api.get(resume, (err, res) => {
                 if (res.displayName) {
                     this.setState({displayName: res.displayName})
                 }
-                this.setState({display: 'waiting', gameCode: res.namespace})
+                this.setState({display: 'waiting', gameCode: res.namespace});
                 api.get(players, (err, msg) => this.setState({players: msg.players, total: msg.total}))
             })
         }
 
-        let loc = new URL(window.location)
-        let params = new URLSearchParams(loc.search)
+        let loc = new URL(window.location);
+        let params = new URLSearchParams(loc.search);
         if (params.has('code')) {
             this.handleParamsCode(params)
         }
@@ -46,17 +46,16 @@ class App extends Component {
     }
 
     handleSubmitDisplayName(displayName) {
-        this.setState({displayName: displayName})
+        this.setState({displayName: displayName});
         api.set(players, {name: displayName, cookie: document.cookie})
     }
 
     handleGetGameCode(err, res) {
-        this.setState({gameCode: res.namespace})
+        this.setState({gameCode: res.namespace});
         this.handleSetWaiting()
     }
 
     handleSendGameCode(err, status) {
-        console.log(status)
         if (status) {
             this.handleSetWaiting()
         } else {
@@ -68,7 +67,7 @@ class App extends Component {
     handleParamsCode(params) {
         api.set(namespace, params.get('code'), (err, status) => {
             if (status) {
-                this.setState({gameCode: params.get('code')})
+                this.setState({gameCode: params.get('code')});
                 this.handleSetWaiting()
             } else {
                 console.log("Whoops")
@@ -78,19 +77,17 @@ class App extends Component {
     }
 
     handleSetWaiting() {
-        this.setState({display: 'waiting'})
+        this.setState({display: 'waiting'});
         api.get(cookie, (err, cookie) => {
             document.cookie = cookie
-        })
-        console.log("Hiya!", api.socket)
+        });
         api.get(players, (err, msg) => {
-            console.log(msg)
             this.setState({players: msg.players, total: msg.total})
         })
     }
 
     handleReady() {
-        api.set(ready, document.cookie, (err) => this.setState({display: 'select'}))
+        api.set(ready, document.cookie, (err) => this.setState({display: 'select'}));
         api.get(select, (err, players) => this.setState({players: players}))
     }
 
@@ -105,14 +102,14 @@ class App extends Component {
                         onClickNewCode={() => api.get(namespace, this.handleGetGameCode)}
                         onChange={(event) => this.setState({gameCode: event.target.value})}
                         onSubmit={(event) => {
-                            api.set(namespace, this.state.gameCode, this.handleSendGameCode)
+                            api.set(namespace, this.state.gameCode, this.handleSendGameCode);
                             event.preventDefault()
                         }}
                     />
-                )
+                );
 
             case 'waiting':
-                let chat = (this.state.players.length) ? <Chat api={api} displayName={this.state.displayName}/> : null
+                let chat = (this.state.players.length) ? <Chat api={api} displayName={this.state.displayName}/> : null;
                 return (
                     <div>
                         <Waiting
@@ -125,7 +122,7 @@ class App extends Component {
                         />
                         {chat}
                     </div>
-                )
+                );
 
             case 'select':
                 return (
@@ -133,7 +130,7 @@ class App extends Component {
                         <Select players={this.state.players} handleClick={this.handleClickSelect}/>
                         <Chat displayName={this.state.displayName}/>
                     </div>
-                )
+                );
             case 'game':
                 return (
                     <div>
@@ -147,7 +144,7 @@ class App extends Component {
 
     render() {
 
-        let app = this.set(this.state.display)
+        let app = this.set(this.state.display);
 
         return (
             app

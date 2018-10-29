@@ -1,5 +1,5 @@
-const Game = require('../game')
-const Player = require('../player')
+const Game = require('../game');
+const Player = require('../player');
 
 let players = [
     new Player("Alasdair"),
@@ -11,7 +11,7 @@ let players = [
     new Player("Brian"),
     new Player("Rae"),
     new Player("Ben")
-    ]
+    ];
 
 for (let i in players) {
     if (i == 0 || i == 1) {
@@ -21,4 +21,4 @@ for (let i in players) {
     }
 }
 
-let game = new Game(players)
+let game = new Game(players);

@@ -6,20 +6,20 @@ import Invite from './Waiting/Invite'
 
 class Waiting extends Component {
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             entry: null,
             ready: false,
-        }
+        };
 
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.handleChange = this.handleChange.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this)
     }
 
     handleSubmit(event) {
-        this.props.onSubmit(this.state.entry)
+        this.props.onSubmit(this.state.entry);
         event.preventDefault()
     }
 
@@ -28,8 +28,8 @@ class Waiting extends Component {
     }
 
     handleClick(event) {
-        this.setState({ready: true})
-        this.props.handleReady()
+        this.setState({ready: true});
+        this.props.handleReady();
         event.preventDefault()
     }
 
@@ -76,7 +76,7 @@ class Waiting extends Component {
     }
 
     setDisplayOthers(players, total) {
-        let others = (this.props.displayName) ? total - players.length : total - players.length - 1
+        let others = (this.props.displayName) ? total : total - 1;
         if (others > 0) {
             return <div><p><Pluralize singular="other player" count={others}/> joining!</p></div>
         }
@@ -92,11 +92,11 @@ class Waiting extends Component {
 
     render() {
 
-        let waiting = this.setDisplayName()
-        let players = this.setDisplayPlayers(this.props.players)
-        let invite = (this.props.displayName) ? <Invite /> : null
-        let others = this.setDisplayOthers(this.props.players, this.props.total)
-        let ready = (this.props.displayName) ? this.setDisplayReady() : null
+        let waiting = this.setDisplayName();
+        let players = this.setDisplayPlayers(this.props.players);
+        let invite = (this.props.displayName) ? <Invite /> : null;
+        let others = this.setDisplayOthers(this.props.players, this.props.total);
+        let ready = (this.props.displayName) ? this.setDisplayReady() : null;
         return (
             <div>
                 {waiting}

@@ -4,7 +4,7 @@ import './App.css';
 class Welcome extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             enterExisting: false,
@@ -44,7 +44,7 @@ class Welcome extends Component {
 
     render() {
 
-        let welcome = this.setDisplay()
+        let welcome = this.setDisplay();
 
         return (
             welcome

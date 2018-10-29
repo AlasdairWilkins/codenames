@@ -4,17 +4,17 @@ import {api, message} from "./Api";
 
 class Chat extends Component {
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             messages: [],
             entry: ""
             //handle allowed in chat yes or no
-        }
+        };
 
-        api.get(message, (err, messages) => this.setState({messages: messages}))
+        api.get(message, (err, messages) => this.setState({messages: messages}));
 
-        this.handleChange = this.handleChange.bind(this)
+        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this)
 
     }
@@ -25,7 +25,7 @@ class Chat extends Component {
 
     handleSubmit(event) {
         if (this.state.entry.length) {
-            api.set(message, this.state.entry)
+            api.set(message, this.state.entry);
             this.setState({entry: ""})
         }
         event.preventDefault()
@@ -50,9 +50,9 @@ class Chat extends Component {
             } else {
                 return <li key={i}>{item.name}: {item.entry}</li>
             }
-        }))
+        }));
 
-        let entry = this.setDisplay()
+        let entry = this.setDisplay();
 
         return (
             <div>

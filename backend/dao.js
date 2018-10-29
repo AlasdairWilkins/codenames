@@ -1,6 +1,6 @@
-const sqlite3 = require('sqlite3').verbose()
+const sqlite3 = require('sqlite3').verbose();
 
-const dbFilePath = './db/sqlite.db'
+const dbFilePath = './db/sqlite.db';
 
 // const tables = {
 //     sessions: `sessions(session_id, nsp_id)`,
@@ -9,28 +9,71 @@ const dbFilePath = './db/sqlite.db'
 
 class DAO {
     constructor(dbFilePath) {
+
+        this.inserts = {
+            namespace: `INSERT INTO namespaces(nsp_id) VALUES (?)`,
+            session: `INSERT INTO sessions(session_id, nsp_id) VALUES (?, ?);`,
+            chat: `INSERT INTO chats(nsp_id, message, socket_id, session_id, display_name) 
+                    SELECT (?), (?), (?), session_id, display_name FROM sessions WHERE socket_id = (?);`
+        };
+
+        this.updates = {
+            socketID: `UPDATE sessions SET socket_id = ? WHERE session_id = ?`,
+            displayName: `UPDATE sessions SET display_name = ?, socket_id = ? WHERE session_id = ?`,
+            ready: `UPDATE sessions SET ready = 1 WHERE socket_id = ?`,
+            team: `UPDATE sessions SET team = (?) WHERE socket_id = (?)`,
+            disconnect: `UPDATE sessions SET socket_id = ? WHERE socket_id = ?`
+        };
+
+        this.gets = {
+            joining: `SELECT count(*) count FROM sessions WHERE nsp_id = ? AND display_name IS NULL`,
+            ready: `SELECT COUNT(*) count FROM sessions WHERE nsp_id = (?) AND ready = 0`,
+            namespace: `SELECT nsp_id nspID FROM namespaces WHERE nsp_id = ?`,
+            resume: `SELECT nsp_id nspID, display_name displayName FROM sessions WHERE session_id = ?`
+        };
+
+        this.alls = {
+            players: `SELECT display_name name,
+                        socket_id socketID,
+                        session_id sessionID
+                FROM sessions
+                WHERE nsp_id = ? AND display_name IS NOT NULL
+                ORDER BY display_name;`,
+            messages: `SELECT message entry,
+                        socket_id socketID,
+                        display_name name
+                        FROM chats
+                        WHERE nsp_id = ?;`,
+            teams: `SELECT display_name name,
+                        socket_id socketID,
+                        team
+                    FROM sessions
+                    WHERE nsp_id = ?
+                    ORDER BY display_name;`,
+        };
+
         this.db = new sqlite3.Database(dbFilePath, err => {
             if (err) {
                 console.error(err.message)
             } else {
                 console.log("Connected to the database.")
             }
-        })
+        });
 
         this.db.serialize(() => {
             let deleteNspSQL =
-                `DROP TABLE IF EXISTS namespaces;`
+                `DROP TABLE IF EXISTS namespaces;`;
 
             let deleteSessSQL =
-                `DROP TABLE IF EXISTS sessions;`
+                `DROP TABLE IF EXISTS sessions;`;
 
             let deleteChatSQL =
-                `DROP TABLE IF EXISTS chats;`
+                `DROP TABLE IF EXISTS chats;`;
 
             let namespacesSQL =
                 `CREATE TABLE IF NOT EXISTS namespaces (
                 nsp_id TEXT PRIMARY KEY
-             );`
+             );`;
 
 
             let sessionsSQL =
@@ -42,7 +85,7 @@ class DAO {
                 ready   BOOLEAN DEFAULT 0 CHECK (ready in (0,1)),
                 team    TEXT    DEFAULT NULL    CHECK (team in (NULL, 'blue', 'red')),
                     FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
-            );`
+            );`;
 
             let chatsSQL =
                 `CREATE TABLE IF NOT EXISTS chats (
@@ -56,25 +99,48 @@ class DAO {
                     FOREIGN KEY (session_id) REFERENCES sessions(session_id),
                     FOREIGN KEY (display_name) REFERENCES sessions(display_name),
                     FOREIGN KEY (socket_id) REFERENCES sessions(socket_id) ON UPDATE CASCADE
-                );`
+                );`;
 
-            this.db.run(deleteNspSQL)
-            this.db.run(deleteSessSQL)
-            this.db.run(deleteChatSQL)
-            this.db.run(namespacesSQL)
-            this.db.run(sessionsSQL)
+            this.db.run(deleteNspSQL);
+            this.db.run(deleteSessSQL);
+            this.db.run(deleteChatSQL);
+            this.db.run(namespacesSQL);
+            this.db.run(sessionsSQL);
             this.db.run(chatsSQL)
 
         })
 
-
-
-
-
     }
 
-    insert(sql, params, cb) {
-        this.db.run(sql, params, function (err) {
+    query() {
+        let type = arguments[0];
+        let header = arguments[1];
+        let hasCB = (typeof arguments[arguments.length - 1] === "function");
+        let params = [];
+        for (let i = 2; (hasCB) ? i < arguments.length - 1 : arguments.length; i++) {
+            params.push(arguments[i])
+        }
+        let cb = (hasCB) ? arguments[arguments.length - 1] : null;
+
+        switch(type) {
+            case 'insert':
+                this.insert(header, params, cb);
+                break;
+            case 'update':
+                this.update(header, params, cb);
+                break;
+            case 'get':
+                this.get(header, params, cb);
+                break;
+            case 'all':
+                this.all(header, params, cb);
+                break;
+        }
+    }
+
+    insert(header, params, cb) {
+
+        this.db.run(this.inserts[header], params, function (err) {
             if (err) {
                 console.error("Insert error:", sql, params, err.message)
             } else {
@@ -83,29 +149,40 @@ class DAO {
         })
     }
 
-    update(sql, params, cb) {
-        this.db.run(sql, params, function(err) {
+    update(header, params, cb) {
+
+        this.db.run(this.updates[header], params, function(err) {
             if (err) {
                 console.error("Update error", sql, params, err.message)
             } else {
-                console.log("Updated!")
                 if (cb) {
                     cb()
                 }
-
             }
         })
     }
 
-    get(sql, params, cb) {
-        this.db.get(sql, params, function(err, row) {
+    get(header, params, cb) {
+
+        this.db.get(this.gets[header], params, function(err, row) {
             if (err) {
-                console.log("Get error:", sql, params, err.message)
+                console.error("Get error:", sql, params, err.message)
             } else {
                 cb(row)
             }
         })
     }
+
+    all(header, params, cb) {
+
+        this.db.all(this.alls[header], params, function(err, rows) {
+            if (err) {
+                console.error("Get error:", sql, params, err.message)
+            } else {
+                cb(rows)
+            }
+        })
+    }
 }
 
-module.exports = new DAO(dbFilePath)
+module.exports = new DAO(dbFilePath);

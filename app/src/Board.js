@@ -25,7 +25,7 @@ class Board extends Component {
 
 
 function split(words) {
-    let rows = []
+    let rows = [];
     for (let i = 0; i < 5; i++) {
         rows.push(words.slice(i * 5, i * 5 + 5))
     }

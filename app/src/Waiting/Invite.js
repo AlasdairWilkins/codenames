@@ -3,20 +3,20 @@ import '../App.css';
 
 class Invite extends Component {
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             invites: [""]
-        }
+        };
 
-        this.handleChange = this.handleChange.bind(this)
-        this.handleClickPlus = this.handleClickPlus.bind(this)
+        this.handleChange = this.handleChange.bind(this);
+        this.handleClickPlus = this.handleClickPlus.bind(this);
         this.handleClickMinus = this.handleClickMinus.bind(this)
     }
 
     handleChange(event) {
-        let index = event.target.getAttribute('i')
-        let invites = this.state.invites
+        let index = event.target.getAttribute('i');
+        let invites = this.state.invites;
         if (invites.length === index) {
             invites.push(event.target.value)
         } else {
@@ -26,18 +26,18 @@ class Invite extends Component {
     }
 
     handleClickPlus(event) {
-        let invites = this.state.invites
+        let invites = this.state.invites;
         if (!invites.length) {
             invites.push("")
         }
-        invites.push("")
+        invites.push("");
         this.setState({invites: invites})
     }
 
     handleClickMinus(event) {
-        let invites = this.state.invites
-        let lastBlank = this.findLastBlank(invites)
-        invites.splice(lastBlank, 1)
+        let invites = this.state.invites;
+        let lastBlank = this.findLastBlank(invites);
+        invites.splice(lastBlank, 1);
         this.setState({invites: invites})
     }
 
@@ -54,8 +54,8 @@ class Invite extends Component {
 
     setInvites(invites) {
         return invites.map((invite, i) => {
-            let input = this.setInput(invite, i)
-            let button = this.setButton(i, invites)
+            let input = this.setInput(invite, i);
+            let button = this.setButton(i, invites);
             return (
                 <div key={i}>
                     {input}
@@ -67,7 +67,7 @@ class Invite extends Component {
 
     setInput(invite, i) {
 
-        let value = (invite.length) ? this.state.invites[i] : ""
+        let value = (invite.length) ? this.state.invites[i] : "";
 
         return <input
             i={i}
@@ -89,7 +89,7 @@ class Invite extends Component {
 
     render() {
 
-        let inputs = this.setInvites(this.state.invites)
+        let inputs = this.setInvites(this.state.invites);
 
         return (
             <div>

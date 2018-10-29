@@ -12,7 +12,7 @@ class Game extends Component {
             "jog", "apologise", "heavy", "nest", "heat", "debt", "roof", "whole", "arithmetic", "bear", "ski",
             "beginner", "jam", "yell", "attract"];
 
-        let first = (Math.random() <= .5) ? "Red" : "Blue"
+        let first = (Math.random() <= .5) ? "Red" : "Blue";
 
         this.state = {
             words: colorCode(words, first),
@@ -24,9 +24,9 @@ class Game extends Component {
 
     render() {
 
-        let codemaster = this.state.codemaster
-        let active = this.state.active
-        let remaining = this.state.remaining
+        let codemaster = this.state.codemaster;
+        let active = this.state.active;
+        let remaining = this.state.remaining;
 
         return (
             <div>
@@ -50,10 +50,10 @@ class Word {
 
 function colorCode(words, first) {
 
-    let list = []
-    let order = shuffle(25)
+    let list = [];
+    let order = shuffle(25);
 
-    let second = (first === "Red") ? "Blue" : "Red"
+    let second = (first === "Red") ? "Blue" : "Red";
 
 
     for (let i = 0; i < words.length; i++) {
@@ -74,16 +74,16 @@ function colorCode(words, first) {
 }
 
 function shuffle(length) {
-    let array = []
+    let array = [];
 
     for (let i = 1; i <= length; i++) {
         array.push(i)
     }
 
     for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1))
-        let temp = array[i]
-        array[i] = array[j]
+        let j = Math.floor(Math.random() * (i + 1));
+        let temp = array[i];
+        array[i] = array[j];
         array[j] = temp
     }
 

@@ -1,15 +1,15 @@
-const words = require('./words')
+const words = require('./words');
 
 module.exports = class Game {
     constructor(players) {
-        this.words = this.makeWords(words, 25)
+        this.words = this.makeWords(words, 25);
         this.teams = this.makeTeams(players)
 
     }
 
     makeTeams(players) {
-        let teams ={'blue': new Team(), 'red': new Team()}
-        let unsorted = []
+        let teams ={'blue': new Team(), 'red': new Team()};
+        let unsorted = [];
         for (let i in players) {
             if (players[i].team === 'blue') {
                 teams.blue.players.push(players[i])
@@ -20,20 +20,20 @@ module.exports = class Game {
             }
         }
 
-        let order = this.shuffle(unsorted.length)
+        let order = this.shuffle(unsorted.length);
 
-        let max = Math.ceil(players.length / 2)
+        let max = Math.ceil(players.length / 2);
 
         for (let i = 0; i < order.length; i++) {
             if (teams.blue.players.length < max && teams.red.players.length < max) {
-                let color = (Math.random() < .5) ? "blue" : "red"
-                unsorted[order[i]].team = color
+                let color = (Math.random() < .5) ? "blue" : "red";
+                unsorted[order[i]].team = color;
                 teams[color].players.push(unsorted[order[i]])
             } else if (teams.blue.players.length === max) {
-                unsorted[order[i]].color = 'red'
+                unsorted[order[i]].color = 'red';
                 teams.red.players.push(unsorted[order[i]])
             } else {
-                unsorted[order[i]].color = 'blue'
+                unsorted[order[i]].color = 'blue';
                 teams.blue.players.push(unsorted[order[i]])
             }
         }
@@ -43,16 +43,16 @@ module.exports = class Game {
 
     shuffle(length, subset) {
 
-        let arr = []
+        let arr = [];
 
         for (let i = 0; i < length; i++) {
             arr.push(i)
         }
 
         for (let i = arr.length - 1; (subset) ? i >= arr.length - subset : i > 0; i--) {
-            let j = Math.floor(Math.random() * (i + 1))
-            let temp = arr[i]
-            arr[i] = arr[j]
+            let j = Math.floor(Math.random() * (i + 1));
+            let temp = arr[i];
+            arr[i] = arr[j];
             arr[j] = temp
         }
 
@@ -66,12 +66,12 @@ module.exports = class Game {
 
     makeWords(words, num) {
 
-        let arr = []
-        let cards = this.shuffle(words.length, num)
-        let order = this.shuffle(num)
+        let arr = [];
+        let cards = this.shuffle(words.length, num);
+        let order = this.shuffle(num);
 
         let [first, second] = (Math.random() < .5) ? ['Blue', 'Red'] : ['Red',
-        'Blue']
+        'Blue'];
 
         for (let i = 0; i < num; i++) {
 
@@ -90,7 +90,7 @@ module.exports = class Game {
         return arr
     }
 
-}
+};
 
 
 class Word {
@@ -102,7 +102,7 @@ class Word {
 
 class Team {
     constructor() {
-        this.players = []
+        this.players = [];
         this.codemaster = null
     }
 }

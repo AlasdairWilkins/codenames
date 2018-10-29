@@ -9,10 +9,10 @@ class CodeWord extends Component {
             code: '',
             number: 1,
             submitted: false
-        }
+        };
 
-        this.handleChangeCode = this.handleChangeCode.bind(this)
-        this.handleChangeNumber = this.handleChangeNumber.bind(this)
+        this.handleChangeCode = this.handleChangeCode.bind(this);
+        this.handleChangeNumber = this.handleChangeNumber.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
@@ -25,7 +25,7 @@ class CodeWord extends Component {
     }
 
     handleSubmit(event) {
-        this.setState({submitted: true})
+        this.setState({submitted: true});
         event.preventDefault()
     }
 
@@ -36,7 +36,7 @@ class CodeWord extends Component {
             )
         }
 
-        let choices = new Array(this.props.remaining)
+        let choices = new Array(this.props.remaining);
 
         for (let i = 0; i < choices.length; i++) {
             choices[i] = i + 1
@@ -95,7 +95,7 @@ class CodeWord extends Component {
 
     render() {
 
-        let codeWord = this.setDisplay()
+        let codeWord = this.setDisplay();
 
         return (
             <div>

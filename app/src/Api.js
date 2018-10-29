@@ -3,11 +3,11 @@ import io from 'socket.io-client';
 import store from "./store/store"
 import {setID} from "./store/actions";
 
-const url = 'http://localhost:5000/'
+const url = 'http://localhost:5000/';
 
 class API {
     constructor(){
-        this.socket = io(url)
+        this.socket = io(url);
 
         this.socket.on('connect', () => {
             store.dispatch(setID(this.socket.id))
@@ -21,21 +21,21 @@ class API {
 
             case namespace:
                 this.socket.on(header, res => {
-                    this.socket.off(header)
-                    let address = url + payload
-                    this.socket = io(address)
+                    this.socket.off(header);
+                    let address = url + payload;
+                    this.socket = io(address);
                     cb(null, res)
-                })
-                this.socket.emit(header, payload)
-                break
+                });
+                this.socket.emit(header, payload);
+                break;
 
             case ready:
                 this.socket.on(header, res => {
-                    this.socket.off(header)
+                    this.socket.off(header);
                     cb(null, res)
-                })
-                this.socket.emit(header, payload)
-                break
+                });
+                this.socket.emit(header, payload);
+                break;
 
             default:
                 this.socket.emit(header, payload)
@@ -50,19 +50,18 @@ class API {
             case namespace:
             case resume:
                 this.socket.on(header, res => {
-                    this.socket.off(header)
-                    let address = url + res.namespace
-                    this.socket = io(address)
+                    this.socket.off(header);
+                    let address = url + res.namespace;
+                    this.socket = io(address);
                     cb(null, res)
-                })
-                this.socket.emit(header)
-                break
+                });
+                this.socket.emit(header);
+                break;
 
             default:
                 this.socket.on(header, res => {
-                    console.log(res)
                     cb(null, res)
-                })
+                });
                 this.socket.emit(header)
         }
 
@@ -70,14 +69,14 @@ class API {
 
 }
 
-const api = new API()
-const players = 'players'
-const select = 'select'
-const message = 'message'
-const namespace = 'namespace'
-const cookie = 'cookie'
-const ready = 'ready'
-const resume = 'resume'
+const api = new API();
+const players = 'players';
+const select = 'select';
+const message = 'message';
+const namespace = 'namespace';
+const cookie = 'cookie';
+const ready = 'ready';
+const resume = 'resume';
 
 
 export {api, players, select, message, namespace, cookie, ready, resume}
