@@ -25,7 +25,7 @@ class Chat extends Component {
 
     handleSubmit(event) {
         if (this.state.entry.length) {
-            api.set(message, {name: this.props.displayName, entry: this.state.entry})
+            api.set(message, this.state.entry)
             this.setState({entry: ""})
         }
         event.preventDefault()

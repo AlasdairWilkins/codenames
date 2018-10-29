@@ -49,9 +49,13 @@ class DAO {
                 chat_id INTEGER PRIMARY KEY,
                 nsp_id  text    NOT NULL,
                 session_id  text,
+                display_name text,
+                socket_id text,
                 message text    NOT NULL,
                     FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id),
-                    FOREIGN KEY (session_id) REFERENCES sessions(session_id)
+                    FOREIGN KEY (session_id) REFERENCES sessions(session_id),
+                    FOREIGN KEY (display_name) REFERENCES sessions(display_name),
+                    FOREIGN KEY (socket_id) REFERENCES sessions(socket_id) ON UPDATE CASCADE
                 );`
 
             this.db.run(deleteNspSQL)
@@ -74,7 +78,6 @@ class DAO {
             if (err) {
                 console.error("Insert error:", sql, params, err.message)
             } else {
-                console.log("Success!")
                 cb()
             }
         })

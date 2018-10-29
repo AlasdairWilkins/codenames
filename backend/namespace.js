@@ -45,7 +45,6 @@ module.exports = class Namespace {
 
                 dao.update(sql, params)
 
-                this.players.push(new Player(req.name, cookie.parse(req.cookie).id, socket.client.id))
             }
             let sql =
                 `SELECT display_name name,
@@ -77,12 +76,42 @@ module.exports = class Namespace {
         })
 
         socket.on('message', message => {
-            if (message) {
-                this.chat.push(message)
-            }
-            this.namespace.emit('message', this.chat)
 
-            //add chat table
+            if (message) {
+
+                let sql =
+                    `INSERT INTO chats(nsp_id, message, socket_id, session_id, display_name) 
+                    SELECT (?), (?), (?), session_id, display_name FROM sessions WHERE socket_id = (?);`
+                let params = [this.address, message, socket.client.id, socket.client.id]
+
+                dao.insert(sql, params, () => {
+                    let allSql =
+                        `SELECT message entry,
+                        socket_id socketID,
+                        display_name name
+                        FROM chats
+                        WHERE nsp_id = ?
+                        ;`
+                    let allParams = [this.address]
+                    dao.db.all(allSql, allParams, (err, rows) => {
+                        console.log(rows)
+                        this.namespace.emit('message', rows)
+                    })
+                })
+            } else {
+                let allSql =
+                    `SELECT message entry,
+                        socket_id socketID,
+                        display_name name
+                        FROM chats
+                        WHERE nsp_id = ?
+                        ;`
+                let allParams = [this.address]
+                dao.db.all(allSql, allParams, (err, rows) => {
+                    console.log(rows)
+                    this.namespace.emit('message', rows)
+                })
+            }
         })
 
         socket.on('ready', () => {

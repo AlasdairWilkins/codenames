@@ -60,6 +60,7 @@ class API {
 
             default:
                 this.socket.on(header, res => {
+                    console.log(res)
                     cb(null, res)
                 })
                 this.socket.emit(header)
