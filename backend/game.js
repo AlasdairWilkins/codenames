@@ -4,6 +4,7 @@ module.exports = class Game {
     constructor(players) {
         this.words = this.makeWords(words, 25)
         this.teams = this.makeTeams(players)
+
     }
 
     makeTeams(players) {

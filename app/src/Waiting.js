@@ -52,6 +52,7 @@ class Waiting extends Component {
         )
     }
 
+
     setDisplayPlayers(players) {
 
         if (!players.length || (this.state.nameSubmitted && players.length <= 1)) {

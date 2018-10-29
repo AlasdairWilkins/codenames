@@ -21,7 +21,6 @@ class API {
 
             case namespace:
                 this.socket.on(header, res => {
-                    console.log(res)
                     this.socket.off(header)
                     let address = url + payload
                     this.socket = io(address)

@@ -26,7 +26,6 @@ io.on('connection', function(socket) {
         let params = [sessionID]
 
         dao.get(sql, params, row => {
-            console.log(row)
             if (row) {
                 let sql =
                     `UPDATE sessions
@@ -48,31 +47,50 @@ io.on('connection', function(socket) {
 
     if (socket.handshake.query.code) {
         let namespace = socket.handshake.query.code
-        if (server.namespaces[namespace]) {
-            socket.emit('namespace', {namespace: namespace})
-        } else {
-            console.log("whoops")
-        }
+
+        let sql = `SELECT nsp_id nspID FROM namespaces WHERE nsp_id = ?`
+        let params = [namespace]
+
+        dao.get(sql, params, row => {
+            if (row) {
+                socket.emit('namespace', {namespace: namespace})
+            } else {
+                socket.emit('namespace', false)
+            }
+        })
     }
 
     socket.on('namespace', namespace => {
         if (namespace) {
-            if (server.namespaces[namespace]) {
-                socket.emit('namespace', true)
-            }
-            socket.emit('namespace', false)
+            console.log("Hiya!")
+
+            let sql = `SELECT nsp_id nspID FROM namespaces WHERE nsp_id = ?`
+            let params = [namespace]
+
+            dao.get(sql, params, row => {
+                if (row) {
+                    socket.emit('namespace', true)
+                } else {
+                    socket.emit('namespace', false)
+                }
+            })
+
         } else {
             let namespace = shortid.generate()
             server.namespaces[namespace] = new Namespace(io, namespace, socket)
-            socket.emit('namespace', {namespace: namespace})
+
+            let sql = `INSERT INTO namespaces(nsp_id) VALUES (?)`
+            let params = [namespace]
+            dao.insert(sql, params, () => socket.emit('namespace', {namespace: namespace}))
+
         }
     })
 
     socket.on('cookie', namespace => {
         let sessionID = shortid.generate()
-        let table = `sessions(session_id, nsp_id)`
+        let sql = `INSERT INTO sessions(session_id, nsp_id) VALUES (?, ?);`
         let params = [sessionID, namespace]
-        dao.insert(table, params, () => socket.emit('cookie', "id=" + sessionID))
+        dao.insert(sql, params, () => socket.emit('cookie', "id=" + sessionID))
     })
 
 })

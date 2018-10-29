@@ -6,7 +6,7 @@ import {api, select} from "./Api";
 class Select extends Component {
     // constructor(props) {
     //     super(props)
-    //
+    //player
     //
     // }
 

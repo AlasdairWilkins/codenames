@@ -2,9 +2,10 @@ const sqlite3 = require('sqlite3').verbose()
 
 const dbFilePath = './db/sqlite.db'
 
-const tables = {
-    sessions: `sessions(session_id, nsp_id)`
-}
+// const tables = {
+//     sessions: `sessions(session_id, nsp_id)`,
+//     namespaces: `namespaces(nsp_id)`
+// }
 
 class DAO {
     constructor(dbFilePath) {
@@ -16,21 +17,40 @@ class DAO {
             }
         })
 
-        let sql =
-            `CREATE TABLE IF NOT EXISTS sessions (
+        this.db.serialize(() => {
+            let deleteNspSQL =
+                `DROP TABLE IF EXISTS namespaces;`
+
+            let deleteSessSQL =
+                `DROP TABLE IF EXISTS sessions;`
+
+            let namespacesSQL =
+                `CREATE TABLE IF NOT EXISTS namespaces (
+                nsp_id TEXT PRIMARY KEY
+             );`
+
+            let sessionsSQL =
+                `CREATE TABLE IF NOT EXISTS sessions (
                 session_id   TEXT PRIMARY KEY,
                 nsp_id   TEXT,
                 display_name    TEXT,
-                socket_id   TEXT
+                socket_id   TEXT,
+                    FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
             );`
 
-        this.db.run(sql)
+            this.db.run(deleteNspSQL)
+            this.db.run(deleteSessSQL)
+            this.db.run(namespacesSQL)
+            this.db.run(sessionsSQL)
+        })
+
+
+
+
 
     }
 
-    insert(header, params, cb) {
-        let sql = `INSERT INTO ${tables[header]} VALUES(?, ?);`
-
+    insert(sql, params, cb) {
         this.db.run(sql, params, function (err) {
             if (err) {
                 console.error("Insert error:", sql, params, err.message)
@@ -59,7 +79,7 @@ class DAO {
         this.db.get(sql, params, function(err, row) {
             if (err) {
                 console.log("Get error:", sql, params, err.message)
-            } else if (row) {
+            } else {
                 cb(row)
             }
         })

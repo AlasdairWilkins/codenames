@@ -26,12 +26,14 @@ module.exports = class Namespace {
 
     setListeners(socket) {
 
+        //do i still need this?
         socket.on('cookie', () => {
             let sessionID = shortid.generate()
 
+            let sql = `INSERT INTO sessions(session_id, nsp_id) VALUES (?, ?);`
             let params = [sessionID, this.address]
 
-            dao.insert('sessions', params, () => socket.emit('cookie', "id=" + sessionID))
+            dao.insert(sql, params, () => socket.emit('cookie', "id=" + sessionID))
         })
 
         socket.on('players', req => {
@@ -51,16 +53,32 @@ module.exports = class Namespace {
                 this.total++
             }
             let sql =
-                `SELECT display_name displayName,
+                `SELECT display_name name,
                         socket_id socketID,
                         session_id sessionID
                 FROM sessions
-                WHERE nsp_id = ? ;`
+                WHERE nsp_id = ? AND display_name IS NOT NULL
+                ORDER BY display_name;`
             let params = [this.address]
-            dao.db.each(sql, params, (err, result) => {
-                console.log("Result:", result)
+            dao.db.all(sql, params, (err, rows) => {
+                if (err) {
+                    console.error(err.message)
+                } else {
+                    let selectSQL =
+                        `SELECT count(*) count
+                        FROM sessions
+                        WHERE nsp_id = ? AND display_name IS NULL`
+                    let selectParams = [this.address]
+                    dao.db.get(selectSQL, selectParams, (err, row) => {
+                        if (err) {
+                            console.error(err.message)
+                        } else {
+                            //make it so the front end just uses row.count
+                            this.namespace.emit('players', {players: rows, total: rows.length + row.count})
+                        }
+                    })
+                }
             })
-            this.namespace.emit('players', {players: this.players, total: this.total})
         })
 
         socket.on('message', message => {
@@ -68,13 +86,21 @@ module.exports = class Namespace {
                 this.chat.push(message)
             }
             this.namespace.emit('message', this.chat)
+
+            //add chat table
         })
 
         socket.on('ready', () => {
+
+            //SQL query player
             let player = this.findPlayer('socketID', socket.client.id)
+
+            //add ready boolean field to table
             if (player != null) {
                 this.players[player].ready = true
             }
+
+            //check if any players are false in nsp
             if (this.players.length === this.total) {
                 if (this.checkReady()) {
                     this.namespace.emit('ready')
@@ -84,12 +110,15 @@ module.exports = class Namespace {
         })
 
         socket.on('select', (team) => {
+
+            //add team category, update player
             if (team) {
                 let player = this.findPlayer('socketID', socket.client.id)
                 if (player != null) {
                     this.players[player].team = (team !== 'unsorted') ? team : null
                 }
             }
+            //get all players in nsp
             this.namespace.emit('players', {players: this.players})
         })
 
