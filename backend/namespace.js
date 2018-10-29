@@ -2,14 +2,14 @@ const Player = require('./player');
 const Game = require('./game');
 
 const shortid = require('shortid');
-const ck = require('cookie');
+const cookie = require('cookie');
 const nodemailer = require('nodemailer');
 
 const server = require('./main');
 const dao = require('./dao');
 
 const {get, insert, update, all, connection,
-    cookie, players, session, displayName, player,
+    player, session, displayName,
     message, ready, team, select, disconnect} = require('./constants');
 
 
@@ -29,17 +29,17 @@ module.exports = class Namespace {
 
     setListeners(socket) {
 
-        socket.on(cookie, () => {
+        socket.on(session, () => {
             let sessionID = shortid.generate();
-            dao.query(insert, session, sessionID, this.address, () => socket.emit(cookie, "id=" + sessionID));
+            dao.query(insert, session, sessionID, this.address, () => socket.emit(session, "id=" + sessionID));
         });
 
-        socket.on(players, msg => {
+        socket.on(player, msg => {
             if (msg) {
-                dao.query(update, displayName, msg.name, socket.client.id, ck.parse(msg.cookie).id)
+                dao.query(update, displayName, msg.name, socket.client.id, cookie.parse(msg.cookie).id)
             }
 
-            dao.query(all, players, this.address, rows => {
+            dao.query(all, player, this.address, rows => {
                 dao.query(get, 'joining', this.address, row => {
                     this.namespace.emit(player, {players: rows, total: row.count})
                 })

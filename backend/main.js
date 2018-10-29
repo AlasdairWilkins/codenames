@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const io = require('socket.io')();
 const shortid = require('shortid');
-const ck = require('cookie');
+const cookie = require('cookie');
 
 const Game = require('./game');
 const Server = require('./server');
@@ -21,8 +21,8 @@ const {get, insert, update, connection, namespace, resume, socketID} = require('
 
 io.on(connection, function(socket) {
 
-    if (socket.handshake.headers.cookie && ck.parse(socket.handshake.headers.cookie).id) {
-        let sessionID = ck.parse(socket.handshake.headers.cookie).id;
+    if (socket.handshake.headers.cookie && cookie.parse(socket.handshake.headers.cookie).id) {
+        let sessionID = cookie.parse(socket.handshake.headers.cookie).id;
 
         let params = [sessionID];
 
