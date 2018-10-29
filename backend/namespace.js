@@ -92,21 +92,46 @@ module.exports = class Namespace {
 
         socket.on('ready', () => {
 
+            let sql = `
+            UPDATE sessions
+            SET ready = 1
+            WHERE socket_id = ?
+            `
+
+            let params = [socket.client.id]
+
+            dao.update(sql, params, () => {
+                let getSQL = `
+                SELECT COUNT(*) count
+                FROM sessions
+                WHERE nsp_id = (?) AND ready = 0
+                `
+
+                let getParams = [this.address]
+
+                dao.get(getSQL, getParams, (row) => {
+                    console.log(row)
+                    if (!row.count) {
+                        this.namespace.emit('ready')
+                    }
+                })
+            })
+
             //SQL query player
-            let player = this.findPlayer('socketID', socket.client.id)
+            // let player = this.findPlayer('socketID', socket.client.id)
+            //
+            // //add ready boolean field to table
+            // if (player != null) {
+            //     this.players[player].ready = true
+            // }
 
-            //add ready boolean field to table
-            if (player != null) {
-                this.players[player].ready = true
-            }
-
-            //check if any players are false in nsp
-            if (this.players.length === this.total) {
-                if (this.checkReady()) {
-                    this.namespace.emit('ready')
-                    // this.games.push(new Game(this.players))
-                }
-            }
+            // //check if any players are false in nsp
+            // if (this.players.length === this.total) {
+            //     if (this.checkReady()) {
+            //         this.namespace.emit('ready')
+            //         // this.games.push(new Game(this.players))
+            //     }
+            // }
         })
 
         socket.on('select', (team) => {

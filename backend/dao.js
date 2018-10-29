@@ -29,12 +29,14 @@ class DAO {
                 nsp_id TEXT PRIMARY KEY
              );`
 
+
             let sessionsSQL =
                 `CREATE TABLE IF NOT EXISTS sessions (
                 session_id   TEXT PRIMARY KEY,
                 nsp_id   TEXT,
                 display_name    TEXT,
                 socket_id   TEXT,
+                ready   BOOLEAN DEFAULT 0 CHECK (ready in (0,1)),
                     FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
             );`
 

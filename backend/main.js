@@ -62,7 +62,6 @@ io.on('connection', function(socket) {
 
     socket.on('namespace', namespace => {
         if (namespace) {
-            console.log("Hiya!")
 
             let sql = `SELECT nsp_id nspID FROM namespaces WHERE nsp_id = ?`
             let params = [namespace]
