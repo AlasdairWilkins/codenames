@@ -70,7 +70,7 @@ class API {
 }
 
 const api = new API();
-const players = 'players';
+const player = 'player';
 const select = 'select';
 const message = 'message';
 const namespace = 'namespace';
@@ -79,4 +79,4 @@ const ready = 'ready';
 const resume = 'resume';
 
 
-export {api, players, select, message, namespace, cookie, ready, resume}
+export {api, player, select, message, namespace, cookie, ready, resume}

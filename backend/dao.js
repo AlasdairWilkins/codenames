@@ -8,7 +8,7 @@ class DAO {
         this.inserts = {
             namespace: `INSERT INTO namespaces(nsp_id) VALUES (?)`,
             session: `INSERT INTO sessions(session_id, nsp_id) VALUES (?, ?);`,
-            chat: `INSERT INTO chats(nsp_id, message, socket_id, session_id, display_name) 
+            message: `INSERT INTO chats(nsp_id, message, socket_id, session_id, display_name) 
                     SELECT (?), (?), (?), session_id, display_name FROM sessions WHERE socket_id = (?);`
         };
 
@@ -28,18 +28,18 @@ class DAO {
         };
 
         this.alls = {
-            players: `SELECT display_name name,
+            player: `SELECT display_name name,
                         socket_id socketID,
                         session_id sessionID
                 FROM sessions
                 WHERE nsp_id = ? AND display_name IS NOT NULL
                 ORDER BY display_name;`,
-            messages: `SELECT message entry,
+            message: `SELECT message entry,
                         socket_id socketID,
                         display_name name
                         FROM chats
                         WHERE nsp_id = ?;`,
-            teams: `SELECT display_name name,
+            team: `SELECT display_name name,
                         socket_id socketID,
                         team
                     FROM sessions
@@ -125,7 +125,7 @@ class DAO {
 
         this.db.run(this.inserts[header], params, function (err) {
             if (err) {
-                console.error("Insert error:", sql, params, err.message)
+                console.error("Insert error:", err.message)
             } else {
                 cb()
             }
@@ -136,7 +136,7 @@ class DAO {
 
         this.db.run(this.updates[header], params, function(err) {
             if (err) {
-                console.error("Update error", sql, params, err.message)
+                console.error("Update error", err.message)
             } else {
                 if (cb) {
                     cb()
@@ -149,7 +149,7 @@ class DAO {
 
         this.db.get(this.gets[header], params, function(err, row) {
             if (err) {
-                console.error("Get error:", sql, params, err.message)
+                console.error("Get error:", err.message)
             } else {
                 cb(row)
             }
@@ -160,7 +160,7 @@ class DAO {
 
         this.db.all(this.alls[header], params, function(err, rows) {
             if (err) {
-                console.error("Get error:", sql, params, err.message)
+                console.error("All error:", err.message)
             } else {
                 cb(rows)
             }

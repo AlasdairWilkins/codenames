@@ -5,7 +5,7 @@ import Waiting from './Waiting'
 import Select from './Select'
 import Game from './Game'
 import Chat from './Chat'
-import { api, players, select, namespace, cookie, ready, resume } from "./Api";
+import { api, player, select, namespace, cookie, ready, resume } from "./Api";
 
 
 class App extends Component {
@@ -33,7 +33,7 @@ class App extends Component {
                     this.setState({displayName: res.displayName})
                 }
                 this.setState({display: 'waiting', gameCode: res.namespace});
-                api.get(players, (err, msg) => this.setState({players: msg.players, total: msg.total}))
+                api.get(player, (err, msg) => this.setState({players: msg.players, total: msg.total}))
             })
         }
 
@@ -47,7 +47,7 @@ class App extends Component {
 
     handleSubmitDisplayName(displayName) {
         this.setState({displayName: displayName});
-        api.set(players, {name: displayName, cookie: document.cookie})
+        api.set(player, {name: displayName, cookie: document.cookie})
     }
 
     handleGetGameCode(err, res) {
@@ -81,7 +81,7 @@ class App extends Component {
         api.get(cookie, (err, cookie) => {
             document.cookie = cookie
         });
-        api.get(players, (err, msg) => {
+        api.get(player, (err, msg) => {
             this.setState({players: msg.players, total: msg.total})
         })
     }
