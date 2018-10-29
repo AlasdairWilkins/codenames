@@ -12,9 +12,7 @@ module.exports = class Namespace {
 
     constructor(io, namespace) {
 
-        this.players = []
         this.chat = []
-        this.total = 0
         this.games = []
         this.address = namespace
 
@@ -48,9 +46,6 @@ module.exports = class Namespace {
                 dao.update(sql, params)
 
                 this.players.push(new Player(req.name, cookie.parse(req.cookie).id, socket.client.id))
-
-            } else {
-                this.total++
             }
             let sql =
                 `SELECT display_name name,
@@ -110,41 +105,37 @@ module.exports = class Namespace {
                 let getParams = [this.address]
 
                 dao.get(getSQL, getParams, (row) => {
-                    console.log(row)
                     if (!row.count) {
                         this.namespace.emit('ready')
                     }
                 })
             })
 
-            //SQL query player
-            // let player = this.findPlayer('socketID', socket.client.id)
-            //
-            // //add ready boolean field to table
-            // if (player != null) {
-            //     this.players[player].ready = true
-            // }
-
-            // //check if any players are false in nsp
-            // if (this.players.length === this.total) {
-            //     if (this.checkReady()) {
-            //         this.namespace.emit('ready')
-            //         // this.games.push(new Game(this.players))
-            //     }
-            // }
         })
 
         socket.on('select', (team) => {
 
-            //add team category, update player
-            if (team) {
-                let player = this.findPlayer('socketID', socket.client.id)
-                if (player != null) {
-                    this.players[player].team = (team !== 'unsorted') ? team : null
-                }
-            }
-            //get all players in nsp
-            this.namespace.emit('players', {players: this.players})
+            let sql = `
+            UPDATE sessions
+            SET team = (?)
+            WHERE socket_id = (?)
+            `
+
+            let params = [team, socket.client.id]
+
+            dao.update(sql, params, () => {
+                let allSql =
+                    `SELECT display_name name,
+                        socket_id socketID,
+                        team
+                    FROM sessions
+                    WHERE nsp_id = ?
+                    ORDER BY display_name;`
+                let allParams = [this.address]
+                dao.db.all(allSql, allParams, (err, rows) => {
+                    this.namespace.emit('players', {players: rows})
+                })
+            })
         })
 
         socket.on('disconnect', () => {
@@ -156,12 +147,6 @@ module.exports = class Namespace {
             let params = [null, socket.client.id]
 
             dao.update(sql, params)
-
-            let player = this.findPlayer('socketID', socket.client.id)
-            if (player != null) {
-                this.players[player].socketID = null
-            }
-            this.total--
         })
 
         // socket.on('email', () => {
@@ -192,25 +177,6 @@ module.exports = class Namespace {
         //             //
         //             //         });
         // })
-    }
-
-    findPlayer(key, value) {
-        for (let i in this.players) {
-            if (this.players[i][key] === value) {
-                return i
-            }
-        }
-        return null
-    }
-
-    checkReady() {
-        for (let i in this.players) {
-            console.log(this.players[i])
-            if (!this.players[i].ready) {
-                return false
-            }
-        }
-        return true
     }
 
 }

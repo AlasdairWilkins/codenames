@@ -24,6 +24,9 @@ class DAO {
             let deleteSessSQL =
                 `DROP TABLE IF EXISTS sessions;`
 
+            let deleteChatSQL =
+                `DROP TABLE IF EXISTS chats;`
+
             let namespacesSQL =
                 `CREATE TABLE IF NOT EXISTS namespaces (
                 nsp_id TEXT PRIMARY KEY
@@ -37,13 +40,27 @@ class DAO {
                 display_name    TEXT,
                 socket_id   TEXT,
                 ready   BOOLEAN DEFAULT 0 CHECK (ready in (0,1)),
+                team    TEXT    DEFAULT NULL    CHECK (team in (NULL, 'blue', 'red')),
                     FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
             );`
 
+            let chatsSQL =
+                `CREATE TABLE IF NOT EXISTS chats (
+                chat_id INTEGER PRIMARY KEY,
+                nsp_id  text    NOT NULL,
+                session_id  text,
+                message text    NOT NULL,
+                    FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id),
+                    FOREIGN KEY (session_id) REFERENCES sessions(session_id)
+                );`
+
             this.db.run(deleteNspSQL)
             this.db.run(deleteSessSQL)
+            this.db.run(deleteChatSQL)
             this.db.run(namespacesSQL)
             this.db.run(sessionsSQL)
+            this.db.run(chatsSQL)
+
         })
 
 

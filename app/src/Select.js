@@ -15,8 +15,7 @@ class Select extends Component {
         let currentTeam = event.target.parentNode.className
         let click = event.target.value
         if (currentTeam === 'blue' || currentTeam === 'red') {
-            console.log("hiya")
-            api.set(select, 'unsorted')
+            api.set(select, null)
         } else if (click === 'left') {
             api.set(select, 'blue')
         } else {
@@ -29,7 +28,7 @@ class Select extends Component {
         return players.map((player, i) => {
 
             if (player.socketID !== store.getState().id) {
-                let className = (player.team) ? player.team : 'unsorted'
+                let className = player.team
                 return (
                     <div key={i} className={className}>{player.name}</div>
                 )
@@ -45,7 +44,7 @@ class Select extends Component {
                 )
             } else {
                 return (
-                    <div key={i} className='unsorted'>
+                    <div key={i}>
                         <button value="left" onClick={this.handleClick} >&lt;</button>
                         {player.name}
                         <button value="right" onClick={this.handleClick} >&gt;</button>
