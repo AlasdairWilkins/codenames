@@ -10,7 +10,8 @@ const dao = require('./dao');
 
 const {get, insert, update, all, connection,
     player, session, displayName,
-    message, ready, team, select, disconnect} = require('./constants');
+    message, ready, team, select, disconnect,
+    checkPlayerMax, resetReady, joining} = require('./constants');
 
 
 module.exports = class Namespace {
@@ -40,7 +41,7 @@ module.exports = class Namespace {
             }
 
             dao.query(all, player, this.address, rows => {
-                dao.query(get, 'joining', this.address, row => {
+                dao.query(get, joining, this.address, row => {
                     this.namespace.emit(player, {players: rows, total: row.count})
                 })
             })
@@ -67,7 +68,7 @@ module.exports = class Namespace {
             dao.query(update, ready, socket.client.id, () => {
                 dao.query(get, ready, this.address, (row) => {
                     if (!row.count) {
-                        dao.query(update, 'resetReady', this.address, () => {
+                        dao.query(update, resetReady, this.address, () => {
                             this.namespace.emit(ready)
                         })
                     }
@@ -80,10 +81,10 @@ module.exports = class Namespace {
 
             dao.query(update, team, msg, socket.client.id, () => {
                 dao.query(all, team, this.address, rows => {
-                    dao.query(get, 'checkPlayerMax', this.address, row => {
+                    dao.query(get, checkPlayerMax, this.address, row => {
                         let max = Math.ceil(row.total / 2)
-                        let blueMax = (row.blueCount === max)
-                        let redMax = (row.redCount === max)
+                        let blueMax = (row.blueCount >= max)
+                        let redMax = (row.redCount >= max)
                         this.namespace.emit(player, {players: rows, blueMax: blueMax, redMax: redMax})
                     })
                 })

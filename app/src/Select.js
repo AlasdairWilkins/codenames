@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
 import './App.css';
-import store from './store/store'
+import store from './store/store';
 import {api, select} from "./Api";
 
 class Select extends Component {
@@ -65,7 +66,10 @@ class Select extends Component {
         let buttons = (!this.state.ready) ?
             <div>
                 <p>Choose your team, or leave your name in the middle to be randomly assigned!</p>
-                <p><button onClick={() => this.setState({ready: true})}>Click when ready!</button></p>
+                <p><button onClick={() => {
+                    this.setState({ready: true})
+                    this.props.handleClickSelect()}}
+                >Click when ready!</button></p>
             </div>
             :
             <div><p>Great! We're starting soon.</p></div>
@@ -92,4 +96,4 @@ class Select extends Component {
     }
 }
 
-export default Select;
+export default Select
