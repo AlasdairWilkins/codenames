@@ -5,7 +5,7 @@ import Waiting from './Waiting'
 import Select from './Select'
 import Game from './Game'
 import Chat from './Chat'
-import { api, player, select, namespace, cookie, ready, resume } from "./Api";
+import {api, player, select, namespace, cookie, ready, resume, session} from "./Api";
 
 
 class App extends Component {
@@ -78,7 +78,7 @@ class App extends Component {
 
     handleSetWaiting() {
         this.setState({display: 'waiting'});
-        api.get(cookie, (err, cookie) => {
+        api.get(session, (err, cookie) => {
             document.cookie = cookie
         });
         api.get(player, (err, msg) => {

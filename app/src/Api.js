@@ -74,9 +74,9 @@ const player = 'player';
 const select = 'select';
 const message = 'message';
 const namespace = 'namespace';
-const cookie = 'cookie';
+const session = 'session';
 const ready = 'ready';
 const resume = 'resume';
 
 
-export {api, player, select, message, namespace, cookie, ready, resume}
+export {api, player, select, message, namespace, session, ready, resume}
