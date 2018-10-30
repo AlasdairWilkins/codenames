@@ -5,13 +5,13 @@ const io = require('socket.io')();
 const shortid = require('shortid');
 const cookie = require('cookie');
 
-const Game = require('./game');
-const Server = require('./server');
+// const Game = require('./game');
+// const Server = require('./server');
 const Namespace = require('./namespace');
 
 const url = process.env.DEVURL;
 
-const server = new Server();
+// const server = new Server();
 
 const dao = require('./dao');
 
@@ -27,8 +27,8 @@ io.on(connection, function(socket) {
             if (row) {
                 dao.query(update, socketID, socket.client.id, sessionID);
                 let nsp = row.nspID;
-                let displayName = row.displayName;
-                socket.emit(resume, {namespace: nsp, displayName: displayName})
+                let name = row.displayName;
+                socket.emit(resume, {namespace: nsp, name: name})
                 //fix resume for greater flexibility
             }
         })

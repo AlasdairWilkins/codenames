@@ -1,17 +1,28 @@
 import React, { Component } from 'react';
+
 import './App.css';
 import Pluralize from 'react-pluralize'
 
 import Invite from './Waiting/Invite'
+import { connect } from 'react-redux';
+import { bindActionCreators } from "redux";
+import { setDisplay, setNSP, setName, setPlayers, setJoining } from "./store/actions";
+import {api, player, ready, select} from "./Api";
 
 class Waiting extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            entry: null,
+            name: null,
             ready: false,
         };
+
+        api.get(player, (err, msg) => {
+            console.log("Received:", msg)
+            this.props.setPlayers(msg.players)
+            this.props.setJoining(msg.joining)
+        })
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -19,22 +30,23 @@ class Waiting extends Component {
     }
 
     handleSubmit(event) {
-        this.props.onSubmit(this.state.entry);
+        api.set(player, {name: this.state.name, cookie: document.cookie})
+        this.props.setName(this.state.name)
         event.preventDefault()
     }
 
     handleChange(event) {
-        this.setState({entry: event.target.value})
+        this.setState({name: event.target.value})
     }
 
     handleClick(event) {
         this.setState({ready: true});
-        this.props.handleReady();
+        api.set(ready, document.cookie, (err) => this.props.setDisplay('select'));
         event.preventDefault()
     }
 
     setDisplayName() {
-        if (!this.props.displayName) {
+        if (!this.props.name) {
             return (
                 <div>
                     <p>Please enter your name.</p>
@@ -48,7 +60,7 @@ class Waiting extends Component {
             )
         }
         return (
-            <div><p>Hi, {this.props.displayName}!</p></div>
+            <div><p>Hi, {this.props.name}!</p></div>
         )
     }
 
@@ -76,7 +88,7 @@ class Waiting extends Component {
     }
 
     setDisplayOthers(players, total) {
-        let others = (this.props.displayName) ? total : total - 1;
+        let others = (this.props.name) ? total : total - 1;
         if (others > 0) {
             return <div><p><Pluralize singular="other player" count={others}/> joining!</p></div>
         }
@@ -94,13 +106,13 @@ class Waiting extends Component {
 
         let waiting = this.setDisplayName();
         let players = this.setDisplayPlayers(this.props.players);
-        let invite = (this.props.displayName) ? <Invite /> : null;
-        let others = this.setDisplayOthers(this.props.players, this.props.total);
-        let ready = (this.props.displayName) ? this.setDisplayReady() : null;
+        let invite = (this.props.name) ? <Invite /> : null;
+        let others = this.setDisplayOthers(this.props.players, this.props.joining);
+        let ready = (this.props.name) ? this.setDisplayReady() : null;
         return (
             <div>
                 {waiting}
-                <p>Your game code is {this.props.gameCode}</p>
+                <p>Your game code is {this.props.code}</p>
                 {players}
                 {invite}
                 {others}
@@ -113,4 +125,24 @@ class Waiting extends Component {
 
 }
 
-export default Waiting;
+
+const mapStateToProps = (state, ownProps) => {
+    return {
+        code: state.nsp,
+        name: state.name,
+        players: state.players,
+        joining: state.joining
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        setDisplay: bindActionCreators(setDisplay, dispatch),
+        setNSP: bindActionCreators(setNSP, dispatch),
+        setName: bindActionCreators(setName, dispatch),
+        setPlayers: bindActionCreators(setPlayers, dispatch),
+        setJoining: bindActionCreators(setJoining, dispatch)
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Waiting);

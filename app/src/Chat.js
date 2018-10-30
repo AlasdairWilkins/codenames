@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import {api, message} from "./Api";
+import { api, message } from "./Api";
 
 class Chat extends Component {
     constructor(props) {

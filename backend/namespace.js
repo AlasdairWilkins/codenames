@@ -42,7 +42,7 @@ module.exports = class Namespace {
 
             dao.query(all, player, this.address, rows => {
                 dao.query(get, joining, this.address, row => {
-                    this.namespace.emit(player, {players: rows, total: row.count})
+                    this.namespace.emit(player, {players: rows, joining: row.count})
                 })
             })
         });

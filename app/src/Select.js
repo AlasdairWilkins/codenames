@@ -12,6 +12,8 @@ class Select extends Component {
             ready: false
         }
 
+        // api.get(select, (err, players) => this.setState({players: players}))
+
     }
 
     handleClick(event) {

@@ -96,9 +96,7 @@ class Welcome extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    return {
-
-    }
+    return {}
 }
 
 const mapDispatchToProps = dispatch => {

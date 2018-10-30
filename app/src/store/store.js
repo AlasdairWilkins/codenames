@@ -3,7 +3,8 @@ import rootReducer from "./reducers";
 
 const initialState =
     {
-        display: 'welcome'
+        display: 'welcome',
+        players: []
     }
 
 const store = createStore(rootReducer, initialState);
