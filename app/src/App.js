@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import './App.css';
 import Welcome from './Welcome'
 import Waiting from './Waiting'
@@ -6,6 +8,7 @@ import Select from './Select'
 import Game from './Game'
 import Chat from './Chat'
 import {api, player, select, namespace, ready, resume, session} from "./Api";
+import {setDisplay, setNSP} from "./store/actions";
 
 
 class App extends Component {
@@ -14,8 +17,6 @@ class App extends Component {
         super(props);
 
         this.state = {
-            display: 'welcome',
-            gameCode: null,
             displayName: null,
             players: [],
             total: null,
@@ -24,17 +25,19 @@ class App extends Component {
         };
 
         this.handleSubmitDisplayName = this.handleSubmitDisplayName.bind(this);
-        this.handleGetGameCode = this.handleGetGameCode.bind(this);
-        this.handleSendGameCode = this.handleSendGameCode.bind(this);
+        // this.handleGetGameCode = this.handleGetGameCode.bind(this);
+        // this.handleSendGameCode = this.handleSendGameCode.bind(this);
         this.handleSetWaiting = this.handleSetWaiting.bind(this);
         this.handleReady = this.handleReady.bind(this);
 
         if (document.cookie) {
-            api.get(resume, (err, res) => {
-                if (res.displayName) {
-                    this.setState({displayName: res.displayName})
+            api.get(resume, (err, msg) => {
+                if (msg.displayName) {
+                    this.setState({displayName: msg.displayName})
                 }
-                this.setState({display: 'waiting', gameCode: res.namespace});
+                this.props.setNSP(msg.namespace)
+                this.props.setDisplay('waiting')
+                // above should become dynamic
                 api.get(player, (err, msg) => this.setState({players: msg.players, total: msg.total}))
             })
         }
@@ -50,20 +53,6 @@ class App extends Component {
     handleSubmitDisplayName(displayName) {
         this.setState({displayName: displayName});
         api.set(player, {name: displayName, cookie: document.cookie})
-    }
-
-    handleGetGameCode(err, res) {
-        this.setState({gameCode: res.namespace});
-        this.handleSetWaiting()
-    }
-
-    handleSendGameCode(err, status) {
-        if (status) {
-            this.handleSetWaiting()
-        } else {
-            console.log("Whoops")
-            //Handle incorrect game code
-        }
     }
 
     handleParamsCode(params) {
@@ -101,14 +90,7 @@ class App extends Component {
             default:
             case 'welcome':
                 return (
-                    <Welcome
-                        onClickNewCode={() => api.get(namespace, this.handleGetGameCode)}
-                        onChange={(event) => this.setState({gameCode: event.target.value})}
-                        onSubmit={(event) => {
-                            api.set(namespace, this.state.gameCode, this.handleSendGameCode);
-                            event.preventDefault()
-                        }}
-                    />
+                    <Welcome/>
                 );
 
             case 'waiting':
@@ -149,10 +131,9 @@ class App extends Component {
         }
     }
 
-
     render() {
 
-        let app = this.set(this.state.display);
+        let app = this.set(this.props.display);
 
         return (
             app
@@ -162,4 +143,17 @@ class App extends Component {
 
 }
 
-export default App;
+const mapStateToProps = (state, ownProps) => {
+    return {
+        display: state.display
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        setDisplay: bindActionCreators(setDisplay, dispatch),
+        setNSP: bindActionCreators(setNSP, dispatch)
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

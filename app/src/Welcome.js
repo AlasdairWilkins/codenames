@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
+import {api, namespace, player, session} from "./Api";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import {setNSP, setDisplay} from './store/actions'
+
 
 class Welcome extends Component {
 
@@ -7,35 +12,71 @@ class Welcome extends Component {
         super(props);
 
         this.state = {
-            enterExisting: false,
+            existing: false,
+            code: null
         }
 
+        this.onClick = this.onClick.bind(this)
+        this.onChange = this.onChange.bind(this)
+        this.onSubmit = this.onSubmit.bind(this)
+    }
+
+    onClick(event) {
+        if (event.target.value === "new") {
+            api.get(namespace, (err, msg) => {
+                this.props.setNSP(msg.namespace)
+                api.get(session, (err, msg) => {
+                    document.cookie = msg
+                    this.props.setDisplay('waiting')
+                })
+            })
+        } else if (event.target.value === "existing") {
+            this.setState({existing: true})
+        }
+    }
+
+    onSubmit(event) {
+        event.preventDefault()
+        console.log(this.state.code)
+        api.set(namespace, this.state.code, (err, msg) => {
+            if (msg) {
+                this.props.setNSP(this.state.code)
+                api.get(session, (err, msg) => {
+                    document.cookie = msg
+                    this.props.setDisplay('waiting')
+                });
+            } else {
+                console.log("Whoops")
+            }
+        })
+    }
+
+    onChange(event) {
+        this.setState({code: event.target.value})
     }
 
     setDisplay() {
 
-        if (this.state.enterExisting) {
+        if (this.state.existing) {
             return (
                 <div>
-                    <div>
-                        <p>Enter your game code below!</p>
-                        <form onSubmit={this.props.onSubmit}>
-                            <label htmlFor="code">
-                                <input onChange={this.props.onChange} placeholder="Game Code" type="text" />
-                            </label>
-                            <input type="submit" value="Submit" />
-                        </form>
-                    </div>
+                    <p>Enter your game code below!</p>
+                    <form onSubmit={this.onSubmit}>
+                        <label htmlFor="code">
+                            <input onChange={this.onChange} placeholder="Game Code" type="text" />
+                        </label>
+                        <input type="submit" value="Submit" />
+                    </form>
                 </div>
             )
         }
         return (
             <div>
                 <p>Welcome to Codenames!</p>
-                <button onClick={() => this.props.onClickNewCode()}>
+                <button value="new" onClick={this.onClick}>
                     Get a new game code.
                 </button>
-                <button onClick={() => {this.setState({enterExisting: true})}}>
+                <button value="existing" onClick={this.onClick}>
                     Enter an existing code.
                 </button>
             </div>
@@ -54,4 +95,17 @@ class Welcome extends Component {
 
 }
 
-export default Welcome;
+const mapStateToProps = (state, ownProps) => {
+    return {
+
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        setDisplay: bindActionCreators(setDisplay, dispatch),
+        setNSP: bindActionCreators(setNSP, dispatch)
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Welcome);
