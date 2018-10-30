@@ -4,11 +4,14 @@ import store from './store/store'
 import {api, select} from "./Api";
 
 class Select extends Component {
-    // constructor(props) {
-    //     super(props)
-    //player
-    //
-    // }
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            ready: false
+        }
+
+    }
 
     handleClick(event) {
 
@@ -27,7 +30,7 @@ class Select extends Component {
 
         return players.map((player, i) => {
 
-            if (player.socketID !== store.getState().id) {
+            if (player.socketID !== store.getState().id || this.state.ready) {
                 let className = player.team;
                 return (
                     <div key={i} className={className}>{player.name}</div>
@@ -59,6 +62,13 @@ class Select extends Component {
     render() {
 
         let select = this.setDisplay(this.props.players);
+        let buttons = (!this.state.ready) ?
+            <div>
+                <p>Choose your team, or leave your name in the middle to be randomly assigned!</p>
+                <p><button onClick={() => this.setState({ready: true})}>Click when ready!</button></p>
+            </div>
+            :
+            <div><p>Great! We're starting soon.</p></div>
         let blueMax = (this.props.blueMax) ? <p>Blue team is full!</p> : null
         let redMax = (this.props.redMax) ? <p>Red team is full!</p> : null
 
@@ -72,12 +82,7 @@ class Select extends Component {
                 <div className="select">
                     {select}
                 </div>
-                <div>
-                    <p>
-                        <button>Click when ready!</button>
-                        <button>Or pick my team at random!</button>
-                    </p>
-                </div>
+                {buttons}
                 <div>
                     {blueMax}
                     {redMax}

@@ -45,7 +45,8 @@ module.exports = {
         displayName: `UPDATE sessions SET display_name = ?, socket_id = ? WHERE session_id = ?`,
         ready: `UPDATE sessions SET ready = 1 WHERE socket_id = ?`,
         team: `UPDATE sessions SET team = (?) WHERE socket_id = (?)`,
-        disconnect: `UPDATE sessions SET socket_id = ? WHERE socket_id = ?`
+        disconnect: `UPDATE sessions SET socket_id = ? WHERE socket_id = ?`,
+        resetReady: `UPDATE sessions SET ready = 0 WHERE nsp_id = ?`
     },
 
     get: {

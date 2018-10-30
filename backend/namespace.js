@@ -67,7 +67,9 @@ module.exports = class Namespace {
             dao.query(update, ready, socket.client.id, () => {
                 dao.query(get, ready, this.address, (row) => {
                     if (!row.count) {
-                        this.namespace.emit(ready)
+                        dao.query(update, 'resetReady', this.address, () => {
+                            this.namespace.emit(ready)
+                        })
                     }
                 })
             })
