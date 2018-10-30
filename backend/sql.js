@@ -50,9 +50,14 @@ module.exports = {
 
     get: {
         joining: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND display_name IS NULL`,
-        ready: `SELECT COUNT(*) count FROM sessions WHERE nsp_id = (?) AND ready = 0`,
+        ready: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND ready = 0`,
         namespace: `SELECT nsp_id nspID FROM namespaces WHERE nsp_id = ?`,
-        resume: `SELECT nsp_id nspID, display_name displayName FROM sessions WHERE session_id = ?`
+        resume: `SELECT nsp_id nspID, display_name displayName FROM sessions WHERE session_id = ?`,
+        checkPlayerMax:
+            `SELECT count(*) total,
+            sum(case when team = 'blue' then 1 else 0 end) blueCount,
+            sum(case when team = 'red' then 1 else 0 end) redCount
+            FROM sessions WHERE nsp_id = ?`
     },
 
     all: {

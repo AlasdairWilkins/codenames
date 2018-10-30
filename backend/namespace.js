@@ -78,7 +78,12 @@ module.exports = class Namespace {
 
             dao.query(update, team, msg, socket.client.id, () => {
                 dao.query(all, team, this.address, rows => {
-                    this.namespace.emit(player, {players: rows})
+                    dao.query(get, 'checkPlayerMax', this.address, row => {
+                        let max = Math.ceil(row.total / 2)
+                        let blueMax = (row.blueCount === max)
+                        let redMax = (row.redCount === max)
+                        this.namespace.emit(player, {players: rows, blueMax: blueMax, redMax: redMax})
+                    })
                 })
             })
         });

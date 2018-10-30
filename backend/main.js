@@ -23,15 +23,13 @@ io.on(connection, function(socket) {
 
     if (socket.handshake.headers.cookie && cookie.parse(socket.handshake.headers.cookie).id) {
         let sessionID = cookie.parse(socket.handshake.headers.cookie).id;
-
-        let params = [sessionID];
-
-        dao.query(get, resume, params, row => {
+        dao.query(get, resume, sessionID, row => {
             if (row) {
                 dao.query(update, socketID, socket.client.id, sessionID);
                 let nsp = row.nspID;
                 let displayName = row.displayName;
                 socket.emit(resume, {namespace: nsp, displayName: displayName})
+                //fix resume for greater flexibility
             }
         })
 

@@ -5,7 +5,7 @@ import Waiting from './Waiting'
 import Select from './Select'
 import Game from './Game'
 import Chat from './Chat'
-import {api, player, select, namespace, cookie, ready, resume, session} from "./Api";
+import {api, player, select, namespace, ready, resume, session} from "./Api";
 
 
 class App extends Component {
@@ -19,6 +19,8 @@ class App extends Component {
             displayName: null,
             players: [],
             total: null,
+            blueMax: null,
+            redMax: null
         };
 
         this.handleSubmitDisplayName = this.handleSubmitDisplayName.bind(this);
@@ -82,7 +84,8 @@ class App extends Component {
             document.cookie = cookie
         });
         api.get(player, (err, msg) => {
-            this.setState({players: msg.players, total: msg.total})
+            this.setState({players: msg.players, total: msg.total, blueMax: msg.blueMax, redMax: msg.redMax})
+            console.log(this.state)
         })
     }
 
@@ -127,7 +130,12 @@ class App extends Component {
             case 'select':
                 return (
                     <div>
-                        <Select players={this.state.players} handleClick={this.handleClickSelect}/>
+                        <Select
+                            players={this.state.players}
+                            blueMax={this.state.blueMax}
+                            redMax={this.state.redMax}
+                            handleClick={this.handleClickSelect}
+                        />
                         <Chat displayName={this.state.displayName}/>
                     </div>
                 );

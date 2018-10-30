@@ -43,11 +43,13 @@ class Select extends Component {
                     <div key={i} className='red'><button onClick={this.handleClick} >&lt;</button>{player.name}</div>
                 )
             } else {
+                let leftButton = (this.props.blueMax) ? null: <button value="left" onClick={this.handleClick} >&lt;</button>
+                let rightButton = (this.props.redMax) ? null: <button value="right" onClick={this.handleClick} >&gt;</button>
                 return (
                     <div key={i}>
-                        <button value="left" onClick={this.handleClick} >&lt;</button>
+                        {leftButton}
                         {player.name}
-                        <button value="right" onClick={this.handleClick} >&gt;</button>
+                        {rightButton}
                     </div>
                 )
             }
@@ -57,7 +59,8 @@ class Select extends Component {
     render() {
 
         let select = this.setDisplay(this.props.players);
-
+        let blueMax = (this.props.blueMax) ? <p>Blue team is full!</p> : null
+        let redMax = (this.props.redMax) ? <p>Red team is full!</p> : null
 
         return (
             <div id="select-container">
@@ -74,6 +77,10 @@ class Select extends Component {
                         <button>Click when ready!</button>
                         <button>Or pick my team at random!</button>
                     </p>
+                </div>
+                <div>
+                    {blueMax}
+                    {redMax}
                 </div>
             </div>
         )
