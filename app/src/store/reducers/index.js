@@ -1,4 +1,7 @@
-import { SET_ID, SET_NSP, SET_DISPLAY, SET_NAME, SET_PLAYERS, SET_JOINING } from "../actions";
+import {
+    SET_ID, SET_NSP, SET_DISPLAY, SET_NAME, SET_PLAYERS, SET_JOINING,
+    SET_BLUE_MAX, SET_RED_MAX
+} from "../actions";
 
 const initialState = {
     id: null
@@ -18,6 +21,10 @@ const rootReducer = (state = initialState, action) => {
             return { ...state, players: action.players }
         case SET_JOINING:
             return { ...state, joining: action.joining }
+        case SET_BLUE_MAX:
+            return { ...state, blueMax: action.blueMax }
+        case SET_RED_MAX:
+            return { ...state, redMax: action.redMax }
         default:
             return state
     }

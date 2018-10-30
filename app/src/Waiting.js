@@ -7,7 +7,7 @@ import Invite from './Waiting/Invite'
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
 import { setDisplay, setNSP, setName, setPlayers, setJoining } from "./store/actions";
-import {api, player, ready, select} from "./Api";
+import {api, player, ready} from "./Api";
 
 class Waiting extends Component {
     constructor(props) {
@@ -19,7 +19,6 @@ class Waiting extends Component {
         };
 
         api.get(player, (err, msg) => {
-            console.log("Received:", msg)
             this.props.setPlayers(msg.players)
             this.props.setJoining(msg.joining)
         })

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import {api, namespace, player, session} from "./Api";
+import {api, namespace, session} from "./Api";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {setNSP, setDisplay} from './store/actions'
@@ -37,7 +37,6 @@ class Welcome extends Component {
 
     onSubmit(event) {
         event.preventDefault()
-        console.log(this.state.code)
         api.set(namespace, this.state.code, (err, msg) => {
             if (msg) {
                 this.props.setNSP(this.state.code)

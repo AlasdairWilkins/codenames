@@ -6,6 +6,8 @@ export const SET_DISPLAY = "SET_DISPLAY"
 export const SET_NAME = "SET_NAME"
 export const SET_PLAYERS = "SET_PLAYERS"
 export const SET_JOINING = "SET_JOINING"
+export const SET_BLUE_MAX = "SET_BLUE_MAX"
+export const SET_RED_MAX = "SET_RED_MAX"
 
 //action creators
 
@@ -31,4 +33,12 @@ export function setPlayers(players) {
 
 export function setJoining(joining) {
     return {type: SET_JOINING, joining}
+}
+
+export function setBlueMax(blueMax) {
+    return {type: SET_BLUE_MAX, blueMax}
+}
+
+export function setRedMax(redMax) {
+    return {type: SET_RED_MAX, redMax}
 }

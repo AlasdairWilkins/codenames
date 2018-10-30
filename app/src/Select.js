@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import './App.css';
 import store from './store/store';
-import {api, select} from "./Api";
+import {api, player, select} from "./Api";
+import {bindActionCreators} from "redux";
+import {setDisplay, setPlayers, setBlueMax, setRedMax } from "./store/actions";
 
 class Select extends Component {
     constructor(props) {
@@ -12,20 +14,36 @@ class Select extends Component {
             ready: false
         }
 
-        // api.get(select, (err, players) => this.setState({players: players}))
+        api.socket.off(player)
+        api.get(select, (err, msg) => {
+            this.props.setPlayers(msg.players)
+            this.props.setBlueMax(msg.blueMax)
+            this.props.setRedMax(msg.redMax)
+        })
+
+        this.handleClick = this.handleClick.bind(this)
 
     }
 
     handleClick(event) {
 
-        let currentTeam = event.target.parentNode.className;
-        let click = event.target.value;
-        if (currentTeam === 'blue' || currentTeam === 'red') {
-            api.set(select, null)
-        } else if (click === 'left') {
-            api.set(select, 'blue')
+        if (event.target.value === "ready") {
+
+            this.setState({ready: true})
+            console.log("Game's starting!")
+
         } else {
-            api.set(select, 'red')
+
+            let currentTeam = event.target.parentNode.className;
+            let click = event.target.value;
+            if (currentTeam === 'blue' || currentTeam === 'red') {
+                api.set(select, null)
+            } else if (click === 'left') {
+                api.set(select, 'blue')
+            } else {
+                api.set(select, 'red')
+            }
+
         }
     }
 
@@ -68,10 +86,7 @@ class Select extends Component {
         let buttons = (!this.state.ready) ?
             <div>
                 <p>Choose your team, or leave your name in the middle to be randomly assigned!</p>
-                <p><button onClick={() => {
-                    this.setState({ready: true})
-                    this.props.handleClickSelect()}}
-                >Click when ready!</button></p>
+                <p><button value="ready" onClick={this.handleClick}>Click when ready!</button></p>
             </div>
             :
             <div><p>Great! We're starting soon.</p></div>
@@ -98,4 +113,21 @@ class Select extends Component {
     }
 }
 
-export default Select
+const mapStateToProps = (state, ownProps) => {
+    return {
+        players: state.players,
+        blueMax: state.blueMax,
+        redMax: state.redMax
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        setDisplay: bindActionCreators(setDisplay, dispatch),
+        setPlayers: bindActionCreators(setPlayers, dispatch),
+        setBlueMax: bindActionCreators(setBlueMax, dispatch),
+        setRedMax: bindActionCreators(setRedMax, dispatch)
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Select);

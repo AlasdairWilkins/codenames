@@ -1,4 +1,4 @@
-import {api, namespace, player, resume, session} from "./Api";
+import {api, namespace, resume, session} from "./Api";
 
 import store from "./store/store"
 import { setName, setNSP, setDisplay } from "./store/actions";
@@ -41,5 +41,4 @@ class Startup {
     }
 }
 
-const startup = new Startup()
-export default { startup }
+export default Startup

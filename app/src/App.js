@@ -1,21 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import './App.css';
 import Welcome from './Welcome'
 import Waiting from './Waiting'
 import Select from './Select'
 import Game from './Game'
 import Chat from './Chat'
-import { startup } from './Startup'
-import { api } from "./Api";
-import { setDisplay, setNSP, setName, setJoining } from "./store/actions";
+import Startup from './Startup'
 
 
 class App extends Component {
 
     constructor(props) {
         super(props);
+
+        new Startup()
 
         this.state = {
             displayName: null,
@@ -49,11 +48,7 @@ class App extends Component {
             case 'select':
                 return (
                     <div>
-                        <Select
-                            players={this.state.players}
-                            blueMax={this.state.blueMax}
-                            redMax={this.state.redMax}
-                        />
+                        <Select/>
                         <Chat displayName={this.state.displayName}/>
                     </div>
                 );

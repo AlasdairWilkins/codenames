@@ -5,7 +5,6 @@ const shortid = require('shortid');
 const cookie = require('cookie');
 const nodemailer = require('nodemailer');
 
-const server = require('./main');
 const dao = require('./dao');
 
 const {get, insert, update, all, connection,
@@ -85,7 +84,7 @@ module.exports = class Namespace {
                         let max = Math.ceil(row.total / 2)
                         let blueMax = (row.blueCount >= max)
                         let redMax = (row.redCount >= max)
-                        this.namespace.emit(player, {players: rows, blueMax: blueMax, redMax: redMax})
+                        this.namespace.emit(select, {players: rows, blueMax: blueMax, redMax: redMax})
                     })
                 })
             })

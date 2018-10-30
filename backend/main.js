@@ -5,13 +5,9 @@ const io = require('socket.io')();
 const shortid = require('shortid');
 const cookie = require('cookie');
 
-// const Game = require('./game');
-// const Server = require('./server');
 const Namespace = require('./namespace');
 
 const url = process.env.DEVURL;
-
-// const server = new Server();
 
 const dao = require('./dao');
 
