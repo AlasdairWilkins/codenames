@@ -3,7 +3,10 @@ module.exports = {
     drop: {
         namespace: `DROP TABLE IF EXISTS namespaces;`,
         session: `DROP TABLE IF EXISTS sessions;`,
-        message: `DROP TABLE IF EXISTS chats;`
+        message: `DROP TABLE IF EXISTS chats;`,
+        player: `DROP TABLE IF EXISTS players;`,
+        game: `DROP TABLE IF EXISTS games;`,
+        word: `DROP TABLE IF EXISTS words;`
     },
 
     create: {
@@ -30,21 +33,52 @@ module.exports = {
                     FOREIGN KEY (session_id) REFERENCES sessions(session_id),
                     FOREIGN KEY (display_name) REFERENCES sessions(display_name),
                     FOREIGN KEY (socket_id) REFERENCES sessions(socket_id) ON UPDATE CASCADE
-                );`
+                );`,
+        player: `CREATE TABLE IF NOT EXISTS players (
+                game_id TEXT,
+                session_id  TEXT,
+                socket_id   TEXT,
+                display_name    TEXT,
+                team    TEXT    DEFAULT NULL    CHECK (team in (NULL, 'blue', 'red')),
+                ready   BOOLEAN DEFAULT 0 CHECK (ready in (0,1)),
+                    PRIMARY KEY (game_id,session_id),
+                    FOREIGN KEY (game_id) REFERENCES games(game_id),
+                    FOREIGN KEY (session_id) REFERENCES sessions(session_id),
+                    FOREIGN KEY (socket_id) REFERENCES sessions(socket_id) ON UPDATE CASCADE
+                );`,
+        game: `CREATE TABLE IF NOT EXISTS games (
+               game_id  TEXT    PRIMARY KEY,
+               nsp_id   TEXT    NOT NULL,
+               active BOOLEAN DEFAULT 1 CHECK (active in (0,1)),
+                   FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
+                );`,
+        word: `CREATE TABLE IF NOT EXISTS words (
+               game_id TEXT,
+               row INTEGER NOT NULL CHECK (row in (0,1,2,3,4)),
+               column INTEGER NOT NULL CHECK (column in (0,1,2,3,4)),
+               type TEXT NOT NULL CHECK (type in ('blue', 'red', 'assassin', 'decoy')),
+               covered BOOLEAN DEFAULT 0 CHECK (covered in (0,1)),
+               by TEXT CHECK (by in ('blue', 'red')),
+                   PRIMARY KEY (game_id,row,column),
+                   FOREIGN KEY (game_id) REFERENCES games(game_id)
+               );`
     },
 
     insert: {
         namespace: `INSERT INTO namespaces(nsp_id) VALUES (?)`,
         session: `INSERT INTO sessions(session_id, nsp_id) VALUES (?, ?);`,
         message: `INSERT INTO chats(nsp_id, message, socket_id, session_id, display_name) 
-                    SELECT (?), (?), (?), session_id, display_name FROM sessions WHERE socket_id = (?);`
+                    SELECT (?), (?), (?), session_id, display_name FROM sessions WHERE socket_id = (?);`,
+        player: `INSERT INTO players(game_id, session_id, socket_id, display_name)
+                    SELECT (?), session_id, socket_id, display_name
+                    FROM sessions WHERE nsp_id = (?)`
     },
 
     update: {
         socketID: `UPDATE sessions SET socket_id = ? WHERE session_id = ?`,
         displayName: `UPDATE sessions SET display_name = ?, socket_id = ? WHERE session_id = ?`,
         ready: `UPDATE sessions SET ready = 1 WHERE socket_id = ?`,
-        team: `UPDATE sessions SET team = (?) WHERE socket_id = (?)`,
+        team: `UPDATE players SET team = (?) WHERE socket_id = (?)`,
         disconnect: `UPDATE sessions SET socket_id = ? WHERE socket_id = ?`,
         resetReady: `UPDATE sessions SET ready = 0 WHERE nsp_id = ?`
     },
@@ -58,7 +92,7 @@ module.exports = {
             `SELECT count(*) total,
             sum(case when team = 'blue' then 1 else 0 end) blueCount,
             sum(case when team = 'red' then 1 else 0 end) redCount
-            FROM sessions WHERE nsp_id = ?`
+            FROM players WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`
     },
 
     all: {
@@ -76,8 +110,8 @@ module.exports = {
         team: `SELECT display_name name,
                         socket_id socketID,
                         team
-                    FROM sessions
-                    WHERE nsp_id = ?
+                    FROM players
+                    WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))
                     ORDER BY display_name;`,
     }
 }

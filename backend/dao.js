@@ -18,14 +18,14 @@ class DAO {
         });
 
         this.db.serialize(() => {
-            this.db.run(sql.drop[namespace]);
-            this.db.run(sql.drop[session]);
-            this.db.run(sql.drop[message]);
-            this.db.run(sql.create[namespace]);
-            this.db.run(sql.create[session]);
-            this.db.run(sql.create[message])
-        })
+            for (let table in sql.drop) {
+                this.db.run(sql.drop[table])
+            }
 
+            for (let table in sql.create) {
+                this.db.run(sql.create[table])
+            }
+        })
     }
 
     query() {
@@ -70,7 +70,7 @@ class DAO {
 
         this.db.get(sql[get][header], params, function(err, row) {
             if (err) {
-                console.error("Get error:", err.message)
+                console.error("Get error:", err.message, sql[get][header])
             } else {
                 cb(row)
             }

@@ -16,6 +16,7 @@ class Select extends Component {
 
         api.socket.off(player)
         api.get(select, (err, msg) => {
+            console.log(msg)
             this.props.setPlayers(msg.players)
             this.props.setBlueMax(msg.blueMax)
             this.props.setRedMax(msg.redMax)

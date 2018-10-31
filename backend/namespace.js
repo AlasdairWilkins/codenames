@@ -8,7 +8,7 @@ const nodemailer = require('nodemailer');
 const dao = require('./dao');
 
 const {get, insert, update, all, connection,
-    player, session, displayName,
+    player, players, session, sessions, displayName,
     message, ready, team, select, disconnect,
     checkPlayerMax, resetReady, joining} = require('./constants');
 
@@ -68,7 +68,10 @@ module.exports = class Namespace {
                 dao.query(get, ready, this.address, (row) => {
                     if (!row.count) {
                         dao.query(update, resetReady, this.address, () => {
-                            this.namespace.emit(ready)
+                            let gameID = shortid.generate()
+                            dao.query(insert, player, gameID, this.address, () => {
+                                this.namespace.emit(ready)
+                            })
                         })
                     }
                 })
