@@ -6,9 +6,10 @@ const cookie = require('cookie');
 const nodemailer = require('nodemailer');
 
 const dao = require('./dao');
+const game = require('./game');
 
 const {get, insert, update, all, connection,
-    player, players, session, sessions, displayName,
+    player, session, displayName,
     message, ready, team, select, disconnect,
     checkPlayerMax, resetReady, joining} = require('./constants');
 
@@ -17,12 +18,8 @@ module.exports = class Namespace {
 
     constructor(io, nsp) {
 
-        this.chat = [];
-        this.games = [];
         this.address = nsp;
-
         this.namespace = io.of("/" + nsp);
-
         this.namespace.on(connection, this.setListeners.bind(this))
 
     }
@@ -39,7 +36,7 @@ module.exports = class Namespace {
                 dao.query(update, displayName, msg.name, socket.client.id, cookie.parse(msg.cookie).id)
             }
 
-            dao.query(all, player, this.address, rows => {
+            dao.query(all, session, this.address, rows => {
                 dao.query(get, joining, this.address, row => {
                     this.namespace.emit(player, {players: rows, joining: row.count})
                 })
@@ -62,17 +59,40 @@ module.exports = class Namespace {
             }
         });
 
-        socket.on(ready, () => {
+        socket.on(ready, (msg) => {
+            console.log(msg)
 
-            dao.query(update, ready, socket.client.id, () => {
-                dao.query(get, ready, this.address, (row) => {
+            dao.query(update, msg, socket.client.id, () => {
+                dao.query(get, msg, this.address, (row) => {
                     if (!row.count) {
-                        dao.query(update, resetReady, this.address, () => {
+                        if (msg === 'waitingReady') {
                             let gameID = shortid.generate()
                             dao.query(insert, player, gameID, this.address, () => {
                                 this.namespace.emit(ready)
                             })
-                        })
+                        } else {
+                            dao.query(all, team, this.address, rows => {
+                                let players = game.makeTeams(rows)
+                                console.log("At last:", rows, players)
+                                for (let i = 0; i < players.length; i++) {
+                                    if (!rows[i].team) {
+                                        dao.query(update, team, players[i].team, players[i].socketID, () => {
+                                            if (i === players.length - 1) {
+                                                // let [params, placeholders] = game.makeWords(25)
+                                                //
+                                                // let sql =
+                                                //     `INSERT INTO words(
+                                                //     `
+                                                // dao.db.run()
+
+
+                                                this.namespace.emit(ready)
+                                            }
+                                        })
+                                    }
+                                }
+                            })
+                        }
                     }
                 })
             })

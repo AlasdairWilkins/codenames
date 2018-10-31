@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import './App.css';
 import store from './store/store';
-import {api, player, select} from "./Api";
+import {api, player, ready, select} from "./Api";
 import {bindActionCreators} from "redux";
 import {setDisplay, setPlayers, setBlueMax, setRedMax } from "./store/actions";
 
@@ -31,7 +31,10 @@ class Select extends Component {
         if (event.target.value === "ready") {
 
             this.setState({ready: true})
-            console.log("Game's starting!")
+            api.set(ready, 'selectReady', (err) => {
+                console.log("Response received!")
+                this.props.setDisplay('game')
+            });
 
         } else {
 

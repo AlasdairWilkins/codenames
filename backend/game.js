@@ -1,22 +1,21 @@
 const words = require('./words');
 
-module.exports = class Game {
-    constructor(players) {
-        this.words = this.makeWords(words, 25);
-        this.teams = this.makeTeams(players)
-
-    }
+class Game {
 
     makeTeams(players) {
-        let teams ={'blue': new Team(), 'red': new Team()};
+        let sorted = []
         let unsorted = [];
+        let blue = 0
+        let red = 0
         for (let i in players) {
             if (players[i].team === 'blue') {
-                teams.blue.players.push(players[i])
+                sorted.push(Object.assign({}, players[i]))
+                blue++
             } else if (players[i].team === 'red') {
-                teams.red.players.push(players[i])
+                sorted.push(Object.assign({}, players[i]))
+                red++
             } else {
-                unsorted.push(players[i])
+                unsorted.push(Object.assign({}, players[i]))
             }
         }
 
@@ -25,20 +24,21 @@ module.exports = class Game {
         let max = Math.ceil(players.length / 2);
 
         for (let i = 0; i < order.length; i++) {
-            if (teams.blue.players.length < max && teams.red.players.length < max) {
+            if (blue < max && red < max) {
                 let color = (Math.random() < .5) ? "blue" : "red";
+                (color === 'blue') ? blue++ : red++
                 unsorted[order[i]].team = color;
-                teams[color].players.push(unsorted[order[i]])
-            } else if (teams.blue.players.length === max) {
+                sorted.push(unsorted[order[i]])
+            } else if (blue === max) {
                 unsorted[order[i]].color = 'red';
-                teams.red.players.push(unsorted[order[i]])
+                sorted.push(unsorted[order[i]])
             } else {
                 unsorted[order[i]].color = 'blue';
-                teams.blue.players.push(unsorted[order[i]])
+                sorted.push(unsorted[order[i]])
             }
         }
 
-        return teams
+        return sorted
     }
 
     shuffle(length, subset) {
@@ -64,7 +64,7 @@ module.exports = class Game {
 
     }
 
-    makeWords(words, num) {
+    makeWords(num) {
 
         let arr = [];
         let cards = this.shuffle(words.length, num);
@@ -76,27 +76,35 @@ module.exports = class Game {
         for (let i = 0; i < num; i++) {
 
             if (order[i] <= 8) {
-                arr.push(new Word(words[cards[i]], first))
+                arr.push(new Word(words[cards[i]], first, i))
             } else if (9 <= order[i] && order[i] <= 16) {
-                arr.push(new Word(words[cards[i]], second))
+                arr.push(new Word(words[cards[i]], second, i))
             } else if (order[i] === 17) {
-                arr.push(new Word(words[cards[i]], 'Assassin'))
+                arr.push(new Word(words[cards[i]], 'Assassin', i))
             } else {
-                arr.push(new Word(words[cards[i]], 'Decoy'))
+                arr.push(new Word(words[cards[i]], 'Decoy', i))
             }
 
         }
 
-        return arr
+        console.log(arr)
+
+        return [[arr.map(item => item.word),
+            arr.map(item => item.value),
+            arr.map(item => item.row),
+            arr.map(item => item.column)],
+            [arr.map(() => '?').join()]]
     }
 
 };
 
 
 class Word {
-    constructor(word, value) {
+    constructor(word, value, index) {
         this.word = word;
         this.value = value
+        this.row = Math.floor(index / 5)
+        this.column = index % 5
     }
 }
 
@@ -106,5 +114,7 @@ class Team {
         this.codemaster = null
     }
 }
+
+module.exports = new Game()
 
 

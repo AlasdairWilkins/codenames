@@ -77,7 +77,8 @@ module.exports = {
     update: {
         socketID: `UPDATE sessions SET socket_id = ? WHERE session_id = ?`,
         displayName: `UPDATE sessions SET display_name = ?, socket_id = ? WHERE session_id = ?`,
-        ready: `UPDATE sessions SET ready = 1 WHERE socket_id = ?`,
+        waitingReady: `UPDATE sessions SET ready = 1 WHERE socket_id = ?`,
+        selectReady: `UPDATE players SET ready = 1 WHERE socket_id = ?`,
         team: `UPDATE players SET team = (?) WHERE socket_id = (?)`,
         disconnect: `UPDATE sessions SET socket_id = ? WHERE socket_id = ?`,
         resetReady: `UPDATE sessions SET ready = 0 WHERE nsp_id = ?`
@@ -85,7 +86,9 @@ module.exports = {
 
     get: {
         joining: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND display_name IS NULL`,
-        ready: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND ready = 0`,
+        waitingReady: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND ready = 0`,
+        selectReady: `SELECT count(*) count FROM players WHERE 
+            game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?)) AND ready = 0`,
         namespace: `SELECT nsp_id nspID FROM namespaces WHERE nsp_id = ?`,
         resume: `SELECT nsp_id nspID, display_name displayName FROM sessions WHERE session_id = ?`,
         checkPlayerMax:
@@ -96,7 +99,7 @@ module.exports = {
     },
 
     all: {
-        player: `SELECT display_name name,
+        session: `SELECT display_name name,
                         socket_id socketID,
                         session_id sessionID
                 FROM sessions
@@ -112,6 +115,6 @@ module.exports = {
                         team
                     FROM players
                     WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))
-                    ORDER BY display_name;`,
+                    ORDER BY display_name;`
     }
 }

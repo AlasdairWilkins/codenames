@@ -40,7 +40,7 @@ class Waiting extends Component {
 
     handleClick(event) {
         this.setState({ready: true});
-        api.set(ready, document.cookie, (err) => this.props.setDisplay('select'));
+        api.set(ready, 'waitingReady', (err) => this.props.setDisplay('select'));
         event.preventDefault()
     }
 
