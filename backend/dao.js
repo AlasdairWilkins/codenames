@@ -2,14 +2,14 @@ const sqlite3 = require('sqlite3').verbose();
 
 const dbFilePath = './db/sqlite.db';
 
-const sql = require('./sql')
+const sql = require('./sql');
 
-const {update, insert, get, all, namespace, session, message} = require('./constants')
+const {update, insert, get, all, namespace, session, message} = require('./constants');
 
 class DAO {
     constructor(dbFilePath) {
 
-        this.updateMultiple = this.updateMultiple.bind(this)
+        this.multiple = this.multiple.bind(this);
 
         this.db = new sqlite3.Database(dbFilePath, err => {
             if (err) {
@@ -33,90 +33,77 @@ class DAO {
     query() {
         let type = arguments[0];
         let header = arguments[1];
+        let op = this.getOp(type);
 
         let hasCB = (typeof arguments[arguments.length - 1] === "function");
         let cb = (hasCB) ? arguments[arguments.length - 1] : null;
 
         if (typeof sql[type][header] === 'function') {
 
-            let params = arguments[2]
-            let [newType, newHeader, newParams] = sql[type][header](params)
-            console.log(newType, newHeader, newParams)
+            let params = arguments[2];
+            let additional = [];
+            if ((hasCB) && arguments.length > 4 || (!hasCB) && arguments.length > 3) {
+                for (let i = 3; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
+                    additional.push(arguments[i])
+                }
+            }
+            let [newHeader, newParams] = sql[type][header](params, ...additional);
 
-            this[newType](newHeader, newParams, cb)
+            this.multiple(op, type, newHeader, newParams, cb)
 
         } else {
             let params = [];
             for (let i = 2; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
                 params.push(arguments[i])
             }
-            this[type](header, params, cb)
+            this.run(op, type, header, params, cb)
         }
 
 
     }
 
-    insert(header, params, cb) {
+    run(op, type, header, params, cb) {
 
-        this.db.run(sql[insert][header], params, function (err) {
+        this.db[op](sql[type][header], params, function (err, res) {
             if (err) {
-                console.error("Insert error:", err.message)
-            } else {
-                cb()
-            }
-        })
-    }
-
-    update(header, params, cb) {
-
-        this.db.run(sql[update][header], params, function(err) {
-            if (err) {
-                console.error("Update error", err.message)
+                console.error("Error:", err.message)
             } else {
                 if (cb) {
-                    cb()
+                    cb(res)
                 }
             }
         })
+
     }
 
-    updateMultiple(header, params, cb) {
-        
-        this.db.run(sql[update][header], params[0], (err) => {
+    multiple(op, type, header, params, cb) {
+
+        this.db[op](sql[type][header], params[0], (err, res) => {
             if (err) {
-                console.error("Update error", err.message)
+                console.error("Error", err.message)
             } else {
                 if (params.length > 1) {
-                    this.updateMultiple(header, params.slice(1), cb)
+                    this.multiple(op, type, header, params.slice(1), cb)
                 } else {
-                    cb()
+                    if (cb) {
+                        cb(rs)
+                    }
                 }
             }
         })
-
     }
 
-    get(header, params, cb) {
-
-        this.db.get(sql[get][header], params, function(err, row) {
-            if (err) {
-                console.error("Get error:", err.message, sql[get][header])
-            } else {
-                cb(row)
-            }
-        })
+    getOp(type) {
+        switch (type) {
+            case get:
+                return get;
+            case all:
+                return all;
+            default:
+                return 'run'
+        }
     }
-
-    all(header, params, cb) {
-
-        this.db.all(sql[all][header], params, function(err, rows) {
-            if (err) {
-                console.error("All error:", err.message)
-            } else {
-                cb(rows)
-            }
-        })
-    }
+    
 }
 
 module.exports = new DAO(dbFilePath);

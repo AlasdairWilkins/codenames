@@ -9,7 +9,7 @@ const dao = require('./dao');
 const game = require('./game');
 
 const {get, insert, update, updateMultiple, all, connection,
-    player, session, displayName,
+    player, session, displayName, unsorted, waitingReady,
     message, ready, team, teams, select, disconnect,
     checkPlayerMax, resetReady, joining} = require('./constants');
 
@@ -64,17 +64,22 @@ module.exports = class Namespace {
             dao.query(update, msg, socket.client.id, () => {
                 dao.query(get, msg, this.address, (row) => {
                     if (!row.count) {
-                        if (msg === 'waitingReady') {
+                        if (msg === waitingReady) {
                             let gameID = shortid.generate()
                             dao.query(insert, player, gameID, this.address, () => {
                                 this.namespace.emit(ready)
                             })
                         } else {
-                            dao.query(all, 'unsorted', this.address, players => {
+                            dao.query(all, unsorted, this.address, players => {
                                 dao.query(get, checkPlayerMax, this.address, count => {
                                     let sorted = game.makeTeams(players, count)
                                     dao.query(update, teams, sorted, () => {
-                                        console.log("All updated!")
+                                        let words = game.makeWords(25)
+                                        dao.query(insert, 'words', words, this.address, () => {
+                                            console.log("Success!")
+                                            this.namespace.emit(ready)
+
+                                        })
                                     })
                                 })
                             })

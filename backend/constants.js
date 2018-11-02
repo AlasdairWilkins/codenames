@@ -23,10 +23,11 @@ const resetReady = 'resetReady';
 const joining = 'joining';
 const blue = 'blue';
 const red = 'red';
+const unsorted = 'unsorted';
+const waitingReady = 'waitingReady';
 
 module.exports = {
     get, insert, update, updateMultiple, all, connection, namespace, resume, socketID, session, sessions,
     displayName, player, players, message, ready, team, teams, select, disconnect, checkPlayerMax,
-    resetReady, joining,
-    blue, red
+    resetReady, joining, waitingReady, unsorted, blue, red
 };

@@ -54,8 +54,7 @@ class Game {
         let cards = this.shuffle(words.length, num);
         let order = this.shuffle(num);
 
-        let [first, second] = (Math.random() < .5) ? ['Blue', 'Red'] : ['Red',
-        'Blue'];
+        let [first, second] = (Math.random() < .5) ? [blue, red] : [red, blue];
 
         for (let i = 0; i < num; i++) {
 
@@ -64,20 +63,14 @@ class Game {
             } else if (9 <= order[i] && order[i] <= 16) {
                 arr.push(new Word(words[cards[i]], second, i))
             } else if (order[i] === 17) {
-                arr.push(new Word(words[cards[i]], 'Assassin', i))
+                arr.push(new Word(words[cards[i]], 'assassin', i))
             } else {
-                arr.push(new Word(words[cards[i]], 'Decoy', i))
+                arr.push(new Word(words[cards[i]], 'decoy', i))
             }
 
         }
 
-        console.log(arr)
-
-        return [[arr.map(item => item.word),
-            arr.map(item => item.value),
-            arr.map(item => item.row),
-            arr.map(item => item.column)],
-            [arr.map(() => '?').join()]]
+        return arr
     }
 
 };
