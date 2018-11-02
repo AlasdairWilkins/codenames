@@ -22,7 +22,6 @@ class SQL {
                 display_name    TEXT,
                 socket_id   TEXT,
                 ready   BOOLEAN DEFAULT 0 CHECK (ready in (0,1)),
-                team    TEXT    DEFAULT NULL    CHECK (team in (NULL, 'blue', 'red')),
                     FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
                 );`,
             message: `CREATE TABLE IF NOT EXISTS chats (
@@ -99,6 +98,7 @@ class SQL {
             game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?)) AND ready = 0`,
             namespace: `SELECT nsp_id nspID FROM namespaces WHERE nsp_id = ?`,
             resume: `SELECT nsp_id nspID, display_name displayName FROM sessions WHERE session_id = ?`,
+            team: `SELECT team FROM players WHERE socket_id = ?`,
             checkPlayerMax:
                 `SELECT count(*) total,
             sum(case when team = 'blue' then 1 else 0 end) blueCount,

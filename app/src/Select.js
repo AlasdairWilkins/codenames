@@ -4,7 +4,7 @@ import './App.css';
 import store from './store/store';
 import {api, player, ready, select} from "./Api";
 import {bindActionCreators} from "redux";
-import {setDisplay, setPlayers, setBlueMax, setRedMax } from "./store/actions";
+import {set} from "./store/actions";
 
 class Select extends Component {
     constructor(props) {
@@ -17,9 +17,9 @@ class Select extends Component {
         api.socket.off(player)
         api.get(select, (err, msg) => {
             console.log(msg)
-            this.props.setPlayers(msg.players)
-            this.props.setBlueMax(msg.blueMax)
-            this.props.setRedMax(msg.redMax)
+            this.props.set('players', msg.players)
+            this.props.set('blueMax', msg.blueMax)
+            this.props.set('redMax', msg.redMax)
         })
 
         this.handleClick = this.handleClick.bind(this)
@@ -32,8 +32,10 @@ class Select extends Component {
 
             this.setState({ready: true})
             api.set(ready, 'selectReady', (err) => {
-                console.log("Response received!")
-                this.props.setDisplay('game')
+                api.get('team', (err, msg) => {
+                    this.props.set('team', msg.team)
+                    this.props.set('display', 'game')
+                })
             });
 
         } else {
@@ -127,10 +129,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        setDisplay: bindActionCreators(setDisplay, dispatch),
-        setPlayers: bindActionCreators(setPlayers, dispatch),
-        setBlueMax: bindActionCreators(setBlueMax, dispatch),
-        setRedMax: bindActionCreators(setRedMax, dispatch)
+        set: bindActionCreators(set, dispatch),
     }
 }
 

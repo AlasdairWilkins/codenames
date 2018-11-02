@@ -3,7 +3,7 @@ import './App.css';
 import {api, namespace, session} from "./Api";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {setNSP, setDisplay} from './store/actions'
+import {set} from './store/actions'
 
 
 class Welcome extends Component {
@@ -24,10 +24,10 @@ class Welcome extends Component {
     onClick(event) {
         if (event.target.value === "new") {
             api.get(namespace, (err, msg) => {
-                this.props.setNSP(msg.namespace)
+                this.props.set('nsp', msg.namespace)
                 api.get(session, (err, msg) => {
                     document.cookie = msg
-                    this.props.setDisplay('waiting')
+                    this.props.set('display', 'waiting')
                 })
             })
         } else if (event.target.value === "existing") {
@@ -39,10 +39,10 @@ class Welcome extends Component {
         event.preventDefault()
         api.set(namespace, this.state.code, (err, msg) => {
             if (msg) {
-                this.props.setNSP(this.state.code)
+                this.props.set('nsp', this.state.code)
                 api.get(session, (err, msg) => {
                     document.cookie = msg
-                    this.props.setDisplay('waiting')
+                    this.props.set('display', 'waiting')
                 });
             } else {
                 console.log("Whoops")
@@ -100,8 +100,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        setDisplay: bindActionCreators(setDisplay, dispatch),
-        setNSP: bindActionCreators(setNSP, dispatch)
+        set: bindActionCreators(set, dispatch),
     }
 }
 

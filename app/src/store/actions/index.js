@@ -1,44 +1,54 @@
 //action types
 
-export const SET_ID = "SET_ID";
-export const SET_NSP = "SET_NSP";
-export const SET_DISPLAY = "SET_DISPLAY"
-export const SET_NAME = "SET_NAME"
-export const SET_PLAYERS = "SET_PLAYERS"
-export const SET_JOINING = "SET_JOINING"
-export const SET_BLUE_MAX = "SET_BLUE_MAX"
-export const SET_RED_MAX = "SET_RED_MAX"
+export const SET = "SET";
+// export const SET_ID = "SET_ID";
+// export const SET_NSP = "SET_NSP";
+// export const SET_DISPLAY = "SET_DISPLAY";
+// export const SET_NAME = "SET_NAME";
+// export const SET_PLAYERS = "SET_PLAYERS";
+// export const SET_JOINING = "SET_JOINING";
+// export const SET_BLUE_MAX = "SET_BLUE_MAX";
+// export const SET_RED_MAX = "SET_RED_MAX";
+// export const SET_TEAM = "SET_TEAM";
 
 //action creators
 
+export function set(header, id) {
+    return {type: SET, [header]: id}
+}
+
 export function setID(id) {
-    return {type: SET_ID, id}
+    return {type: SET, id}
 }
 
 export function setNSP(nsp) {
-    return {type: SET_NSP, nsp}
+    return {type: SET, nsp}
 }
 
 export function setDisplay(display) {
-    return {type: SET_DISPLAY, display}
+    return {type: SET, display}
 }
 
 export function setName(name) {
-    return {type: SET_NAME, name}
+    return {type: SET, name}
 }
 
 export function setPlayers(players) {
-    return {type: SET_PLAYERS, players}
+    return {type: SET, players}
 }
 
 export function setJoining(joining) {
-    return {type: SET_JOINING, joining}
+    return {type: SET, joining}
 }
 
 export function setBlueMax(blueMax) {
-    return {type: SET_BLUE_MAX, blueMax}
+    return {type: SET, blueMax}
 }
 
 export function setRedMax(redMax) {
-    return {type: SET_RED_MAX, redMax}
+    return {type: SET, redMax}
+}
+
+export function setTeam(team) {
+    return {type: SET, team}
 }

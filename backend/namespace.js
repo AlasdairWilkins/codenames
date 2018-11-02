@@ -103,6 +103,14 @@ module.exports = class Namespace {
             })
         });
 
+        socket.on(team, () => {
+            dao.query(get, team, socket.client.id, (res) => {
+                socket.join(res.team)
+                socket.emit(team, res)
+            })
+        })
+
+
         socket.on(disconnect, () => {
             dao.query(update, disconnect, null, socket.client.id)
         })

@@ -6,7 +6,7 @@ import Pluralize from 'react-pluralize'
 import Invite from './Waiting/Invite'
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
-import { setDisplay, setNSP, setName, setPlayers, setJoining } from "./store/actions";
+import { set } from "./store/actions";
 import {api, player, ready} from "./Api";
 
 class Waiting extends Component {
@@ -19,8 +19,8 @@ class Waiting extends Component {
         };
 
         api.get(player, (err, msg) => {
-            this.props.setPlayers(msg.players)
-            this.props.setJoining(msg.joining)
+            this.props.set('players', msg.players)
+            this.props.set('joining', msg.joining)
         })
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -30,7 +30,7 @@ class Waiting extends Component {
 
     handleSubmit(event) {
         api.set(player, {name: this.state.name, cookie: document.cookie})
-        this.props.setName(this.state.name)
+        this.props.set('name', this.state.name)
         event.preventDefault()
     }
 
@@ -40,7 +40,7 @@ class Waiting extends Component {
 
     handleClick(event) {
         this.setState({ready: true});
-        api.set(ready, 'waitingReady', (err) => this.props.setDisplay('select'));
+        api.set(ready, 'waitingReady', (err) => this.props.set('display', 'select'));
         event.preventDefault()
     }
 
@@ -136,11 +136,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        setDisplay: bindActionCreators(setDisplay, dispatch),
-        setNSP: bindActionCreators(setNSP, dispatch),
-        setName: bindActionCreators(setName, dispatch),
-        setPlayers: bindActionCreators(setPlayers, dispatch),
-        setJoining: bindActionCreators(setJoining, dispatch)
+        set: bindActionCreators(set, dispatch),
     }
 }
 
