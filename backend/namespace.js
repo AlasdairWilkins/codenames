@@ -60,7 +60,6 @@ module.exports = class Namespace {
         });
 
         socket.on(ready, (msg) => {
-            console.log(msg)
 
             dao.query(update, msg, socket.client.id, () => {
                 dao.query(get, msg, this.address, (row) => {
@@ -71,26 +70,14 @@ module.exports = class Namespace {
                                 this.namespace.emit(ready)
                             })
                         } else {
-                            dao.query(all, team, this.address, rows => {
-                                let players = game.makeTeams(rows)
-                                console.log("At last:", rows, players)
-                                for (let i = 0; i < players.length; i++) {
-                                    if (!rows[i].team) {
-                                        dao.query(update, team, players[i].team, players[i].socketID, () => {
-                                            if (i === players.length - 1) {
-                                                // let [params, placeholders] = game.makeWords(25)
-                                                //
-                                                // let sql =
-                                                //     `INSERT INTO words(
-                                                //     `
-                                                // dao.db.run()
-
-
-                                                this.namespace.emit(ready)
-                                            }
-                                        })
-                                    }
-                                }
+                            dao.query(all, 'unsorted', this.address, players => {
+                                dao.query(get, checkPlayerMax, this.address, count => {
+                                    let sorted = game.makeTeams(players, count)
+                                    let paramsSorted = sorted.map(item => [item.team, item.socketID])
+                                    dao.updateMultiple(team, paramsSorted, () => {
+                                        console.log("All updated!")
+                                    })
+                                })
                             })
                         }
                     }

@@ -9,6 +9,8 @@ const {update, insert, get, all, namespace, session, message} = require('./const
 class DAO {
     constructor(dbFilePath) {
 
+        this.updateMultiple = this.updateMultiple.bind(this)
+
         this.db = new sqlite3.Database(dbFilePath, err => {
             if (err) {
                 console.error(err.message)
@@ -31,14 +33,36 @@ class DAO {
     query() {
         let type = arguments[0];
         let header = arguments[1];
-        let hasCB = (typeof arguments[arguments.length - 1] === "function");
-        let params = [];
-        for (let i = 2; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
-            params.push(arguments[i])
-        }
-        let cb = (hasCB) ? arguments[arguments.length - 1] : null;
 
-        this[type](header, params, cb)
+        let hasCB = (typeof arguments[arguments.length - 1] === "function");
+
+
+
+        // if (typeof sql[type][header] === 'function') {
+        //     let headerOriginal = arguments[2]
+        //     let paramsOriginal = arguments[3]
+        //     let sqlUpdate = sql[type][header](headerOriginal, paramsOriginal)
+        //
+        //
+        //     let paramsUpdate = paramsOriginal.map(param => param.team + "," + param.socketID).join(",")
+        //     console.log(sqlUpdate, paramsUpdate)
+        //     this.db.run(sqlUpdate, paramsUpdate, err => {
+        //         if (err) {
+        //             console.error(err.message)
+        //         } else {
+        //             console.log("Success!")
+        //         }
+        //     })
+        //
+        // } else {
+            let params = [];
+            for (let i = 2; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
+                params.push(arguments[i])
+            }
+            let cb = (hasCB) ? arguments[arguments.length - 1] : null;
+            this[type](header, params, cb)
+        // }
+
 
     }
 
@@ -64,6 +88,24 @@ class DAO {
                 }
             }
         })
+    }
+
+    updateMultiple(header, params, cb) {
+
+        console.log(this)
+
+        this.db.run(sql[update][header], params[0], (err) => {
+            if (err) {
+                console.error("Update error", err.message)
+            } else {
+                if (params.length > 1) {
+                    this.updateMultiple(header, params.slice(1), cb)
+                } else {
+                    cb()
+                }
+            }
+        })
+
     }
 
     get(header, params, cb) {

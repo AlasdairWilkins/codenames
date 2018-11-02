@@ -19,8 +19,11 @@ const disconnect = 'disconnect';
 const checkPlayerMax = 'checkPlayerMax';
 const resetReady = 'resetReady';
 const joining = 'joining';
+const blue = 'blue';
+const red = 'red';
 
 module.exports = {
     get, insert, update, all, connection, namespace, resume, socketID, session, sessions, displayName,
-    player, players, message, ready, team, select, disconnect, checkPlayerMax, resetReady, joining
+    player, players, message, ready, team, select, disconnect, checkPlayerMax, resetReady, joining,
+    blue, red
 };

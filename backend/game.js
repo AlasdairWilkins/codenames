@@ -1,44 +1,28 @@
 const words = require('./words');
+const { blue, red } = require('./constants')
 
 class Game {
 
-    makeTeams(players) {
-        let sorted = []
-        let unsorted = [];
-        let blue = 0
-        let red = 0
-        for (let i in players) {
-            if (players[i].team === 'blue') {
-                sorted.push(Object.assign({}, players[i]))
-                blue++
-            } else if (players[i].team === 'red') {
-                sorted.push(Object.assign({}, players[i]))
-                red++
-            } else {
-                unsorted.push(Object.assign({}, players[i]))
-            }
-        }
+    makeTeams(players, counts) {
+        let blueCount = counts.blueCount
+        let redCount = counts.redCount
 
-        let order = this.shuffle(unsorted.length);
-
-        let max = Math.ceil(players.length / 2);
+        let order = this.shuffle(players.length);
+        let max = Math.ceil(counts.total / 2);
 
         for (let i = 0; i < order.length; i++) {
-            if (blue < max && red < max) {
-                let color = (Math.random() < .5) ? "blue" : "red";
-                (color === 'blue') ? blue++ : red++
-                unsorted[order[i]].team = color;
-                sorted.push(unsorted[order[i]])
-            } else if (blue === max) {
-                unsorted[order[i]].color = 'red';
-                sorted.push(unsorted[order[i]])
+            if (blueCount < max && redCount < max) {
+                let color = (Math.random() < .5) ? blue : red;
+                (color === blue) ? blueCount++ : redCount++
+                players[order[i]].team = color;
+            } else if (blueCount === max) {
+                players[order[i]].team = red;
             } else {
-                unsorted[order[i]].color = 'blue';
-                sorted.push(unsorted[order[i]])
+                players[order[i]].team = blue;
             }
         }
 
-        return sorted
+        return players
     }
 
     shuffle(length, subset) {
