@@ -4,7 +4,7 @@ const dbFilePath = './db/sqlite.db';
 
 const sql = require('./sql');
 
-const {update, insert, get, all, namespace, session, message} = require('./constants');
+const {update, insert, get, all, run, namespace, session, message} = require('./constants');
 
 class DAO {
     constructor(dbFilePath) {
@@ -86,7 +86,7 @@ class DAO {
                     this.multiple(op, type, header, params.slice(1), cb)
                 } else {
                     if (cb) {
-                        cb(rs)
+                        cb(res)
                     }
                 }
             }
@@ -100,10 +100,10 @@ class DAO {
             case all:
                 return all;
             default:
-                return 'run'
+                return run
         }
     }
-    
+
 }
 
 module.exports = new DAO(dbFilePath);

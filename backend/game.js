@@ -1,5 +1,5 @@
 const words = require('./words');
-const { blue, red } = require('./constants')
+const { blue, red, decoy, assassin } = require('./constants')
 
 class Game {
 
@@ -48,7 +48,7 @@ class Game {
 
     }
 
-    makeWords(num) {
+    makeBoard(num) {
 
         let arr = [];
         let cards = this.shuffle(words.length, num);
@@ -63,9 +63,9 @@ class Game {
             } else if (9 <= order[i] && order[i] <= 16) {
                 arr.push(new Word(words[cards[i]], second, i))
             } else if (order[i] === 17) {
-                arr.push(new Word(words[cards[i]], 'assassin', i))
+                arr.push(new Word(words[cards[i]], assassin, i))
             } else {
-                arr.push(new Word(words[cards[i]], 'decoy', i))
+                arr.push(new Word(words[cards[i]], decoy, i))
             }
 
         }

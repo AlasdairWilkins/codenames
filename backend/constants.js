@@ -1,7 +1,7 @@
 const get = 'get';
 const insert = 'insert';
 const update = 'update';
-const updateMultiple = 'updateMultiple';
+const run = 'run';
 const all = 'all';
 const connection = 'connection';
 const namespace = 'namespace';
@@ -25,9 +25,13 @@ const blue = 'blue';
 const red = 'red';
 const unsorted = 'unsorted';
 const waitingReady = 'waitingReady';
+const word = 'word';
+const words = 'words';
+const decoy = 'decoy';
+const assassin = 'assassin';
 
 module.exports = {
-    get, insert, update, updateMultiple, all, connection, namespace, resume, socketID, session, sessions,
+    get, insert, update, run, all, connection, namespace, resume, socketID, session, sessions,
     displayName, player, players, message, ready, team, teams, select, disconnect, checkPlayerMax,
-    resetReady, joining, waitingReady, unsorted, blue, red
+    resetReady, joining, waitingReady, unsorted, blue, red, word, words, decoy, assassin
 };

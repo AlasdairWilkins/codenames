@@ -8,10 +8,10 @@ const nodemailer = require('nodemailer');
 const dao = require('./dao');
 const game = require('./game');
 
-const {get, insert, update, updateMultiple, all, connection,
+const {get, insert, update, all, connection,
     player, session, displayName, unsorted, waitingReady,
     message, ready, team, teams, select, disconnect,
-    checkPlayerMax, resetReady, joining} = require('./constants');
+    checkPlayerMax, resetReady, joining, words} = require('./constants');
 
 
 module.exports = class Namespace {
@@ -74,11 +74,10 @@ module.exports = class Namespace {
                                 dao.query(get, checkPlayerMax, this.address, count => {
                                     let sorted = game.makeTeams(players, count)
                                     dao.query(update, teams, sorted, () => {
-                                        let words = game.makeWords(25)
-                                        dao.query(insert, 'words', words, this.address, () => {
+                                        let board = game.makeBoard(25)
+                                        dao.query(insert, words, board, this.address, () => {
                                             console.log("Success!")
                                             this.namespace.emit(ready)
-
                                         })
                                     })
                                 })
