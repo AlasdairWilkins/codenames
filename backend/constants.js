@@ -1,6 +1,7 @@
 const get = 'get';
 const insert = 'insert';
 const update = 'update';
+const updateMultiple = 'updateMultiple';
 const all = 'all';
 const connection = 'connection';
 const namespace = 'namespace';
@@ -14,6 +15,7 @@ const players = 'players';
 const message = 'message';
 const ready = 'ready';
 const team = 'team';
+const teams = 'teams';
 const select = 'select';
 const disconnect = 'disconnect';
 const checkPlayerMax = 'checkPlayerMax';
@@ -23,7 +25,8 @@ const blue = 'blue';
 const red = 'red';
 
 module.exports = {
-    get, insert, update, all, connection, namespace, resume, socketID, session, sessions, displayName,
-    player, players, message, ready, team, select, disconnect, checkPlayerMax, resetReady, joining,
+    get, insert, update, updateMultiple, all, connection, namespace, resume, socketID, session, sessions,
+    displayName, player, players, message, ready, team, teams, select, disconnect, checkPlayerMax,
+    resetReady, joining,
     blue, red
 };

@@ -1,3 +1,5 @@
+const { team, updateMultiple } = require('./constants')
+
 class SQL {
     constructor() {
 
@@ -83,7 +85,7 @@ class SQL {
             team: `UPDATE players SET team = (?) WHERE socket_id = (?);`,
             disconnect: `UPDATE sessions SET socket_id = ? WHERE socket_id = ?`,
             resetReady: `UPDATE sessions SET ready = 0 WHERE nsp_id = ?`,
-            // teams: this.updateTeams.bind(this)
+            teams: (params) => [updateMultiple, team, params.map(param => [param.team, param.socketID])]
         }
 
         this.get = {
