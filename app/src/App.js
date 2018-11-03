@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './App.css';
+import Loading from './Loading'
 import Welcome from './Welcome'
 import Waiting from './Waiting'
 import Select from './Select'
@@ -17,11 +18,7 @@ class App extends Component {
         new Startup()
 
         this.state = {
-            displayName: null,
-            players: [],
-            total: null,
-            blueMax: null,
-            redMax: null
+            displayName: null
         };
 
     }
@@ -30,7 +27,6 @@ class App extends Component {
 
         switch (display) {
 
-            default:
             case 'welcome':
                 return (
                     <Welcome/>
@@ -58,6 +54,11 @@ class App extends Component {
                         <Game/>
                         <Chat displayName={this.state.displayName}/>
                     </div>
+                )
+
+            default:
+                return (
+                    <Loading/>
                 )
         }
     }

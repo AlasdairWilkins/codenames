@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 
 import store from "./store/store"
-import {setID} from "./store/actions";
+import {set} from "./store/actions";
 
 const url = 'http://localhost:5000/';
 
@@ -10,8 +10,10 @@ class API {
         this.socket = io(url);
 
         this.socket.on('connect', () => {
-            store.dispatch(setID(this.socket.id))
+            store.dispatch(set('id', this.socket.id))
+            store.dispatch(set('display', 'welcome'))
         })
+
 
     }
 

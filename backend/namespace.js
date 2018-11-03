@@ -50,11 +50,13 @@ module.exports = class Namespace {
                 dao.query(insert, message, this.address, msg, socket.client.id, socket.client.id, () => {
                     dao.query(all, message, this.address, rows => {
                         this.namespace.emit(message, rows)
+                        // this.namespace.to('chat').emit(message, rows)
                     })
                 })
             } else {
+                socket.join('chat')
                 dao.query(all, message, [this.address], rows => {
-                    this.namespace.emit(message, rows)
+                    socket.emit(message, rows)
                 })
             }
         });

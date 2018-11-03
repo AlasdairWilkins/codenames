@@ -1,7 +1,7 @@
 import {api, namespace, resume, session} from "./Api";
 
 import store from "./store/store"
-import { setName, setNSP, setDisplay } from "./store/actions";
+import { set } from "./store/actions";
 
 class Startup {
     constructor() {
@@ -9,10 +9,12 @@ class Startup {
         if (document.cookie) {
             api.get(resume, (err, msg) => {
                 if (msg.name) {
-                    store.dispatch(setName(msg.name))
+                    store.dispatch(set('name', msg.name))
                 }
-                store.dispatch(setNSP(msg.namespace))
-                store.dispatch(setDisplay('waiting'))
+
+                //fix this!!!!!!!
+                store.dispatch(set('nsp', msg.namespace))
+                store.dispatch(set('display', 'waiting'))
                 // above should become dynamic
             })
         } else {
@@ -30,8 +32,8 @@ class Startup {
             if (status) {
                 api.get(session, (err, cookie) => {
                     document.cookie = cookie
-                    store.dispatch(setNSP(code))
-                    store.dispatch(setDisplay('waiting'))
+                    store.dispatch(set('nsp', code))
+                    store.dispatch(set('display', 'waiting'))
                 });
             } else {
                 console.log("Whoops")

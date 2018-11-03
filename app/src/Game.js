@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './App.css';
 import Board from './Board';
 import CodeWord from './CodeWord';
-// import { subscribeToTimer } from "./Api";
 
 class Game extends Component {
     constructor(props) {

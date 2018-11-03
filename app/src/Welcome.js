@@ -3,7 +3,7 @@ import './App.css';
 import {api, namespace, session} from "./Api";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {set} from './store/actions'
+import {set, clear} from './store/actions'
 
 
 class Welcome extends Component {
@@ -23,6 +23,7 @@ class Welcome extends Component {
 
     onClick(event) {
         if (event.target.value === "new") {
+            this.props.clear('display')
             api.get(namespace, (err, msg) => {
                 this.props.set('nsp', msg.namespace)
                 api.get(session, (err, msg) => {
@@ -101,6 +102,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
+        clear: bindActionCreators(clear, dispatch)
     }
 }
 

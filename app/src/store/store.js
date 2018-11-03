@@ -3,7 +3,7 @@ import rootReducer from "./reducers";
 
 const initialState =
     {
-        display: 'welcome',
+        display: null,
         players: []
     }
 

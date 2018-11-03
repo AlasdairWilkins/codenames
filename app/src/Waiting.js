@@ -6,7 +6,7 @@ import Pluralize from 'react-pluralize'
 import Invite from './Waiting/Invite'
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
-import { set } from "./store/actions";
+import { set, clear } from "./store/actions";
 import {api, player, ready} from "./Api";
 
 class Waiting extends Component {
@@ -41,6 +41,7 @@ class Waiting extends Component {
     handleClick(event) {
         this.setState({ready: true});
         api.set(ready, 'waitingReady', (err) => this.props.set('display', 'select'));
+        this.props.clear('display')
         event.preventDefault()
     }
 
@@ -137,6 +138,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
+        clear: bindActionCreators(clear, dispatch)
     }
 }
 
