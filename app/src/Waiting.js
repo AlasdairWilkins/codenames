@@ -7,7 +7,9 @@ import Invite from './Waiting/Invite'
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
 import { set, clear } from "./store/actions";
-import {api, player, ready} from "./Api";
+import {api} from "./Api";
+import {player, ready} from "./constants";
+import Loading from "./Loading";
 
 class Waiting extends Component {
     constructor(props) {
@@ -18,19 +20,31 @@ class Waiting extends Component {
             ready: false,
         };
 
-        api.get(player, (err, msg) => {
-            this.props.set('players', msg.players)
-            this.props.set('joining', msg.joining)
-        })
-
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this)
     }
 
+
+    componentWillUnmount() {
+        this.props.clear('players')
+        api.socket.off(player)
+    }
+
+    componentDidMount() {
+        api.get(player, (err, msg) => {
+            this.props.set('players', msg.players)
+            this.props.set('joining', msg.joining)
+            if (msg.name) {
+                this.props.set('name', msg.name)
+                this.props.set('display', 'waiting')
+            }
+        })
+    }
+
     handleSubmit(event) {
         api.set(player, {name: this.state.name, cookie: document.cookie})
-        this.props.set('name', this.state.name)
+        this.props.clear('players')
         event.preventDefault()
     }
 
@@ -41,7 +55,6 @@ class Waiting extends Component {
     handleClick(event) {
         this.setState({ready: true});
         api.set(ready, 'waitingReady', (err) => this.props.set('display', 'select'));
-        this.props.clear('display')
         event.preventDefault()
     }
 
@@ -102,8 +115,7 @@ class Waiting extends Component {
         return <p id="ready">Great! We'll be starting soon.</p>
     }
 
-    render() {
-
+    setDisplay() {
         let waiting = this.setDisplayName();
         let players = this.setDisplayPlayers(this.props.players);
         let invite = (this.props.name) ? <Invite /> : null;
@@ -119,12 +131,20 @@ class Waiting extends Component {
                 {ready}
             </div>
         )
+    }
 
+    render() {
+
+        let waitingDisplay = (this.props.players) ?
+            this.setDisplay() : <Loading/>
+
+        return (
+            waitingDisplay
+        )
 
     }
 
 }
-
 
 const mapStateToProps = (state, ownProps) => {
     return {

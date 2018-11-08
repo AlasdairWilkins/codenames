@@ -33,11 +33,11 @@ class App extends Component {
                 );
 
             case 'waiting':
-                let chat = (this.props.players.length) ? <Chat displayName={this.state.displayName}/> : null;
+                // let chat = (this.props.players.length) ? <Chat displayName={this.state.displayName}/> : null;
                 return (
                     <div>
                         <Waiting/>
-                        {chat}
+                        {/*{chat}*/}
                     </div>
                 );
 
@@ -45,14 +45,14 @@ class App extends Component {
                 return (
                     <div>
                         <Select/>
-                        <Chat displayName={this.state.displayName}/>
+                        {/*<Chat displayName={this.state.displayName}/>*/}
                     </div>
                 );
             case 'game':
                 return (
                     <div>
                         <Game/>
-                        <Chat displayName={this.state.displayName}/>
+                        {/*<Chat displayName={this.state.displayName}/>*/}
                     </div>
                 )
 

@@ -2,6 +2,7 @@ import io from 'socket.io-client';
 
 import store from "./store/store"
 import {set} from "./store/actions";
+import {namespace, ready, resume} from "./constants"
 
 const url = 'http://localhost:5000/';
 
@@ -72,13 +73,7 @@ class API {
 }
 
 const api = new API();
-const player = 'player';
-const select = 'select';
-const message = 'message';
-const namespace = 'namespace';
-const session = 'session';
-const ready = 'ready';
-const resume = 'resume';
 
 
-export {api, player, select, message, namespace, session, ready, resume}
+
+export {api}

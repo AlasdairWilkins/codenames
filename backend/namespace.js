@@ -5,6 +5,8 @@ const shortid = require('shortid');
 const cookie = require('cookie');
 const nodemailer = require('nodemailer');
 
+const url = process.env.DEVURL;
+
 const dao = require('./dao');
 const game = require('./game');
 
@@ -33,14 +35,21 @@ module.exports = class Namespace {
 
         socket.on(player, msg => {
             if (msg) {
-                dao.query(update, displayName, msg.name, socket.client.id, cookie.parse(msg.cookie).id)
-            }
-
-            dao.query(all, session, this.address, rows => {
-                dao.query(get, joining, this.address, row => {
-                    this.namespace.emit(player, {players: rows, joining: row.count})
+                dao.query(update, displayName, msg.name, socket.client.id, cookie.parse(msg.cookie).id, () => {
+                    dao.query(all, session, this.address, rows => {
+                        dao.query(get, joining, this.address, row => {
+                            socket.broadcast.emit(player, {players: rows, joining: row.count, to: 'everyone else'})
+                            socket.emit(player, {players: rows, joining: row.count, name: msg.name, to: 'you'})
+                        })
+                    })
                 })
-            })
+            } else {
+                dao.query(all, session, this.address, rows => {
+                    dao.query(get, joining, this.address, row => {
+                        this.namespace.emit(player, {players: rows, joining: row.count, to: 'all'})
+                    })
+                })
+            }
         });
 
         socket.on(message, msg => {
@@ -78,8 +87,7 @@ module.exports = class Namespace {
                                     dao.query(update, teams, sorted, () => {
                                         let board = game.makeBoard(25)
                                         dao.query(insert, words, board, this.address, () => {
-                                            console.log("Success!")
-                                            this.namespace.emit(ready)
+                                            this.namespace.emit(ready, board)
                                         })
                                     })
                                 })
@@ -112,6 +120,35 @@ module.exports = class Namespace {
             })
         })
 
+        // socket.on('sendcode', function(msg){
+        //     let link = `${url}/?code=${msg.code}`
+        //     let transporter = nodemailer.createTransport({
+        //         service: 'gmail',
+        //         auth: {
+        //             user: process.env.EMAIL_LOGIN,
+        //             pass: process.env.EMAIL_PW
+        //         },
+        //         tls: {
+        //             rejectUnauthorized: false
+        //         }
+        //     });
+        //
+        //     let mailOptions = {
+        //         to: msg.email,
+        //         subject: "You've been invited to play a game of Codenames!",
+        //         text: `Go to http://fox-forest.alasdairwilkins.com and enter ${msg.code} when it asks for a game code.`,
+        //         html: `Go to <a href="${url}?code=${msg.code}">fox-forest.alasdairwilkins.com</a> and enter ${msg.code} when it asks for a game code. Good luck!`
+        //     };
+        //
+        //     transporter.sendMail(mailOptions, (error, info) => {
+        //         if (error) {
+        //             return console.log(error);
+        //         }
+        //         console.log('Message sent: %s', info.messageId);
+        //         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+        //
+        //     });
+        // })
 
         socket.on(disconnect, () => {
             dao.query(update, disconnect, null, socket.client.id)

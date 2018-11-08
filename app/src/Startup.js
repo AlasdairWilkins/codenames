@@ -1,4 +1,6 @@
-import {api, namespace, resume, session} from "./Api";
+import {api} from "./Api";
+
+import {namespace, resume, session} from "./constants"
 
 import store from "./store/store"
 import { set } from "./store/actions";

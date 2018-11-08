@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
-import {api, namespace, session} from "./Api";
+import {api} from "./Api";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {set, clear} from './store/actions'
+import {namespace, player, session} from "./constants"
 
 
 class Welcome extends Component {
@@ -23,7 +24,7 @@ class Welcome extends Component {
 
     onClick(event) {
         if (event.target.value === "new") {
-            this.props.clear('display')
+            // this.props.clear('display')
             api.get(namespace, (err, msg) => {
                 this.props.set('nsp', msg.namespace)
                 api.get(session, (err, msg) => {
@@ -70,6 +71,7 @@ class Welcome extends Component {
                 </div>
             )
         }
+
         return (
             <div>
                 <p>Welcome to Codenames!</p>
@@ -85,10 +87,10 @@ class Welcome extends Component {
 
     render() {
 
-        let welcome = this.setDisplay();
+        let displayWelcome = this.setDisplay();
 
         return (
-            welcome
+            displayWelcome
         )
 
     }

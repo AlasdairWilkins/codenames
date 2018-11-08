@@ -1,13 +1,10 @@
-import {
-    SET, CLEAR
-} from "../actions";
+import {SET, CLEAR} from "../../constants";
 
 const initialState = {
     id: null
 };
 
 const rootReducer = (state = initialState, action) => {
-
 
     switch (action.type) {
 
@@ -21,6 +18,7 @@ const rootReducer = (state = initialState, action) => {
         default:
             return state
     }
+
 };
 
 export default rootReducer

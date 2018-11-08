@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import './App.css';
 import store from './store/store';
-import {api, player, ready, select} from "./Api";
+import {api} from "./Api";
 import {bindActionCreators} from "redux";
 import {set, clear} from "./store/actions";
+import {player, ready, select} from "./constants";
+import Loading from "./Loading";
 
 class Select extends Component {
     constructor(props) {
@@ -14,15 +16,20 @@ class Select extends Component {
             ready: false
         }
 
+        this.handleClick = this.handleClick.bind(this)
+
+    }
+
+    componentWillUnmount() {
         api.socket.off(player)
+    }
+
+    componentDidMount() {
         api.get(select, (err, msg) => {
             this.props.set('players', msg.players)
             this.props.set('blueMax', msg.blueMax)
             this.props.set('redMax', msg.redMax)
         })
-
-        this.handleClick = this.handleClick.bind(this)
-
     }
 
     handleClick(event) {
@@ -53,7 +60,7 @@ class Select extends Component {
         }
     }
 
-    setDisplay(players) {
+    setPlayerSelectDisplay(players) {
 
         return players.map((player, i) => {
 
@@ -86,9 +93,8 @@ class Select extends Component {
         })
     }
 
-    render() {
-
-        let select = this.setDisplay(this.props.players);
+    setDisplay() {
+        let select = this.setPlayerSelectDisplay(this.props.players);
         let buttons = (!this.state.ready) ?
             <div>
                 <p>Choose your team, or leave your name in the middle to be randomly assigned!</p>
@@ -116,6 +122,17 @@ class Select extends Component {
                 </div>
             </div>
         )
+    }
+
+    render() {
+
+        let selectDisplay = (this.props.players) ?
+            this.setDisplay() : <Loading/>
+
+        return (
+            selectDisplay
+        )
+
     }
 }
 
