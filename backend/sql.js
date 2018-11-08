@@ -14,7 +14,8 @@ class SQL {
 
         this.create = {
             namespace: `CREATE TABLE IF NOT EXISTS namespaces (
-                nsp_id TEXT PRIMARY KEY
+                nsp_id TEXT PRIMARY KEY,
+                display TEXT DEFAULT 'waiting'
                 );`,
             session: `CREATE TABLE IF NOT EXISTS sessions (
                 session_id   TEXT PRIMARY KEY,
@@ -38,12 +39,14 @@ class SQL {
                 );`,
             player: `CREATE TABLE IF NOT EXISTS players (
                 game_id TEXT,
+                nsp_id   TEXT    NOT NULL,
                 session_id  TEXT,
                 socket_id   TEXT,
                 display_name    TEXT,
                 team    TEXT    DEFAULT NULL    CHECK (team in (NULL, 'blue', 'red')),
                 ready   BOOLEAN DEFAULT 0 CHECK (ready in (0,1)),
                     PRIMARY KEY (game_id,session_id),
+                    FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
                     FOREIGN KEY (game_id) REFERENCES games(game_id),
                     FOREIGN KEY (session_id) REFERENCES sessions(session_id),
                     FOREIGN KEY (socket_id) REFERENCES sessions(socket_id) ON UPDATE CASCADE
@@ -72,8 +75,8 @@ class SQL {
             session: `INSERT INTO sessions(session_id, nsp_id) VALUES (?, ?);`,
             message: `INSERT INTO chats(nsp_id, message, socket_id, session_id, display_name) 
                     SELECT (?), (?), (?), session_id, display_name FROM sessions WHERE socket_id = (?);`,
-            player: `INSERT INTO players(game_id, session_id, socket_id, display_name)
-                    SELECT (?), session_id, socket_id, display_name
+            player: `INSERT INTO players(game_id, session_id, nsp_id, socket_id, display_name)
+                    SELECT (?), session_id, nsp_id, socket_id, display_name
                     FROM sessions WHERE nsp_id = (?)`,
             word:   `INSERT INTO words(game_id, row, column, word, type) VALUES (?, ?, ?, ?, ?);`,
             words: (params, gameID) => ['word',
@@ -81,6 +84,7 @@ class SQL {
         }
 
         this.update = {
+            display: `UPDATE namespaces SET display = ? WHERE nsp_id = ?`,
             socketID: `UPDATE sessions SET socket_id = ? WHERE session_id = ?`,
             displayName: `UPDATE sessions SET display_name = ?, socket_id = ? WHERE session_id = ?`,
             waitingReady: `UPDATE sessions SET ready = 1 WHERE socket_id = ?`,
@@ -92,6 +96,7 @@ class SQL {
         }
 
         this.get = {
+            display: `SELECT display FROM namespaces WHERE nsp_id = (SELECT nsp_id FROM sessions WHERE session_id = ?)`,
             joining: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND display_name IS NULL`,
             waitingReady: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND ready = 0`,
             selectReady: `SELECT count(*) count FROM players WHERE 

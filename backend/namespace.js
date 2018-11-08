@@ -78,7 +78,9 @@ module.exports = class Namespace {
                         if (msg === waitingReady) {
                             let gameID = shortid.generate()
                             dao.query(insert, player, gameID, this.address, () => {
-                                this.namespace.emit(ready)
+                                dao.query(update, 'display', 'select', this.address, () => {
+                                    this.namespace.emit(ready)
+                                })
                             })
                         } else {
                             dao.query(all, unsorted, this.address, players => {
@@ -87,7 +89,8 @@ module.exports = class Namespace {
                                     dao.query(update, teams, sorted, () => {
                                         let board = game.makeBoard(25)
                                         dao.query(insert, words, board, this.address, () => {
-                                            this.namespace.emit(ready, board)
+                                            dao.query(update, 'display', 'game', this.address, () => {
+                                                this.namespace.emit(ready, board)                                            })
                                         })
                                     })
                                 })
