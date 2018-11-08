@@ -56,7 +56,7 @@ class Welcome extends Component {
         this.setState({code: event.target.value})
     }
 
-    setDisplay() {
+    set() {
 
         if (this.state.existing) {
             return (
@@ -87,10 +87,10 @@ class Welcome extends Component {
 
     render() {
 
-        let displayWelcome = this.setDisplay();
+        let display = this.set();
 
         return (
-            displayWelcome
+            display
         )
 
     }

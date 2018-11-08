@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import '../App.css';
+import connect from "react-redux/es/connect/connect";
 
 class Invite extends Component {
     constructor(props) {
@@ -87,8 +88,7 @@ class Invite extends Component {
         return null
     }
 
-    render() {
-
+    set() {
         let inputs = this.setInvites(this.state.invites);
 
         return (
@@ -98,10 +98,29 @@ class Invite extends Component {
                 <button>Click to send invitations!</button>
             </div>
         )
+    }
+
+    render() {
+
+        let display = this.props.name ? this.set() : null
+
+        return (
+            display
+        )
 
 
     }
 
 }
 
-export default Invite
+const mapStateToProps = (state, ownProps) => {
+    return {
+        name: state.name
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Invite);

@@ -126,11 +126,11 @@ class Select extends Component {
 
     render() {
 
-        let selectDisplay = (this.props.players) ?
+        let display = (this.props.players) ?
             this.setDisplay() : <Loading/>
 
         return (
-            selectDisplay
+            display
         )
 
     }
