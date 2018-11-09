@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import { api } from "./Api";
 import { message } from "./constants"
+import { set, clear, updateMessages } from "./store/actions"
+import { bindActionCreators } from "redux";
 import connect from "react-redux/es/connect/connect";
 
 class Chat extends Component {
@@ -9,9 +11,7 @@ class Chat extends Component {
         super(props);
 
         this.state = {
-            messages: null,
             entry: ""
-            //handle allowed in chat yes or no
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -21,18 +21,17 @@ class Chat extends Component {
 
     componentDidMount() {
         api.get(message, (err, msg) => {
-            console.log(this.state.messages)
-            if (!this.state.messages) {
-                this.setState({messages: msg})
+            if (!this.props.messages) {
+                this.props.set("messages", msg)
             } else {
-                this.setState({messages: [...this.state.messages, msg]})
-
+                this.props.updateMessages(msg)
             }
         });
     }
 
     componentWillUnmount() {
         api.socket.off(message)
+        this.props.clear("messages")
     }
 
     handleChange(event) {
@@ -63,8 +62,8 @@ class Chat extends Component {
 
         let messages;
 
-        if (this.state.messages) {
-            messages = (this.state.messages.map((item, i) => {
+        if (this.props.messages) {
+            messages = (this.props.messages.map((item, i) => {
                 if (this.props.id === item.socketID) {
                     return <li key={i} className="own">{item.entry}</li>
                 } else {
@@ -102,8 +101,17 @@ class Message {
 const mapStateToProps = state => {
     return {
         name: state.name,
-        id: state.id
+        id: state.id,
+        messages: state.messages
     }
 }
 
-export default connect(mapStateToProps)(Chat);
+const mapDispatchToProps = dispatch => {
+    return {
+        set: bindActionCreators(set, dispatch),
+        clear: bindActionCreators(set, dispatch),
+        updateMessages: bindActionCreators(updateMessages, dispatch)
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Chat);

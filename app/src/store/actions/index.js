@@ -7,3 +7,7 @@ export function set(header, id) {
 export function clear(id) {
     return {type: CLEAR, header: id}
 }
+
+export function updateMessages(message) {
+    return {type: "UPDATE_MESSAGES", message: message}
+}

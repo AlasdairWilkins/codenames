@@ -15,6 +15,9 @@ const rootReducer = (state = initialState, action) => {
         case CLEAR:
             return {...state, [action.header]: null}
 
+        case "UPDATE_MESSAGES":
+            return {...state, messages: [...state.messages, action.message]}
+
         default:
             return state
     }
