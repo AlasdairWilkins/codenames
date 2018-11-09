@@ -49,7 +49,7 @@ class Entry extends Component {
             display
         )
     }
-    
+
 }
 
 class Message {

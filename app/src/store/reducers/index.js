@@ -1,4 +1,4 @@
-import {SET, CLEAR} from "../../constants";
+import {SET, CLEAR, UPDATE} from "../../constants";
 
 const initialState = {
     id: null
@@ -16,7 +16,7 @@ const rootReducer = (state = initialState, action) => {
         case CLEAR:
             return {...state, [action.header]: null}
 
-        case "UPDATE":
+        case UPDATE:
             return {...state, [header]: [...state[header], action[header]]}
 
         default:

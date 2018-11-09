@@ -4,7 +4,7 @@ import {api} from "./Api";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {set, clear} from './store/actions'
-import {namespace, player, session} from "./constants"
+import {namespace, session} from "./constants"
 
 
 class Welcome extends Component {

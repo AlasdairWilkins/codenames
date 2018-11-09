@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
 import { set, clear } from "./store/actions";
 import {api} from "./Api";
-import {player, ready} from "./constants";
+import {player} from "./constants";
 import Loading from "./Loading";
 
 class Waiting extends Component {
