@@ -6,17 +6,18 @@ const initialState = {
 
 const rootReducer = (state = initialState, action) => {
 
+    let header = Object.keys(action)[1]
+
     switch (action.type) {
 
         case SET:
-            let header = Object.keys(action)[1]
             return { ...state, [header]: action[header]}
 
         case CLEAR:
             return {...state, [action.header]: null}
 
-        case "UPDATE_MESSAGES":
-            return {...state, messages: [...state.messages, action.message]}
+        case "UPDATE":
+            return {...state, [header]: [...state[header], action[header]]}
 
         default:
             return state

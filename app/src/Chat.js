@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import { api } from "./Api";
-import { message } from "./constants"
-import { set, clear, updateMessages } from "./store/actions"
+import { message, messages } from "./constants"
+import { set, clear, update } from "./store/actions"
 import { bindActionCreators } from "redux";
 import connect from "react-redux/es/connect/connect";
 
@@ -22,16 +22,16 @@ class Chat extends Component {
     componentDidMount() {
         api.get(message, (err, msg) => {
             if (!this.props.messages) {
-                this.props.set("messages", msg)
+                this.props.set(messages, msg)
             } else {
-                this.props.updateMessages(msg)
+                this.props.update(messages, msg)
             }
         });
     }
 
     componentWillUnmount() {
         api.socket.off(message)
-        this.props.clear("messages")
+        this.props.clear(messages)
     }
 
     handleChange(event) {
@@ -109,8 +109,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
-        clear: bindActionCreators(set, dispatch),
-        updateMessages: bindActionCreators(updateMessages, dispatch)
+        clear: bindActionCreators(clear, dispatch),
+        update: bindActionCreators(update, dispatch)
     }
 }
 
