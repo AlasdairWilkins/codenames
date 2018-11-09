@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import './App.css';
-import store from './store/store';
 import {api} from "./Api";
 import {bindActionCreators} from "redux";
 import {set, clear} from "./store/actions";
@@ -60,11 +59,11 @@ class Select extends Component {
         }
     }
 
-    setPlayerSelectDisplay(players) {
+    setPlayerSelectDisplay() {
 
-        return players.map((player, i) => {
+        return this.props.players.map((player, i) => {
 
-            if (player.socketID !== store.getState().id || this.state.ready) {
+            if (player.socketID !== this.props.id || this.state.ready) {
                 let className = player.team;
                 return (
                     <div key={i} className={className}>{player.name}</div>
@@ -93,8 +92,8 @@ class Select extends Component {
         })
     }
 
-    setDisplay() {
-        let select = this.setPlayerSelectDisplay(this.props.players);
+    set() {
+        let select = this.setPlayerSelectDisplay();
         let buttons = (!this.state.ready) ?
             <div>
                 <p>Choose your team, or leave your name in the middle to be randomly assigned!</p>
@@ -127,7 +126,7 @@ class Select extends Component {
     render() {
 
         let display = (this.props.players) ?
-            this.setDisplay() : <Loading/>
+            this.set() : <Loading/>
 
         return (
             display
@@ -140,7 +139,8 @@ const mapStateToProps = (state, ownProps) => {
     return {
         players: state.players,
         blueMax: state.blueMax,
-        redMax: state.redMax
+        redMax: state.redMax,
+        id: state.id
     }
 }
 

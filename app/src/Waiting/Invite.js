@@ -11,52 +11,40 @@ class Invite extends Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleClickPlus = this.handleClickPlus.bind(this);
-        this.handleClickMinus = this.handleClickMinus.bind(this)
+        this.handleClick = this.handleClick.bind(this);
     }
 
     handleChange(event) {
-        let index = event.target.getAttribute('i');
-        let invites = this.state.invites;
-        if (invites.length === index) {
-            invites.push(event.target.value)
+        let index = parseInt(event.target.getAttribute('i'), 10);
+        this.setState({invites: [...this.state.invites.slice(0, index),
+                event.target.value, ...this.state.invites.slice(index + 1)]})
+    }
+
+    handleClick(event) {
+        if (event.target.value === 'plus') {
+            this.setState({invites: [...this.state.invites, ""]})
         } else {
-            invites[index] = event.target.value
+            let remove = this.findLastBlank()
+            this.setState({invites: [...this.state.invites.slice(0, remove), ...this.state.invites.slice(remove + 1)]})
         }
-        this.setState({invites: invites})
     }
 
-    handleClickPlus(event) {
-        let invites = this.state.invites;
-        if (!invites.length) {
-            invites.push("")
-        }
-        invites.push("");
-        this.setState({invites: invites})
-    }
-
-    handleClickMinus(event) {
-        let invites = this.state.invites;
-        let lastBlank = this.findLastBlank(invites);
-        invites.splice(lastBlank, 1);
-        this.setState({invites: invites})
-    }
-
-    findLastBlank(invites) {
-        for (let i = invites.length - 1; 0 <= i; i-- ) {
-            if (!invites[i].length) {
-                return [i]
+    findLastBlank() {
+        for (let i = this.state.invites.length - 1; 0 <= i; i-- ) {
+            if (!this.state.invites[i].length) {
+                return i
             }
         }
-        return invites.length - 1
+        return this.state.invites.length - 1
     }
 
 
 
-    setInvites(invites) {
-        return invites.map((invite, i) => {
+    setInvites() {
+        let inviteMax = this.state.invites.length - 1
+        return this.state.invites.map((invite, i) => {
             let input = this.setInput(invite, i);
-            let button = this.setButton(i, invites);
+            let button = this.setButton(i, inviteMax);
             return (
                 <div key={i}>
                     {input}
@@ -78,12 +66,12 @@ class Invite extends Component {
             type="text" />
     }
 
-    setButton(i, invites) {
+    setButton(i, inviteMax) {
         if (i === 0) {
-            return <button i={i} onClick={this.handleClickPlus}>+</button>
+            return <button i={i} value="plus" onClick={this.handleClick}>+</button>
         }
-        if (i === invites.length - 1) {
-            return <button i={i} onClick={this.handleClickMinus}>-</button>
+        if (i === inviteMax) {
+            return <button i={i} value="minus" onClick={this.handleClick}>-</button>
         }
         return null
     }
@@ -113,14 +101,10 @@ class Invite extends Component {
 
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = state => {
     return {
         name: state.name
     }
 }
 
-const mapDispatchToProps = dispatch => {
-    return {}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Invite);
+export default connect(mapStateToProps)(Invite);
