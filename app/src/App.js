@@ -12,20 +12,13 @@ import Startup from './Startup'
 
 class App extends Component {
 
-    constructor(props) {
-        super(props);
-
+    componentDidMount() {
         new Startup()
-
-        this.state = {
-            displayName: null
-        };
-
     }
 
-    set(display) {
+    set() {
 
-        switch (display) {
+        switch (this.props.display) {
 
             case 'welcome':
                 return (
@@ -33,11 +26,11 @@ class App extends Component {
                 );
 
             case 'waiting':
-                // let chat = (this.props.players.length) ? <Chat displayName={this.state.displayName}/> : null;
+                let chat = (this.props.players) ? <Chat/> : null;
                 return (
                     <div>
                         <Waiting/>
-                        {/*{chat}*/}
+                        {chat}
                     </div>
                 );
 
@@ -45,14 +38,14 @@ class App extends Component {
                 return (
                     <div>
                         <Select/>
-                        {/*<Chat displayName={this.state.displayName}/>*/}
+                        <Chat/>
                     </div>
                 );
             case 'game':
                 return (
                     <div>
                         <Game/>
-                        {/*<Chat displayName={this.state.displayName}/>*/}
+                        <Chat/>
                     </div>
                 )
 
@@ -65,7 +58,7 @@ class App extends Component {
 
     render() {
 
-        let app = this.set(this.props.display);
+        let app = this.set();
 
         return (
             app
@@ -75,15 +68,12 @@ class App extends Component {
 
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
         display: state.display,
         players: state.players
     }
 }
 
-const mapDispatchToProps = dispatch => {
-    return {}
-}
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);

@@ -73,8 +73,8 @@ class SQL {
         this.insert = {
             namespace: `INSERT INTO namespaces(nsp_id) VALUES (?)`,
             session: `INSERT INTO sessions(session_id, nsp_id) VALUES (?, ?);`,
-            message: `INSERT INTO chats(nsp_id, message, socket_id, session_id, display_name) 
-                    SELECT (?), (?), (?), session_id, display_name FROM sessions WHERE socket_id = (?);`,
+            message: `INSERT INTO chats(nsp_id, message, display_name, socket_id, session_id) 
+                    SELECT (?), (?), (?), (?), session_id FROM sessions WHERE socket_id = (?);`,
             player: `INSERT INTO players(game_id, session_id, nsp_id, socket_id, display_name)
                     SELECT (?), session_id, nsp_id, socket_id, display_name
                     FROM sessions WHERE nsp_id = (?)`,
@@ -82,6 +82,8 @@ class SQL {
             words: (params, gameID) => ['word',
                 params.map(param => [gameID, param.row, param.column, param.word, param.value])]
         }
+
+        //
 
         this.update = {
             display: `UPDATE namespaces SET display = ? WHERE nsp_id = ?`,
