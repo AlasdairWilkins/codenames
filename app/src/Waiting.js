@@ -16,11 +16,6 @@ import Loading from "./Loading";
 
 class Waiting extends Component {
 
-    componentWillUnmount() {
-        this.props.clear('players')
-        api.socket.off(player)
-    }
-
     componentDidMount() {
         api.get(player, (err, msg) => {
             this.props.set('players', msg.players)
@@ -30,6 +25,11 @@ class Waiting extends Component {
                 this.props.set('display', 'waiting')
             }
         })
+    }
+
+    componentWillUnmount() {
+        this.props.clear('players')
+        api.socket.off(player)
     }
 
     set() {
@@ -47,8 +47,7 @@ class Waiting extends Component {
 
     render() {
 
-        let display = (this.props.players) ?
-            this.set() : <Loading/>
+        let display = (this.props.players) ? this.set() : <Loading/>
 
         return (
             display

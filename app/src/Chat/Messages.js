@@ -35,7 +35,6 @@ class Messages extends Component {
 
     render() {
 
-
         let display = (this.props.messages) ? this.set() : null;
 
         return (

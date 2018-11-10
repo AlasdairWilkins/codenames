@@ -67,14 +67,18 @@ module.exports = class Namespace {
 
         socket.on(ready, (msg) => {
 
+            console.log(msg)
+
             dao.query(update, msg, socket.client.id, () => {
                 dao.query(get, msg, this.address, (row) => {
                     if (!row.count) {
                         if (msg === waitingReady) {
                             let gameID = shortid.generate()
-                            dao.query(insert, player, gameID, this.address, () => {
-                                dao.query(update, 'display', 'select', this.address, () => {
-                                    this.namespace.emit(ready)
+                            dao.query(insert, 'game', gameID, this.address, () => {
+                                dao.query(insert, player, gameID, this.address, () => {
+                                    dao.query(update, 'display', 'select', this.address, () => {
+                                        this.namespace.emit(ready)
+                                    })
                                 })
                             })
                         } else {
@@ -98,7 +102,7 @@ module.exports = class Namespace {
         });
 
         socket.on(select, (msg) => {
-
+            console.log("Hello", msg)
             dao.query(update, team, msg, socket.client.id, () => {
                 dao.query(all, team, this.address, rows => {
                     dao.query(get, checkPlayerMax, this.address, row => {
@@ -113,40 +117,19 @@ module.exports = class Namespace {
 
         socket.on(team, () => {
             dao.query(get, team, socket.client.id, (res) => {
+                console.log("Ahoy hoy", res)
                 socket.join(res.team)
                 socket.emit(team, res)
             })
         })
 
-        // socket.on('sendcode', function(msg){
-        //     let link = `${url}/?code=${msg.code}`
-        //     let transporter = nodemailer.createTransport({
-        //         service: 'gmail',
-        //         auth: {
-        //             user: process.env.EMAIL_LOGIN,
-        //             pass: process.env.EMAIL_PW
-        //         },
-        //         tls: {
-        //             rejectUnauthorized: false
-        //         }
-        //     });
-        //
-        //     let mailOptions = {
-        //         to: msg.email,
-        //         subject: "You've been invited to play a game of Codenames!",
-        //         text: `Go to http://fox-forest.alasdairwilkins.com and enter ${msg.code} when it asks for a game code.`,
-        //         html: `Go to <a href="${url}?code=${msg.code}">fox-forest.alasdairwilkins.com</a> and enter ${msg.code} when it asks for a game code. Good luck!`
-        //     };
-        //
-        //     transporter.sendMail(mailOptions, (error, info) => {
-        //         if (error) {
-        //             return console.log(error);
-        //         }
-        //         console.log('Message sent: %s', info.messageId);
-        //         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-        //
-        //     });
-        // })
+        socket.on('game', () => {
+            dao.query(all, 'words', this.address, (rows) => {
+                console.log(rows)
+                socket.emit('game', rows)
+            })
+        })
+
 
         socket.on(disconnect, () => {
             dao.query(update, disconnect, null, socket.client.id)

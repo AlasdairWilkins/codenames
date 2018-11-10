@@ -16,7 +16,6 @@ class Chat extends Component {
                 </div>
                 <Entry/>
             </div>
-
         )
     }
 

@@ -1,4 +1,4 @@
-const { team, updateMultiple } = require('./constants')
+const { team, updateMultiple } = require('./constants');
 
 class SQL {
     constructor() {
@@ -10,7 +10,7 @@ class SQL {
             player: `DROP TABLE IF EXISTS players;`,
             game: `DROP TABLE IF EXISTS games;`,
             word: `DROP TABLE IF EXISTS words;`
-        }
+        };
 
         this.create = {
             namespace: `CREATE TABLE IF NOT EXISTS namespaces (
@@ -68,7 +68,7 @@ class SQL {
                    PRIMARY KEY (game_id,row,column),
                    FOREIGN KEY (game_id) REFERENCES games(game_id)
                );`
-        }
+        };
 
         this.insert = {
             namespace: `INSERT INTO namespaces(nsp_id) VALUES (?)`,
@@ -78,12 +78,12 @@ class SQL {
             player: `INSERT INTO players(game_id, session_id, nsp_id, socket_id, display_name)
                     SELECT (?), session_id, nsp_id, socket_id, display_name
                     FROM sessions WHERE nsp_id = (?)`,
-            word:   `INSERT INTO words(game_id, row, column, word, type) VALUES (?, ?, ?, ?, ?);`,
-            words: (params, gameID) => ['word',
-                params.map(param => [gameID, param.row, param.column, param.word, param.value])]
-        }
-
-        //
+            game: `INSERT INTO games(game_id, nsp_id) VALUES (?, ?)`,
+            word:   `INSERT INTO words(row, column, word, type, game_id) SELECT (?), (?), (?), (?),
+                    game_id FROM games WHERE nsp_id = (?);`,
+            words: (params, nspID) => ['word', params.map(param =>
+                [param.row, param.column, param.word, param.value, nspID])]
+        };
 
         this.update = {
             display: `UPDATE namespaces SET display = ? WHERE nsp_id = ?`,
@@ -95,7 +95,7 @@ class SQL {
             disconnect: `UPDATE sessions SET socket_id = ? WHERE socket_id = ?`,
             resetReady: `UPDATE sessions SET ready = 0 WHERE nsp_id = ?`,
             teams: (params) => [team, params.map(param => [param.team, param.socketID])]
-        }
+        };
 
         this.get = {
             display: `SELECT display FROM namespaces WHERE nsp_id = (SELECT nsp_id FROM sessions WHERE session_id = ?)`,
@@ -111,7 +111,7 @@ class SQL {
             sum(case when team = 'blue' then 1 else 0 end) blueCount,
             sum(case when team = 'red' then 1 else 0 end) redCount
             FROM players WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`
-        }
+        };
 
         this.all = {
             session: `SELECT display_name name,
@@ -136,7 +136,10 @@ class SQL {
                         team
                     FROM players
                     WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?)) AND team IS NULL
-                    ORDER BY display_name;`
+                    ORDER BY display_name;`,
+            words: `SELECT word, type, row, column
+                    FROM words
+                    WHERE game_id IN (SELECT game_id FROM games WHERE nsp_id = (?))`
         }
     }
 
@@ -149,4 +152,4 @@ class SQL {
 
 }
 
-module.exports = new SQL()
+module.exports = new SQL();

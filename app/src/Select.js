@@ -36,7 +36,8 @@ class Select extends Component {
         if (event.target.value === "ready") {
 
             this.setState({ready: true})
-            api.set(ready, 'selectReady', (err) => {
+            api.set(ready, 'selectReady', (err, words) => {
+                this.props.set('words', words)
                 api.get('team', (err, msg) => {
                     this.props.set('team', msg.team)
                     this.props.set('display', 'game')
