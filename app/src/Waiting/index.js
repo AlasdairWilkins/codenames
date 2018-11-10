@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 
-import './App.css';
+import '../App.css';
 
-import Invite from './Waiting/Invite'
-import Others from './Waiting/Others'
-import Players from './Waiting/Players'
-import Name from './Waiting/Name'
-import Ready from './Waiting/Ready'
+import Invite from './Invite'
+import Others from './Others'
+import Players from './Players'
+import Name from './Name'
+import Ready from './Ready'
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
-import { set, clear } from "./store/actions";
-import {api} from "./Api";
-import {player} from "./constants";
-import Loading from "./Loading";
+import { set, clear } from "../store/actions";
+import {api} from "../Api";
+import {player} from "../constants";
+import Loading from "../Loading";
 
 class Waiting extends Component {
 

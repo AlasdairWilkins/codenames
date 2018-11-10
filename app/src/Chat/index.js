@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import './App.css';
-import Entry from "./Chat/Entry"
-import Messages from "./Chat/Messages";
+import '../App.css';
+import Entry from "./Entry"
+import Messages from "./Messages";
 
 class Chat extends Component {
 
