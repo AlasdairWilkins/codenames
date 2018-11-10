@@ -38,11 +38,7 @@ class Messages extends Component {
         let display = (this.props.messages) ? this.set() : null;
 
         return (
-            <div id="chat-container">
-                <ul id="chatroom">
-                    {display}
-                </ul>
-            </div>
+            display
         )
     }
 
