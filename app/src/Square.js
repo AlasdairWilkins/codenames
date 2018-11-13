@@ -1,23 +1,36 @@
 import React, { Component } from 'react';
 import './App.css';
+import {bindActionCreators} from "redux";
+import {set} from "./store/actions";
+import connect from "react-redux/es/connect/connect";
 
 class Square extends Component {
 
     handleClick() {
         if (this.props.active) {
-            let value = this.props.item.value;
-            alert(`This is ${value}.`)
+            alert(`This is ${this.props.square.type}.`)
         }
     }
 
-
     render() {
 
-        let value = (this.props.codemaster) ? this.props.item.value : null;
-        let word = this.props.item.word;
+        let type = (this.props.codemaster) ? this.props.square.type : null;
 
-        return <button className={value} onClick={() => this.handleClick()}>{word}</button>
+        return <button className={type} onClick={() => this.handleClick()}>{this.props.square.word}</button>
+
     }
 }
 
-export default Square;
+const mapStateToProps = (state, ownProps) => {
+    return {
+        square: state.words[ownProps.row][ownProps.column]
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        set: bindActionCreators(set, dispatch),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Square);

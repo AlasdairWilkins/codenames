@@ -1,4 +1,4 @@
-import {SET, CLEAR, UPDATE} from "../../constants";
+import {SET, CLEAR, UPDATE} from "../constants";
 
 const initialState = {
     id: null
@@ -24,5 +24,6 @@ const rootReducer = (state = initialState, action) => {
     }
 
 };
+
 
 export default rootReducer

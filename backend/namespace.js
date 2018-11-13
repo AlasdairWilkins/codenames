@@ -67,8 +67,6 @@ module.exports = class Namespace {
 
         socket.on(ready, (msg) => {
 
-            console.log(msg)
-
             dao.query(update, msg, socket.client.id, () => {
                 dao.query(get, msg, this.address, (row) => {
                     if (!row.count) {
@@ -89,7 +87,7 @@ module.exports = class Namespace {
                                         let board = game.makeBoard(25)
                                         dao.query(insert, words, board, this.address, () => {
                                             dao.query(update, 'display', 'game', this.address, () => {
-                                                this.namespace.emit(ready, board)                                            })
+                                                this.namespace.emit(ready)                                            })
                                         })
                                     })
                                 })
@@ -124,17 +122,47 @@ module.exports = class Namespace {
         })
 
         socket.on('game', () => {
-            dao.query(all, 'words', this.address, (rows) => {
-                console.log(rows)
-                socket.emit('game', rows)
-            })
-        })
+            let words = new Board(this.address)
+            console.log(words)
+
+            setTimeout(() => {socket.emit('game', words)}, 1000)
+        // socket.emit('game', rows)
+    })
 
 
-        socket.on(disconnect, () => {
+    socket.on(disconnect, () => {
             dao.query(update, disconnect, null, socket.client.id)
         })
 
     }
 
 };
+
+class Board {
+    constructor(nspID) {
+
+        this[0] = new Row(0, nspID)
+        this[1] = new Row(1, nspID)
+        this[2] = new Row(2, nspID)
+        this[3] = new Row(3, nspID)
+        this[4] = new Row(4, nspID)
+
+    }
+}
+
+class Row {
+    constructor(row, nspID) {
+
+        this.setWord(row, 0, nspID)
+        this.setWord(row, 1, nspID)
+        this.setWord(row, 2, nspID)
+        this.setWord(row, 3, nspID)
+        this.setWord(row, 4, nspID)
+
+    }
+
+    setWord(row, column, nspID) {
+        dao.query(get, 'column', row, column, nspID, (word) => this[column] = word)
+    }
+
+}

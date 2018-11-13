@@ -76,7 +76,7 @@ class DAO {
 
     }
 
-    multiple(op, type, header, params, cb) {
+    multiple(op, type, header, params, cb, result) {
 
         this.db[op](sql[type][header], params[0], (err, res) => {
             if (err) {

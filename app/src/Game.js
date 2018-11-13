@@ -4,8 +4,9 @@ import Board from './Board';
 import CodeWord from './CodeWord';
 import {api} from './Api';
 import {bindActionCreators} from "redux";
-import {clear, set} from "./store/actions";
+import {set} from "./store/actions";
 import connect from "react-redux/es/connect/connect";
+import Loading from "./Loading";
 
 class Game extends Component {
     constructor(props) {
@@ -19,12 +20,14 @@ class Game extends Component {
     }
 
     componentDidMount() {
-        api.get('game', (words) => {
-            console.log(words)
+        api.get('game', (err, msg) => {
+            console.log(msg)
+            this.props.set('words', msg)
+            // this.props.set('words', msg)
         })
     }
 
-    render() {
+    set() {
 
         let codemaster = this.state.codemaster;
         let active = this.state.active;
@@ -32,18 +35,27 @@ class Game extends Component {
 
         return (
             <div>
-                <Board words={this.props.words} codemaster={codemaster} active={active} />
+                <Board codemaster={codemaster} active={active} />
                 <div>
                     <CodeWord codemaster={codemaster} active = {active} remaining = {remaining} />
                 </div>
             </div>
+        )
+    }
 
+    render() {
 
+        let display =
+            (this.props.words) ? this.set() :
+                <Loading/>
+
+        return (
+            display
         );
     }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
         words: state.words
     }
@@ -52,7 +64,6 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
-        clear: bindActionCreators(clear, dispatch)
     }
 }
 

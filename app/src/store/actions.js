@@ -1,4 +1,4 @@
-import {SET, CLEAR, UPDATE} from "../../constants"
+import {SET, CLEAR, UPDATE} from "../constants"
 
 export function set(header, id) {
     return {type: SET, [header]: id}

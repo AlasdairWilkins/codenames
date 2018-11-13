@@ -6,15 +6,15 @@ class Board extends Component {
 
     render() {
 
-        let rows = split(this.props.words);
+        let rows = split();
         let codemaster = this.props.codemaster;
         let active = this.props.active;
 
         return (
-            <div id="Board">{rows.map((row) =>
+            <div id="Board">{rows.map((row, index) =>
                 <div className = "Row" key={rows.indexOf(row)}>
-                    {row.map((item) =>
-                        <Square key={item.word} item = {item} codemaster = {codemaster} active = {active}  />
+                    {row.map((column) =>
+                        <Square key={index * 5 + column}  row={index} column={column} codemaster={codemaster} active={active}/>
                     )}
                 </div>)}
             </div>
@@ -24,10 +24,10 @@ class Board extends Component {
 }
 
 
-function split(words) {
+function split() {
     let rows = [];
     for (let i = 0; i < 5; i++) {
-        rows.push(words.slice(i * 5, i * 5 + 5))
+        rows[i] = [0, 1, 2, 3, 4]
     }
     return rows
 }

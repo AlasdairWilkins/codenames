@@ -110,7 +110,10 @@ class SQL {
                 `SELECT count(*) total,
             sum(case when team = 'blue' then 1 else 0 end) blueCount,
             sum(case when team = 'red' then 1 else 0 end) redCount
-            FROM players WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`
+            FROM players WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
+            row: (params) => ['column', params.map(param => [param.row, param.column, param.nspID])],
+            column: `SELECT word, type FROM words WHERE row = (?) and column = (?) and 
+                    game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`
         };
 
         this.all = {
@@ -137,6 +140,9 @@ class SQL {
                     FROM players
                     WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?)) AND team IS NULL
                     ORDER BY display_name;`,
+            row:    `SELECT word, type, column
+                    FROM words
+                    WHERE row = (?) AND game_id IN (SELECT game_id FROM games WHERE nsp_id = (?))`,
             words: `SELECT word, type, row, column
                     FROM words
                     WHERE game_id IN (SELECT game_id FROM games WHERE nsp_id = (?))`
