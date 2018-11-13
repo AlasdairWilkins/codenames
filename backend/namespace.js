@@ -122,7 +122,7 @@ module.exports = class Namespace {
         })
 
         socket.on('game', () => {
-            let words = new Board(this.address)
+            let words = new Board(socket.client.id, this.address)
             console.log(words)
 
             setTimeout(() => {socket.emit('game', words)}, 1000)
@@ -139,30 +139,31 @@ module.exports = class Namespace {
 };
 
 class Board {
-    constructor(nspID) {
+    constructor(socketID, nspID) {
 
-        this[0] = new Row(0, nspID)
-        this[1] = new Row(1, nspID)
-        this[2] = new Row(2, nspID)
-        this[3] = new Row(3, nspID)
-        this[4] = new Row(4, nspID)
+        this[0] = new Row(socketID, 0, nspID)
+        this[1] = new Row(socketID, 1, nspID)
+        this[2] = new Row(socketID, 2, nspID)
+        this[3] = new Row(socketID, 3, nspID)
+        this[4] = new Row(socketID, 4, nspID)
 
     }
 }
 
 class Row {
-    constructor(row, nspID) {
+    constructor(socketID, row, nspID) {
 
-        this.setWord(row, 0, nspID)
-        this.setWord(row, 1, nspID)
-        this.setWord(row, 2, nspID)
-        this.setWord(row, 3, nspID)
-        this.setWord(row, 4, nspID)
+        this.setWord(socketID, row, 0, nspID)
+        this.setWord(socketID, row, 1, nspID)
+        this.setWord(socketID, row, 2, nspID)
+        this.setWord(socketID, row, 3, nspID)
+        this.setWord(socketID, row, 4, nspID)
 
     }
 
-    setWord(row, column, nspID) {
-        dao.query(get, 'column', row, column, nspID, (word) => this[column] = word)
+    setWord(socketID, row, column, nspID) {
+        console.log(socketID)
+        dao.query(get, 'column', socketID, row, column, nspID, (word) => this[column] = word)
     }
 
 }

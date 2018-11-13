@@ -44,6 +44,7 @@ class SQL {
                 socket_id   TEXT,
                 display_name    TEXT,
                 team    TEXT    DEFAULT NULL    CHECK (team in (NULL, 'blue', 'red')),
+                codemaster BOOLEAN DEFAULT 0 CHECK (codemaster in (0,1)),
                 ready   BOOLEAN DEFAULT 0 CHECK (ready in (0,1)),
                     PRIMARY KEY (game_id,session_id),
                     FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
@@ -112,9 +113,16 @@ class SQL {
             sum(case when team = 'red' then 1 else 0 end) redCount
             FROM players WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
             row: (params) => ['column', params.map(param => [param.row, param.column, param.nspID])],
-            column: `SELECT word, type FROM words WHERE row = (?) and column = (?) and 
+            column: `SELECT word, 
+                    CASE 
+                    WHEN (SELECT codemaster FROM players WHERE socket_id = (?)) = 1 THEN type
+                    ELSE NULL
+                    END AS type
+                    FROM words WHERE row = (?) and column = (?) and 
                     game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`
         };
+
+        //
 
         this.all = {
             session: `SELECT display_name name,
