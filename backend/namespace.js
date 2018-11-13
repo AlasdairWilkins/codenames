@@ -132,7 +132,10 @@ module.exports = class Namespace {
 
         socket.on('word', msg => {
             dao.query(update, 'word', socket.client.id, msg.row, msg.column, this.address, () => {
-                console.log("Success!")
+                dao.query(get, 'word', msg.row, msg.column, this.address, word => {
+                    console.log(word)
+                    socket.emit('word', word)
+                })
             })
         })
 

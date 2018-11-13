@@ -110,6 +110,8 @@ class SQL {
             namespace: `SELECT nsp_id nspID FROM namespaces WHERE nsp_id = ?`,
             resume: `SELECT nsp_id nspID, display_name displayName FROM sessions WHERE session_id = ?`,
             team: `SELECT team FROM players WHERE socket_id = ?`,
+            word: `SELECT type FROM words WHERE row = (?) and column = (?) and 
+                    game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
             checkPlayerMax:
                 `SELECT count(*) total,
             sum(case when team = 'blue' then 1 else 0 end) blueCount,

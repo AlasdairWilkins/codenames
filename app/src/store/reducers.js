@@ -10,6 +10,14 @@ const rootReducer = (state = initialState, action) => {
 
     switch (action.type) {
 
+        case "SET_WORD":
+            const row = state.words[action.row]
+            const column = state.words[action.row][action.column]
+            return { ...state,
+                words: { ...state.words,
+                    [action.row]: {...row,
+                        [action.column]: {...column, type: action.value}}}}
+
         case SET:
             return { ...state, [header]: action[header]}
 
