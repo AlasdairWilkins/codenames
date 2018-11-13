@@ -12,18 +12,31 @@ class Square extends Component {
         }
     }
 
+    set() {
+
+        let onClick = (this.props.codemaster) ? null : () => this.handleClick()
+
+        return (
+            <div className={this.props.square.type} onClick={onClick}>{this.props.square.word}</div>
+        )
+    }
+
+
     render() {
 
-        let type = (this.props.codemaster) ? this.props.square.type : null;
+        let display = this.set()
 
-        return <button className={type} onClick={() => this.handleClick()}>{this.props.square.word}</button>
+        return (
+            display
+        )
 
     }
 }
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        square: state.words[ownProps.row][ownProps.column]
+        square: state.words[ownProps.row][ownProps.column],
+        codemaster: state.codemaster
     }
 }
 

@@ -12,10 +12,36 @@
     width: 100%
 }
 
-.Row>button {
+/*.Row>div {*/
+    /*width: 20%;*/
+    /*height: 50px;*/
+    /*display: table-cell;*/
+/*}*/
+
+/*.red {*/
+    /*background-color: red;*/
+/*}*/
+
+/*.blue {*/
+    /*background-color: blue;*/
+    /*color: white*/
+/*}*/
+
+/*.assassin {*/
+    /*background-color: black;*/
+    /*color: white;*/
+/*}*/
+
+/*.decoy {*/
+    /*background-color: gray;*/
+/*}*/
+
+.Row>div {
     width: 20%;
     height: 50px;
-
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .red {

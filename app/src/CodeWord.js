@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
+import {bindActionCreators} from "redux";
+import {set} from "./store/actions";
+import connect from "react-redux/es/connect/connect";
 
 class CodeWord extends Component {
 
@@ -107,4 +110,17 @@ class CodeWord extends Component {
 
 }
 
-export default CodeWord;
+const mapStateToProps = (state) => {
+    return {
+        codemaster: state.codemaster
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        set: bindActionCreators(set, dispatch),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CodeWord);
+

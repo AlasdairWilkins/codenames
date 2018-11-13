@@ -13,7 +13,6 @@ class Game extends Component {
         super(props);
 
         this.state = {
-            codemaster: true,
             active: true,
             remaining: 8,
         }
@@ -21,23 +20,20 @@ class Game extends Component {
 
     componentDidMount() {
         api.get('game', (err, msg) => {
-            console.log(msg)
             this.props.set('words', msg)
-            // this.props.set('words', msg)
         })
     }
 
     set() {
 
-        let codemaster = this.state.codemaster;
         let active = this.state.active;
         let remaining = this.state.remaining;
 
         return (
             <div>
-                <Board codemaster={codemaster} active={active} />
+                <Board active={active} />
                 <div>
-                    <CodeWord codemaster={codemaster} active = {active} remaining = {remaining} />
+                    <CodeWord active = {active} remaining = {remaining} />
                 </div>
             </div>
         )

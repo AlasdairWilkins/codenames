@@ -4,7 +4,8 @@ import rootReducer from "./reducers";
 const initialState =
     {
         display: null,
-        players: []
+        players: [],
+        codemaster: true
     }
 
 const store = createStore(rootReducer, initialState);

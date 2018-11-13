@@ -92,6 +92,7 @@ class SQL {
             displayName: `UPDATE sessions SET display_name = ?, socket_id = ? WHERE session_id = ?`,
             waitingReady: `UPDATE sessions SET ready = 1 WHERE socket_id = ?`,
             selectReady: `UPDATE players SET ready = 1 WHERE socket_id = ?`,
+            codemaster: `UPDATE players SET codemaster = ? WHERE socket_id = ?`,
             team: `UPDATE players SET team = (?) WHERE socket_id = (?);`,
             disconnect: `UPDATE sessions SET socket_id = ? WHERE socket_id = ?`,
             resetReady: `UPDATE sessions SET ready = 0 WHERE nsp_id = ?`,

@@ -67,10 +67,12 @@ module.exports = class Namespace {
 
         socket.on(ready, (msg) => {
 
-            dao.query(update, msg, socket.client.id, () => {
-                dao.query(get, msg, this.address, (row) => {
+            let header = (msg === waitingReady) ? waitingReady : 'selectReady'
+
+            dao.query(update, header, socket.client.id, () => {
+                dao.query(get, header, this.address, (row) => {
                     if (!row.count) {
-                        if (msg === waitingReady) {
+                        if (header === waitingReady) {
                             let gameID = shortid.generate()
                             dao.query(insert, 'game', gameID, this.address, () => {
                                 dao.query(insert, player, gameID, this.address, () => {
@@ -80,14 +82,16 @@ module.exports = class Namespace {
                                 })
                             })
                         } else {
-                            dao.query(all, unsorted, this.address, players => {
-                                dao.query(get, checkPlayerMax, this.address, count => {
-                                    let sorted = game.makeTeams(players, count)
-                                    dao.query(update, teams, sorted, () => {
-                                        let board = game.makeBoard(25)
-                                        dao.query(insert, words, board, this.address, () => {
-                                            dao.query(update, 'display', 'game', this.address, () => {
-                                                this.namespace.emit(ready)                                            })
+                            dao.query(update, 'codemaster', msg, socket.client.id, () => {
+                                dao.query(all, unsorted, this.address, players => {
+                                    dao.query(get, checkPlayerMax, this.address, count => {
+                                        let sorted = game.makeTeams(players, count)
+                                        dao.query(update, teams, sorted, () => {
+                                            let board = game.makeBoard(25)
+                                            dao.query(insert, words, board, this.address, () => {
+                                                dao.query(update, 'display', 'game', this.address, () => {
+                                                    this.namespace.emit(ready)                                            })
+                                            })
                                         })
                                     })
                                 })
@@ -162,7 +166,6 @@ class Row {
     }
 
     setWord(socketID, row, column, nspID) {
-        console.log(socketID)
         dao.query(get, 'column', socketID, row, column, nspID, (word) => this[column] = word)
     }
 

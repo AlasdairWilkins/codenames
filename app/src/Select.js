@@ -36,8 +36,8 @@ class Select extends Component {
         if (event.target.value === "ready") {
 
             this.setState({ready: true})
-            api.set(ready, 'selectReady', (err) => {
-                // this.props.set('words', words)
+            api.set(ready, this.props.codemaster, (err) => {
+                // 'selectReady'
                 api.get('team', (err, msg) => {
                     this.props.set('team', msg.team)
                     this.props.set('display', 'game')
@@ -141,7 +141,8 @@ const mapStateToProps = (state, ownProps) => {
         players: state.players,
         blueMax: state.blueMax,
         redMax: state.redMax,
-        id: state.id
+        id: state.id,
+        codemaster: state.codemaster
     }
 }
 
