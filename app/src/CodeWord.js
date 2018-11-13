@@ -67,19 +67,19 @@ class CodeWord extends Component {
 
     inactiveCodeMaster() {
         return (
-            <text>Waiting for the other Code Master!</text>
+            <p>Waiting for the other Code Master!</p>
         )
     }
 
     activeTeam() {
         return (
-            <text>Waiting for your Code Master!</text>
+            <p>Waiting for your Code Master!</p>
         )
     }
 
     inactiveTeam() {
         return (
-            <text>Sit tight!</text>
+            <p>Sit tight!</p>
         )
     }
 

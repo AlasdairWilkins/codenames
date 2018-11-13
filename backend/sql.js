@@ -96,7 +96,9 @@ class SQL {
             team: `UPDATE players SET team = (?) WHERE socket_id = (?);`,
             disconnect: `UPDATE sessions SET socket_id = ? WHERE socket_id = ?`,
             resetReady: `UPDATE sessions SET ready = 0 WHERE nsp_id = ?`,
-            teams: (params) => [team, params.map(param => [param.team, param.socketID])]
+            teams: (params) => [team, params.map(param => [param.team, param.socketID])],
+            word: `UPDATE words SET covered = 1, by = (SELECT team FROM players WHERE socket_id = (?)) WHERE 
+                    row = ? AND column = ? AND game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
         };
 
         this.get = {
@@ -157,13 +159,13 @@ class SQL {
                     WHERE game_id IN (SELECT game_id FROM games WHERE nsp_id = (?))`
         }
     }
-
-    updateTeams(sql, params) {
-
-        return `UPDATE players`
-
-
-    }
+    //
+    // updateTeams(sql, params) {
+    //
+    //     return `UPDATE players`
+    //
+    //
+    // }
 
 }
 

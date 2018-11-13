@@ -32,6 +32,7 @@ class API {
                 this.socket.emit(header, payload);
                 break;
 
+            case 'word':
             case ready:
                 this.socket.on(header, res => {
                     this.socket.off(header);

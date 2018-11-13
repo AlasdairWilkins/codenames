@@ -3,13 +3,12 @@ import './App.css';
 import {bindActionCreators} from "redux";
 import {set} from "./store/actions";
 import connect from "react-redux/es/connect/connect";
+import {api} from "./Api";
 
 class Square extends Component {
 
     handleClick() {
-        if (this.props.active) {
-            alert(`This is ${this.props.square.type}.`)
-        }
+        api.set('word', {row: this.props.row, column: this.props.column, word: this.props.square.word})
     }
 
     set() {
