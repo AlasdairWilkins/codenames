@@ -44,7 +44,11 @@ class DAO {
             let additional = [];
             if ((hasCB) && arguments.length > 4 || (!hasCB) && arguments.length > 3) {
                 for (let i = 3; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
-                    additional.push(arguments[i])
+                    if (typeof arguments[i] === 'object') {
+                        additional.push(...Object.values(arguments[i]))
+                    } else {
+                        additional.push(arguments[i])
+                    }
                 }
             }
             let [newHeader, newParams] = sql[type][header](params, ...additional);
@@ -54,7 +58,11 @@ class DAO {
         } else {
             let params = [];
             for (let i = 2; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
-                params.push(arguments[i])
+                if (typeof arguments[i] === 'object') {
+                    params.push(...Object.values(arguments[i]))
+                } else {
+                    params.push(arguments[i])
+                }
             }
             this.run(op, type, header, params, cb)
         }

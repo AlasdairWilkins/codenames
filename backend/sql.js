@@ -56,6 +56,9 @@ class SQL {
             game: `CREATE TABLE IF NOT EXISTS games (
                game_id  TEXT    PRIMARY KEY,
                nsp_id   TEXT    NOT NULL,
+               codeword TEXT,
+               turn TEXT    CHECK (turn in (null, 'blue', 'red')),
+               number INTEGER,
                active BOOLEAN DEFAULT 1 CHECK (active in (0,1)),
                    FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
                 );`,
@@ -71,10 +74,11 @@ class SQL {
                    FOREIGN KEY (game_id) REFERENCES games(game_id)
                );`,
             turn: `CREATE TABLE IF NOT EXISTS turns (
-                game_id TEXT,
-                team TEXT DEFAULT 'blue' CHECK (team in ('blue', 'red')),
-                codeword TEXT DEFAULT NULL,
-                turn INTEGER,
+                game_id TEXT NOT NULL,
+                team TEXT CHECK (team in ('blue', 'red')),
+                turn INTEGER NOT NULL,
+                codeword TEXT,
+                word TEXT,
                 guess INTEGER,
                 of INTEGER,
                     PRIMARY KEY (game_id,turn,guess),
@@ -95,11 +99,11 @@ class SQL {
                     game_id FROM games WHERE nsp_id = (?);`,
             words: (params, nspID) => ['word', params.map(param =>
                 [param.row, param.column, param.word, param.value, nspID])],
-            turn: `INSERT INTO turns(game_id, turn, team)
-                    SELECT
-                    (SELECT game_id FROM games where nsp_id = (?)),
-                    (SELECT COALESCE(MAX(turn),0) from turns WHERE (SELECT game_id FROM games where nsp_id = (?))) + 1,
-                    (?);`
+            // currentTurn:    `INSERT INTO games(game_id, turn, team)
+            //                 SELECT
+            //                 (SELECT game_id FROM games where nsp_id = (?)),
+            //                 (SELECT COALESCE(MAX(turn),0) from turns WHERE (SELECT game_id FROM games where nsp_id = (?))) + 1,
+            //                 (?);`
         };
 
         this.update = {
@@ -114,7 +118,10 @@ class SQL {
             resetReady: `UPDATE sessions SET ready = 0 WHERE nsp_id = ?`,
             teams: (params) => [team, params.map(param => [param.team, param.socketID])],
             word: `UPDATE words SET covered = 1, by = (SELECT team FROM players WHERE socket_id = (?)) WHERE 
-                    row = ? AND column = ? AND game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
+                    row = ? AND column = ? AND game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
+            codeword: `UPDATE games SET codeword = ?, number = ? WHERE
+                      game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
+            turn: `UPDATE games SET turn = ? WHERE nsp_id = ?;`
         };
 
         this.get = {
@@ -130,9 +137,9 @@ class SQL {
                     game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
             checkPlayerMax:
                 `SELECT count(*) total,
-            sum(case when team = 'blue' then 1 else 0 end) blueCount,
-            sum(case when team = 'red' then 1 else 0 end) redCount
-            FROM players WHERE nsp_id = (?)`,
+                sum(case when team = 'blue' then 1 else 0 end) blueCount,
+                sum(case when team = 'red' then 1 else 0 end) redCount
+                FROM players WHERE nsp_id = (?)`,
             column: `SELECT word, 
                     CASE 
                     WHEN (SELECT codemaster FROM players WHERE socket_id = (?)) = 1 THEN type
@@ -140,14 +147,10 @@ class SQL {
                     END AS type
                     FROM words WHERE row = (?) and column = (?) and 
                     game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
-            remaining: `SELECT count(*) count FROM words WHERE covered = 0 AND type = (?) AND
+            remaining: `SELECT count(*) remaining FROM words WHERE covered = 0 AND type = (?) AND
                         game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?));`,
-            turn: `SELECT team FROM turns 
-                    WHERE game_id = (SELECT game_id FROM namespaces WHERE nsp_id = ?)
-                    AND turn = (SELECT MAX(turn) from turns WHERE game_id = (SELECT game_id FROM namespaces WHERE nsp_id = ?));`
+            turn: `SELECT turn FROM games WHERE nsp_id = (?);`,
         };
-
-        //
 
         this.all = {
             session: `SELECT display_name name,
@@ -180,13 +183,6 @@ class SQL {
                     WHERE game_id = (SELECT game_id FROM games WHERE nsp_id = (?))`
         }
     }
-    //
-    // updateTeams(sql, params) {
-    //
-    //     return `UPDATE players`
-    //
-    //
-    // }
 
 }
 

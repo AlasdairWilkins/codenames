@@ -5,7 +5,7 @@ const initialState =
     {
         display: null,
         players: [],
-        codemaster: false
+        codemaster: true
     }
 
 const store = createStore(rootReducer, initialState);
