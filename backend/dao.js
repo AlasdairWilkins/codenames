@@ -31,44 +31,49 @@ class DAO {
     }
 
     query() {
+
         let type = arguments[0];
         let header = arguments[1];
         let op = this.getOp(type);
-
         let hasCB = (typeof arguments[arguments.length - 1] === "function");
         let cb = (hasCB) ? arguments[arguments.length - 1] : null;
 
-        if (typeof sql[type][header] === 'function') {
+        let [isMultiple, originalParams, paramsLength] = (typeof sql[type][header] === 'function') ?
+            [true, arguments[2], 3] : [false, null, 2]
 
-            let params = arguments[2];
-            let additional = [];
-            if ((hasCB) && arguments.length > 4 || (!hasCB) && arguments.length > 3) {
-                for (let i = 3; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
-                    if (typeof arguments[i] === 'object') {
-                        additional.push(...Object.values(arguments[i]))
-                    } else {
-                        additional.push(arguments[i])
-                    }
-                }
-            }
-            let [newHeader, newParams] = sql[type][header](params, ...additional);
+        let params = [];
 
-            this.multiple(op, type, newHeader, newParams, cb)
-
-        } else {
-            let params = [];
-            for (let i = 2; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
+        if ((hasCB) && arguments.length > paramsLength + 1 || (!hasCB) && arguments.length > paramsLength) {
+            for (let i = paramsLength; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
                 if (typeof arguments[i] === 'object') {
                     params.push(...Object.values(arguments[i]))
                 } else {
                     params.push(arguments[i])
                 }
             }
+        }
+
+        if (isMultiple) {
+            let [newHeader, newParams] = sql[type][header](originalParams, ...params);
+            this.multiple(op, type, newHeader, newParams, cb)
+        } else {
             this.run(op, type, header, params, cb)
         }
 
-
     }
+
+
+    // } else {
+        //     let params = [];
+        //     for (let i = 2; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
+        //         if (typeof arguments[i] === 'object') {
+        //             params.push(...Object.values(arguments[i]))
+        //         } else {
+        //             params.push(arguments[i])
+        //         }
+        //     }
+
+
 
     run(op, type, header, params, cb) {
 
