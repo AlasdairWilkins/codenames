@@ -87,10 +87,13 @@ module.exports = class Namespace {
                                     dao.query(get, checkPlayerMax, this.address, count => {
                                         let sorted = game.makeTeams(players, count)
                                         dao.query(update, teams, sorted, () => {
-                                            let board = game.makeBoard(25)
+                                            let [board, first] = game.makeBoard(25)
                                             dao.query(insert, words, board, this.address, () => {
-                                                dao.query(update, 'display', 'game', this.address, () => {
-                                                    this.namespace.emit(ready)                                            })
+                                                dao.query(insert, 'turn', this.address, this.address, first, () => {
+                                                    dao.query(update, 'display', 'game', this.address, () => {
+                                                        this.namespace.emit(ready)
+                                                    })
+                                                })
                                             })
                                         })
                                     })
@@ -106,6 +109,7 @@ module.exports = class Namespace {
         socket.on(select, (msg) => {
             dao.query(update, team, msg, socket.client.id, () => {
                 dao.query(all, team, this.address, rows => {
+                    console.log("Ahoy hoy", rows)
                     dao.query(get, checkPlayerMax, this.address, row => {
                         let max = Math.ceil(row.total / 2)
                         let blueMax = (row.blueCount >= max)
@@ -118,7 +122,6 @@ module.exports = class Namespace {
 
         socket.on(team, () => {
             dao.query(get, team, socket.client.id, (res) => {
-                console.log("Ahoy hoy", res)
                 socket.join(res.team)
                 socket.emit(team, res)
             })
@@ -127,7 +130,14 @@ module.exports = class Namespace {
         socket.on('game', () => {
             let words = new Board(socket.client.id, this.address)
             setTimeout(() => {socket.emit('game', words)}, 1000)
-            // socket.emit('game', rows)
+        })
+
+        socket.on('turn', () => {
+            dao.query(get, 'turn', this.address, this.address, resultTurn => {
+                dao.query(get, 'remaining', resultTurn.team, this.address, resultRemaining => {
+                    socket.emit('turn', {team: resultTurn.team, remaining: resultRemaining.count})
+                })
+            })
         })
 
         socket.on('word', msg => {
@@ -139,6 +149,9 @@ module.exports = class Namespace {
             })
         })
 
+        socket.on('codeword', msg => {
+            console.log(msg)
+        })
 
         socket.on(disconnect, () => {
             dao.query(update, disconnect, null, socket.client.id)

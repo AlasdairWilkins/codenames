@@ -9,7 +9,8 @@ class SQL {
             message: `DROP TABLE IF EXISTS chats;`,
             player: `DROP TABLE IF EXISTS players;`,
             game: `DROP TABLE IF EXISTS games;`,
-            word: `DROP TABLE IF EXISTS words;`
+            word: `DROP TABLE IF EXISTS words;`,
+            turn: `DROP TABLE IF EXISTS turns;`
         };
 
         this.create = {
@@ -68,7 +69,17 @@ class SQL {
                by TEXT CHECK (by in ('blue', 'red')),
                    PRIMARY KEY (game_id,row,column),
                    FOREIGN KEY (game_id) REFERENCES games(game_id)
-               );`
+               );`,
+            turn: `CREATE TABLE IF NOT EXISTS turns (
+                game_id TEXT,
+                team TEXT DEFAULT 'blue' CHECK (team in ('blue', 'red')),
+                codeword TEXT DEFAULT NULL,
+                turn INTEGER,
+                guess INTEGER,
+                of INTEGER,
+                    PRIMARY KEY (game_id,turn,guess),
+                    FOREIGN KEY (game_id) REFERENCES games(game_id)
+                );`
         };
 
         this.insert = {
@@ -83,7 +94,12 @@ class SQL {
             word:   `INSERT INTO words(row, column, word, type, game_id) SELECT (?), (?), (?), (?),
                     game_id FROM games WHERE nsp_id = (?);`,
             words: (params, nspID) => ['word', params.map(param =>
-                [param.row, param.column, param.word, param.value, nspID])]
+                [param.row, param.column, param.word, param.value, nspID])],
+            turn: `INSERT INTO turns(game_id, turn, team)
+                    SELECT
+                    (SELECT game_id FROM games where nsp_id = (?)),
+                    (SELECT COALESCE(MAX(turn),0) from turns WHERE (SELECT game_id FROM games where nsp_id = (?))) + 1,
+                    (?);`
         };
 
         this.update = {
@@ -116,15 +132,19 @@ class SQL {
                 `SELECT count(*) total,
             sum(case when team = 'blue' then 1 else 0 end) blueCount,
             sum(case when team = 'red' then 1 else 0 end) redCount
-            FROM players WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
-            row: (params) => ['column', params.map(param => [param.row, param.column, param.nspID])],
+            FROM players WHERE nsp_id = (?)`,
             column: `SELECT word, 
                     CASE 
                     WHEN (SELECT codemaster FROM players WHERE socket_id = (?)) = 1 THEN type
                     ELSE NULL
                     END AS type
                     FROM words WHERE row = (?) and column = (?) and 
-                    game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`
+                    game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
+            remaining: `SELECT count(*) count FROM words WHERE covered = 0 AND type = (?) AND
+                        game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?));`,
+            turn: `SELECT team FROM turns 
+                    WHERE game_id = (SELECT game_id FROM namespaces WHERE nsp_id = ?)
+                    AND turn = (SELECT MAX(turn) from turns WHERE game_id = (SELECT game_id FROM namespaces WHERE nsp_id = ?));`
         };
 
         //
@@ -144,21 +164,20 @@ class SQL {
             team: `SELECT display_name name,
                         socket_id socketID,
                         team
-                    FROM players
-                    WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?))
+                    FROM players WHERE nsp_id = (?)
                     ORDER BY display_name;`,
             unsorted: `SELECT display_name name,
                         socket_id socketID,
                         team
                     FROM players
-                    WHERE game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?)) AND team IS NULL
+                    WHERE game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?)) AND team IS NULL
                     ORDER BY display_name;`,
             row:    `SELECT word, type, column
                     FROM words
                     WHERE row = (?) AND game_id IN (SELECT game_id FROM games WHERE nsp_id = (?))`,
             words: `SELECT word, type, row, column
                     FROM words
-                    WHERE game_id IN (SELECT game_id FROM games WHERE nsp_id = (?))`
+                    WHERE game_id = (SELECT game_id FROM games WHERE nsp_id = (?))`
         }
     }
     //

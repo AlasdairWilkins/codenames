@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import {bindActionCreators} from "redux";
-import {set, setWord } from "./store/actions";
+import {set, updateWord} from "./store/actions";
 import connect from "react-redux/es/connect/connect";
 import {api} from "./Api";
 
@@ -9,14 +9,14 @@ class Square extends Component {
 
     handleClick() {
         api.set('word', {row: this.props.row, column: this.props.column}, (err, msg) => {
-            console.log(msg)
-            this.props.setWord(this.props.row, this.props.column, msg.type)
+            this.props.updateWord(this.props.row, this.props.column, msg.type)
         })
     }
 
     set() {
 
-        let onClick = (this.props.codemaster) ? null : () => this.handleClick()
+        let onClick = (!this.props.codemaster && (this.props.team === this.props.turn)) ?
+            () => this.handleClick() : null
 
         return (
             <div className={this.props.square.type} onClick={onClick}>{this.props.square.word}</div>
@@ -37,15 +37,17 @@ class Square extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     return {
+        codemaster: state.codemaster,
         square: state.words[ownProps.row][ownProps.column],
-        codemaster: state.codemaster
+        team: state.team,
+        turn: state.turn
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
-        setWord: bindActionCreators(setWord, dispatch)
+        updateWord: bindActionCreators(updateWord, dispatch)
     }
 }
 

@@ -9,31 +9,26 @@ import connect from "react-redux/es/connect/connect";
 import Loading from "./Loading";
 
 class Game extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            active: true,
-            remaining: 8,
-        }
-    }
 
     componentDidMount() {
         api.get('game', (err, msg) => {
             this.props.set('words', msg)
         })
+
+        api.get('turn', (err, msg) => {
+            this.props.set('turn', msg.team)
+            if (msg.remaining) {
+                this.props.set('remaining', msg.remaining)
+            }
+        })
     }
 
     set() {
-
-        let active = this.state.active;
-        let remaining = this.state.remaining;
-
         return (
             <div>
-                <Board active={active} />
+                <Board/>
                 <div>
-                    <CodeWord active = {active} remaining = {remaining} />
+                    <CodeWord/>
                 </div>
             </div>
         )
@@ -41,9 +36,7 @@ class Game extends Component {
 
     render() {
 
-        let display =
-            (this.props.words) ? this.set() :
-                <Loading/>
+        let display = (this.props.words && this.props.turn) ? this.set() : <Loading/>
 
         return (
             display
@@ -53,7 +46,8 @@ class Game extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        words: state.words
+        words: state.words,
+        turn: state.turn
     }
 }
 

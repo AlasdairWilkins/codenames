@@ -3,32 +3,34 @@ import './App.css';
 import {bindActionCreators} from "redux";
 import {set} from "./store/actions";
 import connect from "react-redux/es/connect/connect";
+import {api} from "./Api"
 
 class CodeWord extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            code: '',
-            number: 1,
+            code: null,
+            number: null,
             submitted: false
         };
 
-        this.handleChangeCode = this.handleChangeCode.bind(this);
-        this.handleChangeNumber = this.handleChangeNumber.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
-    handleChangeCode(event) {
-        this.setState({code: event.target.value})
-    }
-
-    handleChangeNumber(event) {
-        this.setState({number: event.target.value})
-    }
-
     handleSubmit(event) {
-        this.setState({submitted: true});
+
+        let code = event.target.elements.code.value
+        let number =  event.target.elements.number.options[event.target.elements.number.selectedIndex].value
+        // let msg = {code, number}
+
+        api.set('codeword', {code, number}, (err, res) => {
+
+        })
+
+
+        this.setState(
+            {submitted: true, code, number});
         event.preventDefault()
     }
 
@@ -39,26 +41,22 @@ class CodeWord extends Component {
             )
         }
 
-        let choices = new Array(this.props.remaining);
+        let choices = []
 
-        for (let i = 0; i < choices.length; i++) {
-            choices[i] = i + 1
+        for (let i = 0; i < this.props.remaining; i++) {
+            choices.push(i + 1)
         }
 
         return (
             <form onSubmit={this.handleSubmit}>
-                <label htmlFor="code">
-                    Code:
-                    <input onChange={this.handleChangeCode} value={this.state.code} type="text" />
-                </label>
-                <label htmlFor="number">
-                    Words:
-                    <select onChange={this.handleChangeNumber} value={this.state.number}>
-                        {choices.map((choice) =>
-                            <option key={choice} value={choice}>{choice}</option>
-                        )}
-                    </select>
-                </label>
+                <label htmlFor="code">Code:</label>
+                <input id="code" type="text" />
+                <label htmlFor="number">Words:</label>
+                <select id="number">
+                    {choices.map((choice) =>
+                        <option key={choice} value={choice}>{choice}</option>
+                    )}
+                </select>
                 <input type="submit" value="Submit" />
             </form>
 
@@ -84,13 +82,13 @@ class CodeWord extends Component {
     }
 
     setDisplay() {
-        if (this.props.codemaster && this.props.active) {
+        if (this.props.codemaster && this.props.team === this.props.turn) {
             return this.activeCodeMaster()
         }
         if (this.props.codemaster) {
             return this.inactiveCodeMaster()
         }
-        if (this.props.active) {
+        if (this.props.team === this.props.turn) {
             return this.activeTeam()
         }
         return this.inactiveTeam()
@@ -112,7 +110,10 @@ class CodeWord extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        codemaster: state.codemaster
+        codemaster: state.codemaster,
+        remaining: state.remaining,
+        team: state.team,
+        turn: state.turn
     }
 }
 

@@ -70,7 +70,7 @@ class Game {
 
         }
 
-        return arr
+        return [arr, first]
     }
 
 };
