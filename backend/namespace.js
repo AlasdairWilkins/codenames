@@ -140,19 +140,24 @@ module.exports = class Namespace {
             })
         })
 
-        socket.on('word', msg => {
-            dao.query(update, 'word', socket.client.id, msg.row, msg.column, this.address, () => {
-                dao.query(get, 'word', msg.row, msg.column, this.address, word => {
-                    console.log(word)
-                    socket.emit('word', word)
+        socket.on('guess', msg => {
+            console.log(msg)
+            dao.query(insert, 'guess', msg, msg, this.address, this.address, () => {
+                dao.query(get, 'guessResult', this.address, (result) => {
+                    console.log(result)
                 })
+                // dao.query(get, 'word', msg, this.address, word => {
+                    // socket.emit('word', word)
+                // })
             })
         })
 
         socket.on('codeword', msg => {
-            dao.query(update, 'codeword', msg.code, msg.number, this.address, () => {
-
-            })
+            if (msg) {
+                dao.query(update, 'codeword', msg, this.address, () => {
+                    socket.emit('codeword', msg)
+                })
+            }
         })
 
         socket.on(disconnect, () => {

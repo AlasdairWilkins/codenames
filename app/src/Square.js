@@ -8,7 +8,7 @@ import {api} from "./Api";
 class Square extends Component {
 
     handleClick() {
-        api.set('word', {row: this.props.row, column: this.props.column}, (err, msg) => {
+        api.set('guess', this.props.square.word, (err, msg) => {
             this.props.updateWord(this.props.row, this.props.column, msg.type)
         })
     }

@@ -26,6 +26,11 @@ class Game extends Component {
                 this.props.set('remaining', msg.remaining)
             }
         })
+
+        api.get('codeword', (err, msg) => {
+            this.props.set('codeword', msg.codeword)
+            this.props.set('number', msg.number)
+        })
     }
 
     set() {

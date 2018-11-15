@@ -10,8 +10,8 @@ class CodeWord extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            code: null,
-            number: null,
+            // code: null,
+            // number: null,
             submitted: false
         };
 
@@ -20,24 +20,23 @@ class CodeWord extends Component {
 
     handleSubmit(event) {
 
-        let code = event.target.elements.code.value
+        let codeword = event.target.elements.code.value
         let number =  event.target.elements.number.options[event.target.elements.number.selectedIndex].value
         // let msg = {code, number}
 
-        api.set('codeword', {code, number}, (err, res) => {
+        api.set('codeword', {codeword, number})
+        this.props.clear('words')
+        api.get('game')
 
-        })
 
-
-        this.setState(
-            {submitted: true, code, number});
+        this.setState({submitted: true});
         event.preventDefault()
     }
 
     activeCodeMaster() {
-        if (this.state.submitted) {
+        if (this.props.codeword && this.props.number) {
             return (
-                <p>The hint is '{this.state.code}' for {this.state.number} words.</p>
+                <p>The hint is '{this.props.codeword}' for {this.props.number} words.</p>
             )
         }
 
@@ -70,12 +69,23 @@ class CodeWord extends Component {
     }
 
     activeTeam() {
+        if (this.props.codeword && this.props.number) {
+            return (
+                <p>The hint is '{this.props.codeword}' for {this.props.number} words.</p>
+            )
+        }
+
         return (
             <p>Waiting for your Code Master!</p>
         )
     }
 
     inactiveTeam() {
+        if (this.props.codeword && this.props.number) {
+            return (
+                <p>The other team's hint is '{this.props.codeword}' for {this.props.number} words.</p>
+            )
+        }
         return (
             <p>Sit tight!</p>
         )
@@ -113,7 +123,9 @@ const mapStateToProps = (state) => {
         codemaster: state.codemaster,
         remaining: state.remaining,
         team: state.team,
-        turn: state.turn
+        turn: state.turn,
+        codeword: state.codeword,
+        number: state.number
     }
 }
 
