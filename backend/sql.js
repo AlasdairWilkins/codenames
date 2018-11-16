@@ -118,12 +118,13 @@ class SQL {
             selectReady: `UPDATE players SET ready = 1 WHERE socket_id = ?`,
             codemaster: `UPDATE players SET codemaster = ? WHERE socket_id = ?`,
             team: `UPDATE players SET team = (?) WHERE socket_id = (?);`,
-            disconnect: `UPDATE sessions SET socket_id = ? WHERE socket_id = ?`,
+            disconnect: `UPDATE sessions SET socket_id = null WHERE socket_id = ?`,
             resetReady: `UPDATE sessions SET ready = 0 WHERE nsp_id = ?`,
             teams: (params) => [team, params.map(param => [param.team, param.socketID])],
             codeword: `UPDATE games SET codeword = ?, number = ? WHERE
                       game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
-            turn: `UPDATE games SET team = ?, turn = 1, codeword = "hey", guesses = 0, of = 3 WHERE nsp_id = ?;`
+            turn: `UPDATE games SET team = ?, turn = 1, codeword = "hey", guesses = 0, of = 3 WHERE nsp_id = ?;`,
+            guessEntered: `UPDATE games SET guesses = guesses + 1 WHERE nsp_id = ?;`
         };
 
         this.get = {
@@ -152,8 +153,10 @@ class SQL {
             remaining: `SELECT count(*) remaining FROM words WHERE covered = 0 AND type = (?) AND
                         game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?));`,
             turn: `SELECT turn FROM games WHERE nsp_id = (?);`,
-            guessResult: `SELECT team, word, type FROM guesses WHERE 
-                            game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?))`
+            guessResult: `SELECT team, word, type, guess, of FROM guesses WHERE 
+                            game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?))
+                            AND guess = (SELECT guesses FROM games WHERE game_id =
+                                (SELECT game_id FROM namespaces WHERE nsp_id = (?)));`,
         };
 
         this.all = {

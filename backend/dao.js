@@ -45,7 +45,7 @@ class DAO {
 
         if ((hasCB) && arguments.length > paramsLength + 1 || (!hasCB) && arguments.length > paramsLength) {
             for (let i = paramsLength; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
-                if (typeof arguments[i] === 'object') {
+                if (arguments[i] && typeof arguments[i] === 'object') {
                     params.push(...Object.values(arguments[i]))
                 } else {
                     params.push(arguments[i])

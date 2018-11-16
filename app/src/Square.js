@@ -9,7 +9,8 @@ class Square extends Component {
 
     handleClick() {
         api.set('guess', this.props.square.word, (err, msg) => {
-            this.props.updateWord(this.props.row, this.props.column, msg.type)
+            console.log(msg)
+            this.props.updateWord(this.props.row, this.props.column, msg)
         })
     }
 

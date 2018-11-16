@@ -16,7 +16,7 @@ const rootReducer = (state = initialState, action) => {
             return { ...state,
                 words: { ...state.words,
                     [action.row]: {...row,
-                        [action.column]: {...column, type: action.value}}}}
+                        [action.column]: action.value}}}
 
         case SET:
             return { ...state, [header]: action[header]}

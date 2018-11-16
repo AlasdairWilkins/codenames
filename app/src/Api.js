@@ -33,6 +33,7 @@ class API {
                 break;
 
             case 'word':
+            case 'guess':
             case ready:
                 this.socket.on(header, res => {
                     this.socket.off(header);
