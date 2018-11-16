@@ -104,6 +104,8 @@ class DAO {
                 }
             }
         })
+
+        //db.run( sql query , [params], callback)
     }
 
     getOp(type) {

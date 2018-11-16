@@ -179,6 +179,7 @@ class SQL {
                             game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?))
                             AND guess = (SELECT guesses FROM games WHERE game_id =
                                 (SELECT game_id FROM namespaces WHERE nsp_id = (?)));`,
+            gameState: `SELECT * FROM games WHERE nsp_id = (?);`
         };
 
         this.all = {

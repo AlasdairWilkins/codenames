@@ -145,28 +145,10 @@ module.exports = class Namespace {
         socket.on('guess', msg => {
             console.log(msg)
             guess(msg, this.address, (result) => {
-
                 socket.emit('guess', {type: result.type})
-
-                gameState.handleGuess(result.type, result.team)
-
-                // if (result.type === 'assassin') {
-                //
-                //     dao.query(update, "gameOver", 0, 0, this.address, () => {
-                //         console.log("Game over!")
-                //     })
-                //
-                // } else if (result.type === 'decoy') {
-                //     dao.query(update, 'newTurn', this.address, () => {
-                //         console.log("That's a decoy!")
-                //     })
-                // } else if (result.type !== result.team) {
-                //     dao.query(update, 'newTurn', this.address, () => {
-                //         console.log("You just helped the other team!")
-                //     })
-                // } else {
-                //
-                // }
+                gameState.handleGuess(this.address, result.type, result.team, () => {
+                    console.log("And done!")
+                })
             })
         })
 
