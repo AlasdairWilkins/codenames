@@ -149,7 +149,7 @@ class SQL {
         // team = NULL, turn = NULL, codeword = NULL, guesses = NULL, of = NULL, ,
 
 
-            this.get = {
+        this.get = {
             display: `SELECT display FROM namespaces WHERE nsp_id = (SELECT nsp_id FROM sessions WHERE session_id = ?)`,
             joining: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND display_name IS NULL`,
             waitingReady: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND ready = 0`,

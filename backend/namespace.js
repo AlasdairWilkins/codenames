@@ -15,6 +15,8 @@ const {get, insert, update, all, connection,
     message, ready, team, teams, select, disconnect,
     checkPlayerMax, resetReady, joining, words} = require('./constants');
 
+const guess = require('./guess')
+const gameState = require('./gameState')
 
 module.exports = class Namespace {
 
@@ -142,46 +144,39 @@ module.exports = class Namespace {
 
         socket.on('guess', msg => {
             console.log(msg)
-            dao.query(insert, 'guess', msg, msg, this.address, this.address, () => {
-                dao.query(update, 'guessEntered', this.address, () => {
-                    dao.query(update, 'wordCovered', this.address, msg, this.address, () => {
-                        dao.query(get, 'guessResult', this.address, this.address, (result) => {
-                            socket.emit('guess', {type: result.type})
-                            if (result.type === 'assassin') {
+            guess(msg, this.address, (result) => {
 
-                                dao.query(update, "gameOver", 0, 0, this.address, () => {
-                                    console.log("Game over!")
-                                })
+                socket.emit('guess', {type: result.type})
 
-                            } else if (result.type === 'decoy') {
-                                dao.query(update, 'newTurn', this.address, () => {
-                                    console.log("That's a decoy!")
-                                })
-                            } else if (result.type !== result.team) {
-                                dao.query(update, 'newTurn', this.address, () => {
-                                    console.log("You just helped the other team!")
-                                })
-                            } else {
+                gameState.handleGuess(result.type, result.team)
 
-                            }
-                        })
-                    })
+                // if (result.type === 'assassin') {
+                //
+                //     dao.query(update, "gameOver", 0, 0, this.address, () => {
+                //         console.log("Game over!")
+                //     })
+                //
+                // } else if (result.type === 'decoy') {
+                //     dao.query(update, 'newTurn', this.address, () => {
+                //         console.log("That's a decoy!")
+                //     })
+                // } else if (result.type !== result.team) {
+                //     dao.query(update, 'newTurn', this.address, () => {
+                //         console.log("You just helped the other team!")
+                //     })
+                // } else {
+                //
+                // }
+            })
+        })
 
+
+        socket.on('codeword', msg => {
+            if (msg) {
+                dao.query(update, 'codeword', msg, this.address, () => {
+                    socket.emit('codeword', msg)
                 })
-
-                // dao.query(get, 'word', msg, this.address, word => {
-                    // socket.emit('word', word)
-                // })
-        })
-
-    })
-
-    socket.on('codeword', msg => {
-    if (msg) {
-        dao.query(update, 'codeword', msg, this.address, () => {
-            socket.emit('codeword', msg)
-        })
-    }
+            }
         })
 
         socket.on(disconnect, () => {
