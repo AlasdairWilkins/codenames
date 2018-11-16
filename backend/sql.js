@@ -124,7 +124,10 @@ class SQL {
             codeword: `UPDATE games SET codeword = ?, number = ? WHERE
                       game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
             turn: `UPDATE games SET team = ?, turn = 1, codeword = "hey", guesses = 0, of = 3 WHERE nsp_id = ?;`,
-            guessEntered: `UPDATE games SET guesses = guesses + 1 WHERE nsp_id = ?;`
+            guessEntered: `UPDATE games SET guesses = guesses + 1 WHERE nsp_id = ?;`,
+            wordCovered: `UPDATE words SET covered = 1, by = 
+                            (SELECT team FROM games WHERE game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?)))
+                            where word = (?) AND game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?));`
         };
 
         this.get = {
