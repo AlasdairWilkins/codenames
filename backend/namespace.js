@@ -148,11 +148,19 @@ module.exports = class Namespace {
                         dao.query(get, 'guessResult', this.address, this.address, (result) => {
                             socket.emit('guess', {type: result.type})
                             if (result.type === 'assassin') {
-                                console.log("Game over!")
+
+                                dao.query(update, "gameOver", 0, 0, this.address, () => {
+                                    console.log("Game over!")
+                                })
+
                             } else if (result.type === 'decoy') {
-                                console.log("Wrong!")
+                                dao.query(update, 'newTurn', this.address, () => {
+                                    console.log("That's a decoy!")
+                                })
                             } else if (result.type !== result.team) {
-                                console.log("You just helped the other team!")
+                                dao.query(update, 'newTurn', this.address, () => {
+                                    console.log("You just helped the other team!")
+                                })
                             } else {
 
                             }

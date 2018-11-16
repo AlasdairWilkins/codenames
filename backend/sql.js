@@ -62,6 +62,7 @@ class SQL {
                guesses INTEGER,
                of INTEGER,
                active BOOLEAN DEFAULT 1 CHECK (active in (0,1)),
+               winner TEXT CHECK (winner in (null, 'blue', 'red')),
                    FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
                 );`,
             word: `CREATE TABLE IF NOT EXISTS words (
@@ -127,10 +128,28 @@ class SQL {
             guessEntered: `UPDATE games SET guesses = guesses + 1 WHERE nsp_id = ?;`,
             wordCovered: `UPDATE words SET covered = 1, by = 
                             (SELECT team FROM games WHERE game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?)))
-                            where word = (?) AND game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?));`
+                            where word = (?) AND game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?));`,
+            gameOver: `UPDATE games SET active = 0, winner = 
+                        (CASE 
+                            WHEN (?) = 0 AND team = 'red' then 'blue'
+                            WHEN (?) = 0 AND team = 'blue' then 'red'
+                            ELSE team
+                        END),
+                        team = NULL, turn = NULL, codeword = NULL, guesses = NULL, of = NULL                         
+                        WHERE nsp_id = (?)`,
+            newTurn: `UPDATE games SET team = 
+                        (CASE
+                            WHEN team = 'red' then 'blue'
+                            ELSE 'red'
+                        END),
+                        turn = turn + 1, codeword = NULL, guesses = NULL, of = NULL
+                        WHERE nsp_id = (?)`
         };
 
-        this.get = {
+        // team = NULL, turn = NULL, codeword = NULL, guesses = NULL, of = NULL, ,
+
+
+            this.get = {
             display: `SELECT display FROM namespaces WHERE nsp_id = (SELECT nsp_id FROM sessions WHERE session_id = ?)`,
             joining: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND display_name IS NULL`,
             waitingReady: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND ready = 0`,
