@@ -70,7 +70,7 @@ io.on(connection, function(socket) {
             })
         } else {
             let nsp = shortid.generate();
-            dao.query('namespaces', insert, null, nsp, () => {
+            dao.query('namespaces', insert, nsp, () => {
                 new Namespace(io, nsp, socket);
                 socket.emit(namespace, {namespace: nsp})
             })

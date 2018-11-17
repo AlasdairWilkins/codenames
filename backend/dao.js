@@ -33,19 +33,26 @@ class DAO {
         let type = arguments[1];
         let header = arguments[2];
 
-        let query = (header) ? sql[table][type][header] : sql[table][type]
+        let [query, hasHeader] = (typeof sql[table][type] === 'object') ?
+            [sql[table][type][arguments[2]], true] : [sql[table][type], false]
+
+        let paramsStart = (hasHeader) ? 3 : 2
 
         let op = this.getOp(type);
         let hasCB = (typeof arguments[arguments.length - 1] === "function");
         let cb = (hasCB) ? arguments[arguments.length - 1] : null;
 
-        let [isMultiple, originalParams, paramsLength] = (typeof query === 'function') ?
-            [true, arguments[3], 4] : [false, null, 3]
+        let [isMultiple, originalParams] = (typeof query === 'function') ?
+            [true, arguments[paramsStart]] : [false, null]
+
+        if (isMultiple) {
+            paramsStart++
+        }
 
         let params = [];
 
-        if ((hasCB) && arguments.length > paramsLength + 1 || (!hasCB) && arguments.length > paramsLength) {
-            for (let i = paramsLength; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
+        if ((hasCB) && paramsStart + 1 < arguments.length || (!hasCB) && paramsStart < arguments.length) {
+            for (let i = paramsStart; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
                 if (arguments[i] && typeof arguments[i] === 'object') {
                     params.push(...Object.values(arguments[i]))
                 } else {

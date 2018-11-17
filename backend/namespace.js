@@ -32,13 +32,13 @@ module.exports = class Namespace {
 
         socket.on(session, () => {
             let sessionID = shortid.generate();
-            dao.query('sessions', insert, null, sessionID, this.address, () => socket.emit(session, "id=" + sessionID));
+            dao.query('sessions', insert, sessionID, this.address, () => socket.emit(session, "id=" + sessionID));
         });
 
         socket.on(player, msg => {
             if (msg) {
                 dao.query('sessions', update, displayName, msg.name, socket.client.id, cookie.parse(msg.cookie).id, () => {
-                    dao.query('sessions', all, null, this.address, rows => {
+                    dao.query('sessions', all, this.address, rows => {
                         dao.query('sessions', get, joining, this.address, row => {
                             socket.broadcast.emit(player, {players: rows, joining: row.count, to: 'everyone else'})
                             socket.emit(player, {players: rows, joining: row.count, name: msg.name, to: 'you'})
@@ -46,7 +46,7 @@ module.exports = class Namespace {
                     })
                 })
             } else {
-                dao.query('sessions', all, null, this.address, rows => {
+                dao.query('sessions', all, this.address, rows => {
                     dao.query('sessions', get, joining, this.address, row => {
                         this.namespace.emit(player, {players: rows, joining: row.count, to: 'all'})
                     })
@@ -57,11 +57,11 @@ module.exports = class Namespace {
         socket.on(message, msg => {
 
             if (msg) {
-                dao.query('chats', insert, null, this.address, msg.entry, msg.name, msg.socketID, msg.socketID, () => {
+                dao.query('chats', insert, this.address, msg.entry, msg.name, msg.socketID, msg.socketID, () => {
                     this.namespace.emit(message, msg)
                 })
             } else {
-                dao.query('chats', all, null, this.address, rows => {
+                dao.query('chats', all, this.address, rows => {
                     socket.emit(message, rows)
                 })
             }
@@ -76,9 +76,9 @@ module.exports = class Namespace {
                     dao.query('sessions', get, waitingReady, this.address, (row) => {
                         if (!row.count) {
                             let gameID = shortid.generate()
-                            dao.query('games', insert, null, gameID, this.address, () => {
-                                dao.query('players', insert, null, gameID, this.address, () => {
-                                    dao.query('namespaces', update, null, 'select', this.address, () => {
+                            dao.query('games', insert, gameID, this.address, () => {
+                                dao.query('players', insert, gameID, this.address, () => {
+                                    dao.query('namespaces', update, 'select', this.address, () => {
                                         this.namespace.emit(ready)
                                     })
                                 })
@@ -98,7 +98,7 @@ module.exports = class Namespace {
                                             let [board, first] = game.makeBoard(25)
                                             dao.query('words', insert, words, board, this.address, () => {
                                                 dao.query('games', update, 'turn', first, this.address, () => {
-                                                    dao.query('namespaces', update, null, 'game', this.address, () => {
+                                                    dao.query('namespaces', update, 'game', this.address, () => {
                                                         this.namespace.emit(ready)
                                                     })
                                                 })
