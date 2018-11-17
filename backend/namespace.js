@@ -98,7 +98,7 @@ module.exports = class Namespace {
                                             let [board, first] = game.makeBoard(25)
                                             dao.query('words', insert, words, board, this.address, () => {
                                                 dao.query('games', update, 'turn', first, this.address, () => {
-                                                    dao.query('namespaces', update, 'game', this.address, () => {
+                                                    dao.query('namespaces', update, null, 'game', this.address, () => {
                                                         this.namespace.emit(ready)
                                                     })
                                                 })

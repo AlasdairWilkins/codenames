@@ -50,7 +50,7 @@ io.on(connection, function(socket) {
 
     if (socket.handshake.query.code) {
         let nsp = socket.handshake.query.code;
-        dao.query(get, namespace, nsp, row => {
+        dao.query('namespaces', get, namespace, nsp, row => {
             if (row) {
                 socket.emit(namespace, {namespace: nsp})
             } else {
@@ -61,7 +61,7 @@ io.on(connection, function(socket) {
 
     socket.on(namespace, msg => {
         if (msg) {
-            dao.query(get, namespace, msg, row => {
+            dao.query('namespaces', get, namespace, msg, row => {
                 if (row) {
                     socket.emit(namespace, true)
                 } else {

@@ -23,7 +23,6 @@ class DAO {
             for (let table in sql) {
                 this.db.run(sql[table].drop)
                 this.db.run(sql[table].create)
-                console.log("Success!")
             }
         })
     }
@@ -33,14 +32,15 @@ class DAO {
         let table = arguments[0]
         let type = arguments[1];
         let header = arguments[2];
+
+        let query = (header) ? sql[table][type][header] : sql[table][type]
+
         let op = this.getOp(type);
         let hasCB = (typeof arguments[arguments.length - 1] === "function");
         let cb = (hasCB) ? arguments[arguments.length - 1] : null;
 
-        // let [isMultiple, originalParams, paramsLength] = (typeof sql[type][header] === 'function') ?
-        //     [true, arguments[3], 4] : [false, null, 3]
-        let paramsLength = 3
-
+        let [isMultiple, originalParams, paramsLength] = (typeof query === 'function') ?
+            [true, arguments[3], 4] : [false, null, 3]
 
         let params = [];
 
@@ -54,14 +54,12 @@ class DAO {
             }
         }
 
-        let query = (header) ? sql[table][type][header] : sql[table][type]
-        // if (isMultiple) {
-        //     let [newHeader, newParams] = query(originalParams, ...params);
-        //     let newQuery =
-        //     this.multiple(op, type, newHeader, newParams, cb)
-        // } else {
+        if (isMultiple) {
+            let [newQuery, newParams] = query(originalParams, ...params);
+            this.multiple(op, newQuery, newParams, cb)
+        } else {
             this.run(op, query, params, cb)
-        // }
+        }
 
     }
 

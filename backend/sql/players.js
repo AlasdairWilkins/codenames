@@ -22,7 +22,8 @@ const players = {
         selectReady: `UPDATE players SET ready = 1 WHERE socket_id = ?`,
         codemaster: `UPDATE players SET codemaster = ? WHERE socket_id = ?`,
         team: `UPDATE players SET team = (?) WHERE socket_id = (?);`,
-        teams: (params) => [team, params.map(param => [param.team, param.socketID])],
+        teams: (params) => [`UPDATE players SET team = (?) WHERE socket_id = (?);`,
+            params.map(param => [param.team, param.socketID])],
     },
     get: {
         selectReady: `SELECT count(*) count FROM players WHERE 

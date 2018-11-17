@@ -12,10 +12,9 @@ const words = {
                    FOREIGN KEY (game_id) REFERENCES games(game_id)
                );`,
     insert: {
-        word:   `INSERT INTO words(row, column, word, type, game_id) SELECT (?), (?), (?), (?),
+        words: (params, nspID) => [`INSERT INTO words(row, column, word, type, game_id) SELECT (?), (?), (?), (?),
                     game_id FROM games WHERE nsp_id = (?);`,
-        words: (params, nspID) => ['word', params.map(param =>
-            [param.row, param.column, param.word, param.value, nspID])],
+            params.map(param => [param.row, param.column, param.word, param.value, nspID])],
     },
     update: `UPDATE words SET covered = 1, by = 
              (SELECT team FROM games WHERE game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?)))
