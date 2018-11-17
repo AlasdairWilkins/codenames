@@ -5,7 +5,7 @@ const {get, insert, update} = require('./constants');
 class GameState {
 
     handleUpdatedGameState(nspID, callback) {
-        dao.query(get, 'gameState', nspID, (result) => {
+        dao.query('games', get, 'gameState', nspID, (result) => {
             if (!result.active) {
                 callback("Handle game over")
                 //handle game over notification
@@ -21,16 +21,16 @@ class GameState {
     
     handleGuess(nspID, type, team, callback) {
         if (type === 'assassin') {
-            dao.query(update, "gameOver", 0, 0, nspID, () => {
+            dao.query('games', update, "gameOver", 0, 0, nspID, () => {
                 this.handleUpdatedGameState(nspID, callback)
             })
 
         } else if (type === 'decoy') {
-            dao.query(update, 'newTurn', nspID, () => {
+            dao.query('games', update, 'newTurn', nspID, () => {
                 this.handleUpdatedGameState(nspID, callback)
             })
         } else if (type !== team) {
-            dao.query(update, 'newTurn', nspID, () => {
+            dao.query('games', update, 'newTurn', nspID, () => {
                 this.handleUpdatedGameState(nspID, callback)
             })
         } else {

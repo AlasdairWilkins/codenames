@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 const dbFilePath = './db/sqlite.db';
 
-const sql = require('./sql');
+const sql = require('./sql/')
 
 const {update, insert, get, all, run, namespace, session, message} = require('./constants');
 
@@ -20,26 +20,27 @@ class DAO {
         });
 
         this.db.serialize(() => {
-            for (let table in sql.drop) {
-                this.db.run(sql.drop[table])
-            }
-
-            for (let table in sql.create) {
-                this.db.run(sql.create[table])
+            for (let table in sql) {
+                this.db.run(sql[table].drop)
+                this.db.run(sql[table].create)
+                console.log("Success!")
             }
         })
     }
 
     query() {
 
-        let type = arguments[0];
-        let header = arguments[1];
+        let table = arguments[0]
+        let type = arguments[1];
+        let header = arguments[2];
         let op = this.getOp(type);
         let hasCB = (typeof arguments[arguments.length - 1] === "function");
         let cb = (hasCB) ? arguments[arguments.length - 1] : null;
 
-        let [isMultiple, originalParams, paramsLength] = (typeof sql[type][header] === 'function') ?
-            [true, arguments[2], 3] : [false, null, 2]
+        // let [isMultiple, originalParams, paramsLength] = (typeof sql[type][header] === 'function') ?
+        //     [true, arguments[3], 4] : [false, null, 3]
+        let paramsLength = 3
+
 
         let params = [];
 
@@ -53,12 +54,14 @@ class DAO {
             }
         }
 
-        if (isMultiple) {
-            let [newHeader, newParams] = sql[type][header](originalParams, ...params);
-            this.multiple(op, type, newHeader, newParams, cb)
-        } else {
-            this.run(op, type, header, params, cb)
-        }
+        let query = (header) ? sql[table][type][header] : sql[table][type]
+        // if (isMultiple) {
+        //     let [newHeader, newParams] = query(originalParams, ...params);
+        //     let newQuery =
+        //     this.multiple(op, type, newHeader, newParams, cb)
+        // } else {
+            this.run(op, query, params, cb)
+        // }
 
     }
 
@@ -75,9 +78,9 @@ class DAO {
 
 
 
-    run(op, type, header, params, cb) {
+    run(op, query, params, cb) {
 
-        this.db[op](sql[type][header], params, function (err, res) {
+        this.db[op](query, params, function (err, res) {
             if (err) {
                 console.error("Error:", err.message)
             } else {
@@ -89,14 +92,14 @@ class DAO {
 
     }
 
-    multiple(op, type, header, params, cb, result) {
+    multiple(op, query, params, cb, result) {
 
-        this.db[op](sql[type][header], params[0], (err, res) => {
+        this.db[op](query, params[0], (err, res) => {
             if (err) {
                 console.error("Error", err.message)
             } else {
                 if (params.length > 1) {
-                    this.multiple(op, type, header, params.slice(1), cb)
+                    this.multiple(op, query, params.slice(1), cb)
                 } else {
                     if (cb) {
                         cb(res)

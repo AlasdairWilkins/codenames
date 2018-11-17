@@ -17,3 +17,5 @@ class SQL {
         this.words = words
     }
 }
+
+module.exports = new SQL()

@@ -20,7 +20,7 @@ io.on(connection, function(socket) {
     if (socket.handshake.headers.cookie && cookie.parse(socket.handshake.headers.cookie).id) {
         let sessionID = cookie.parse(socket.handshake.headers.cookie).id;
 
-        dao.query(get, 'display', sessionID, (result) => {
+        dao.query('namespaces', get, 'display', sessionID, (result) => {
             if (result) {
                 switch (result.display) {
 
@@ -70,7 +70,7 @@ io.on(connection, function(socket) {
             })
         } else {
             let nsp = shortid.generate();
-            dao.query(insert, namespace, nsp, () => {
+            dao.query('namespaces', insert, null, nsp, () => {
                 new Namespace(io, nsp, socket);
                 socket.emit(namespace, {namespace: nsp})
             })

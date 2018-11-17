@@ -216,4 +216,5 @@ class SQL {
 
 }
 
-module.exports = new SQL();
+
+// module.exports = new SQL();
