@@ -21,7 +21,7 @@ class DAO {
 
         this.db.serialize(() => {
             for (let table in sql) {
-                this.db.run(sql[table].drop)
+                this.db.run(sql.drop(table))
                 this.db.run(sql[table].create)
             }
         })

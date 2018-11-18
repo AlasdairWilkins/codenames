@@ -1,5 +1,4 @@
 const guesses = {
-    drop: `DROP TABLE IF EXISTS guesses;`,
     create: `CREATE TABLE IF NOT EXISTS guesses (
                 game_id TEXT NOT NULL,
                 team TEXT CHECK (team in ('blue', 'red')),

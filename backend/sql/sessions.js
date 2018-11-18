@@ -1,5 +1,4 @@
 const sessions = {
-    drop: `DROP TABLE IF EXISTS sessions;`,
     create: `CREATE TABLE IF NOT EXISTS sessions (
                 session_id   TEXT PRIMARY KEY,
                 nsp_id   TEXT,

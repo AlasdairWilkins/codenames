@@ -1,5 +1,7 @@
+const {drop} = require('./templates')
+
 const chats = {
-    drop: `DROP TABLE IF EXISTS chats;`,
+    drop: drop('chats'),
     create: `CREATE TABLE IF NOT EXISTS chats (
                 chat_id INTEGER PRIMARY KEY,
                 nsp_id  text    NOT NULL,

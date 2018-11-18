@@ -1,5 +1,4 @@
 const players = {
-    drop: `DROP TABLE IF EXISTS players;`,
     create:  `CREATE TABLE IF NOT EXISTS players (
                 game_id TEXT,
                 nsp_id   TEXT    NOT NULL,
