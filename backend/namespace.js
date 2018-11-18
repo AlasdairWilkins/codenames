@@ -32,7 +32,15 @@ module.exports = class Namespace {
 
         socket.on(session, () => {
             let sessionID = shortid.generate();
-            dao.query('sessions', insert, sessionID, this.address, () => socket.emit(session, "id=" + sessionID));
+            dao.query('sessions', insert, sessionID, this.address, () => {
+                dao.query('sessions', get, 'session', sessionID, this.address, (row) => {
+                    if (row.sessionID) {
+                        socket.emit(session, "id=" + sessionID)
+                    } else {
+                        console.log("No session!")
+                    }
+                })
+            });
         });
 
         socket.on(player, msg => {
@@ -68,8 +76,6 @@ module.exports = class Namespace {
         });
 
         socket.on(ready, (msg) => {
-
-            let header = (msg === waitingReady) ? waitingReady : 'selectReady'
 
             if (msg === waitingReady) {
                 dao.query('sessions', update, waitingReady, socket.client.id, () => {
@@ -116,7 +122,6 @@ module.exports = class Namespace {
         socket.on(select, (msg) => {
             dao.query('players', update, team, msg, socket.client.id, () => {
                 dao.query('players', all, team, this.address, rows => {
-                    console.log("Ahoy hoy", rows)
                     dao.query('players', get, checkPlayerMax, this.address, row => {
                         let max = Math.ceil(row.total / 2)
                         let blueMax = (row.blueCount >= max)

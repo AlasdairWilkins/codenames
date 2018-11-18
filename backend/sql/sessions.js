@@ -17,6 +17,7 @@ const sessions = {
         resetReady: `UPDATE sessions SET ready = 0 WHERE nsp_id = ?`,
     },
     get: {
+        session: `SELECT session_id sessionID FROM sessions WHERE session_id = (?) AND nsp_id = (?)`,
         joining: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND display_name IS NULL`,
         waitingReady: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND ready = 0`,
         resume: `SELECT nsp_id nspID, display_name displayName FROM sessions WHERE session_id = ?`,

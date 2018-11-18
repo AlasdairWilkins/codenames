@@ -49,10 +49,9 @@ io.on(connection, function(socket) {
     }
 
     if (socket.handshake.query.code) {
-        let nsp = socket.handshake.query.code;
-        dao.query('namespaces', get, namespace, nsp, row => {
+        dao.query('namespaces', get, namespace, socket.handshake.query.code, row => {
             if (row) {
-                socket.emit(namespace, {namespace: nsp})
+                socket.emit(namespace, {namespace: row.nspID})
             } else {
                 socket.emit(namespace, false)
             }
@@ -71,8 +70,14 @@ io.on(connection, function(socket) {
         } else {
             let nsp = shortid.generate();
             dao.query('namespaces', insert, nsp, () => {
-                new Namespace(io, nsp, socket);
-                socket.emit(namespace, {namespace: nsp})
+                dao.query('namespaces', get, namespace, nsp, row => {
+                    if (row) {
+                        new Namespace(io, nsp, socket);
+                        socket.emit(namespace, {namespace: row.nspID})
+                    } else {
+                        socket.emit(namespace, false)
+                    }
+                })
             })
         }
     })
