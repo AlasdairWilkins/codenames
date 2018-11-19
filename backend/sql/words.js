@@ -1,15 +1,15 @@
-const {create, text, int, is, checkIn, bool, primary, foreign} = require('./templates')
+const {create, text, int, bool, primary, foreign} = require('./templates')
 
 const words = {
     create: create(
-        'words',
-        text('game_id', is('NOT NULL')),
-        int('row', is('NOT NULL'), checkIn('row', [0, 1, 2, 3, 4])),
-        int('column', is('NOT NULL'), checkIn('column', [0, 1, 2, 3, 4])),
-        text('word', is('NOT NULL')),
-        text('type', is('NOT NULL'), checkIn('type', ['blue', 'red', 'assassin', 'decoy'])),
+        "words",
+        text('game_id').notNull(),
+        int('row').notNull().checkIn(0, 1, 2, 3, 4),
+        int('column').notNull().checkIn(0, 1, 2, 3, 4),
+        text('word').notNull(),
+        text('type').notNull().checkIn('blue', 'red', 'assassin', 'decoy'),
         bool('covered', false),
-        text('by', checkIn('by', ['blue', 'red'])),
+        text('by').checkIn('blue', 'red'),
         primary('game_id', 'row', 'column'),
         foreign('game_id', 'games')
     ),
