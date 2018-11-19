@@ -12,7 +12,7 @@ const def = function(value) {
 };
 
 const checkIn = function(column, range) {
-    return ` CHECK (` + column + ` in (` + range.map(item => (typeof item === 'string' ? `'${item}'` : item)).join(",") + `))`
+    return `CHECK (` + column + ` in (` + range.map(item => (typeof item === 'string' ? `'${item}'` : item)).join(",") + `))`
 };
 
 const text = function() {
