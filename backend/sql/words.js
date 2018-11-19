@@ -1,16 +1,18 @@
+const {create, text, int, is, checkIn, bool, primary, foreign} = require('./templates')
+
 const words = {
-    drop: `DROP TABLE IF EXISTS words;`,
-    create: `CREATE TABLE IF NOT EXISTS words (
-               game_id TEXT NOT NULL,
-               row INTEGER NOT NULL CHECK (row in (0,1,2,3,4)),
-               column INTEGER NOT NULL CHECK (column in (0,1,2,3,4)),
-               word TEXT NOT NULL,
-               type TEXT NOT NULL CHECK (type in ('blue', 'red', 'assassin', 'decoy')),
-               covered BOOLEAN DEFAULT 0 CHECK (covered in (0,1)),
-               by TEXT CHECK (by in ('blue', 'red')),
-                   PRIMARY KEY (game_id,row,column),
-                   FOREIGN KEY (game_id) REFERENCES games(game_id)
-               );`,
+    create: create(
+        'words',
+        text('game_id', is('NOT NULL')),
+        int('row', is('NOT NULL'), checkIn('row', [0, 1, 2, 3, 4])),
+        int('column', is('NOT NULL'), checkIn('column', [0, 1, 2, 3, 4])),
+        text('word', is('NOT NULL')),
+        text('type', is('NOT NULL'), checkIn('type', ['blue', 'red', 'assassin', 'decoy'])),
+        bool('covered', false),
+        text('by', checkIn('by', ['blue', 'red'])),
+        primary('game_id', 'row', 'column'),
+        foreign('game_id', 'games')
+    ),
     insert: {
         words: (params, nspID) => [`INSERT INTO words(row, column, word, type, game_id) SELECT (?), (?), (?), (?),
                     game_id FROM games WHERE nsp_id = (?);`,
