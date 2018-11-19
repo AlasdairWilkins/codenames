@@ -14,6 +14,46 @@ ForeignKey.prototype.onDelete = function(action) {
     return this
 }
 
+ForeignKey.prototype.onUpdateCascade = function() {
+    return this.onUpdate('CASCADE')
+}
+
+ForeignKey.prototype.onUpdateSetNull = function() {
+    return this.onUpdate('SET NULL')
+}
+
+ForeignKey.prototype.onSetDefault = function() {
+    return this.onUpdate('SET DEFAULT')
+}
+
+ForeignKey.prototype.onUpdateRestrict = function() {
+    return this.onUpdate('RESTRICT')
+}
+
+ForeignKey.prototype.onUpdateNoAction = function() {
+    return this.onDelete('NO ACTION')
+}
+
+ForeignKey.prototype.onDeleteCascade = function() {
+    return this.onDelete('CASCADE')
+}
+
+ForeignKey.prototype.onDeleteSetNull = function() {
+    return this.onDelete('SET NULL')
+}
+
+ForeignKey.prototype.onDeleteSetDefault = function() {
+    return this.onUpdate('SET DEFAULT')
+}
+
+ForeignKey.prototype.onDeleteRestrict = function() {
+    return this.onDelete('RESTRICT')
+}
+
+ForeignKey.prototype.onDeleteNoAction = function() {
+    return this.onDelete('NO ACTION')
+}
+
 
 ForeignKey.prototype.save = function() {
     let mainString = `FOREIGN KEY (${this.column}) REFERENCES ${this.foreignTable}(${this.foreignColumn})`
