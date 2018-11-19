@@ -2,6 +2,7 @@ const {create, text, primary} = require('./templates')
 
 const namespaces = {
     create: create('namespaces', text('nsp_id'), text('display').default('waiting'), primary('nsp_id')),
+
     insert: `INSERT INTO namespaces(nsp_id) VALUES (?)`,
     update: `UPDATE namespaces SET display = ? WHERE nsp_id = ?`,
     get: {

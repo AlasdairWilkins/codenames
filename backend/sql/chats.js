@@ -1,19 +1,11 @@
-const {drop} = require('./templates')
+const {create, int, text, foreign} = require('./templates')
 
 const chats = {
-    drop: drop('chats'),
-    create: `CREATE TABLE IF NOT EXISTS chats (
-                chat_id INTEGER PRIMARY KEY,
-                nsp_id  text    NOT NULL,
-                session_id  text,
-                display_name text,
-                socket_id text,
-                message text    NOT NULL,
-                    FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id),
-                    FOREIGN KEY (session_id) REFERENCES sessions(session_id),
-                    FOREIGN KEY (display_name) REFERENCES sessions(display_name),
-                    FOREIGN KEY (socket_id) REFERENCES sessions(socket_id) ON UPDATE CASCADE
-                );`,
+    create: create('chats', int('chat_id').primary(), text('nsp_id').notNull(), text('session_id'),
+        text('display_name'), text('socket_id'), text('message').notNull(), foreign('nsp_id', 'namespaces'),
+        foreign('session_id', 'sessions'), foreign('display_name', 'sessions'), foreign('socket_id', 'sessions')),
+    // ON UPDATE CASCADE
+
     insert: `INSERT INTO chats(nsp_id, message, display_name, socket_id, session_id) 
                     SELECT (?), (?), (?), (?), session_id FROM sessions WHERE socket_id = (?);`,
     all: `SELECT message entry,

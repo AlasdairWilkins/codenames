@@ -1,19 +1,11 @@
+const {create, text, bool, primary, foreign} = require('./templates')
+
 const players = {
-    create:  `CREATE TABLE IF NOT EXISTS players (
-                game_id TEXT,
-                nsp_id   TEXT    NOT NULL,
-                session_id  TEXT,
-                socket_id   TEXT,
-                display_name    TEXT,
-                team    TEXT    DEFAULT NULL    CHECK (team in (NULL, 'blue', 'red')),
-                codemaster BOOLEAN DEFAULT 0 CHECK (codemaster in (0,1)),
-                ready   BOOLEAN DEFAULT 0 CHECK (ready in (0,1)),
-                    PRIMARY KEY (game_id,session_id),
-                    FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
-                    FOREIGN KEY (game_id) REFERENCES games(game_id),
-                    FOREIGN KEY (session_id) REFERENCES sessions(session_id),
-                    FOREIGN KEY (socket_id) REFERENCES sessions(socket_id) ON UPDATE CASCADE
-                );`,
+    create: create('players', text('game_id'), text('nsp_id').notNull(), text('session_id'), text('socket_id'),
+        text('display_name'), text('team').default(null).checkIn(null, 'blue', 'red'), bool('codemaster', false),
+        bool('ready', false), primary('game_id', 'session_id'), foreign('nsp_id', 'namespaces'),
+        foreign('game_id', 'games'), foreign('session_id', 'sessions'), foreign('socket_id', 'sessions')),
+
     insert: `INSERT INTO players(game_id, session_id, nsp_id, socket_id, display_name)
                     SELECT (?), session_id, nsp_id, socket_id, display_name
                     FROM sessions WHERE nsp_id = (?)`,

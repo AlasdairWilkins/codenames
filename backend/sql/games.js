@@ -1,16 +1,12 @@
+const {create, text, int, bool, foreign} = require('./templates')
+
+
+
 const games = {
-    create: `CREATE TABLE IF NOT EXISTS games (
-               game_id  TEXT    PRIMARY KEY,
-               nsp_id   TEXT    NOT NULL,
-               team TEXT    CHECK (team in (null, 'blue', 'red')),
-               turn INTEGER,
-               codeword TEXT,
-               guesses INTEGER,
-               of INTEGER,
-               active BOOLEAN DEFAULT 1 CHECK (active in (0,1)),
-               winner TEXT CHECK (winner in (null, 'blue', 'red')),
-                   FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
-                );`,
+    create: create('games', text('game_id').primary(), text('nsp_id').notNull(),
+        text('team').checkIn(null, 'blue', 'red'), int('turn'), text('codeword'), int('guesses'), int('of'),
+        bool('active', true), text('winner').checkIn(null, 'blue', 'red'), foreign('nsp_id', 'namespaces')),
+
     insert: `INSERT INTO games(game_id, nsp_id) VALUES (?, ?)`,
     update: {
         codeword: `UPDATE games SET codeword = ?, number = ? WHERE

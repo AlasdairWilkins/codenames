@@ -5,7 +5,15 @@ const Column = function(name, type) {
 
 Column.prototype.checkIn = function() {
     this.checkIn = `CHECK (${this.name} in (` +
-        Array(...arguments).map(item => typeof item === 'string' ? `'${item}'` : item).join(",") + `))`
+        Array(...arguments).map(item => {
+            if (typeof item === 'string') {
+                return `'${item}'`
+            }
+            if (item === null) {
+                return 'NULL'
+            }
+            return item
+        }).join(",") + `))`
     return this
 }
 

@@ -1,12 +1,9 @@
+const {create, text, bool, foreign} = require('./templates')
+
 const sessions = {
-    create: `CREATE TABLE IF NOT EXISTS sessions (
-                session_id   TEXT PRIMARY KEY,
-                nsp_id   TEXT,
-                display_name    TEXT,
-                socket_id   TEXT,
-                ready   BOOLEAN DEFAULT 0 CHECK (ready in (0,1)),
-                    FOREIGN KEY (nsp_id) REFERENCES namespaces(nsp_id)
-                );`,
+    create: create('sessions', text('session_id').primary(), text('nsp_id'), text('display_name'),
+        text('socket_id'), bool('ready', 0), foreign('nsp_id', 'namespaces')),
+
     insert: `INSERT INTO sessions(session_id, nsp_id) VALUES (?, ?);`,
     update: {
         socketID: `UPDATE sessions SET socket_id = ? WHERE session_id = ?`,
