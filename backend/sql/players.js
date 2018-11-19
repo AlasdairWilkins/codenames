@@ -4,7 +4,8 @@ const players = {
     create: create('players', text('game_id'), text('nsp_id').notNull(), text('session_id'), text('socket_id'),
         text('display_name'), text('team').default(null).checkIn(null, 'blue', 'red'), bool('codemaster', false),
         bool('ready', false), primary('game_id', 'session_id'), foreign('nsp_id', 'namespaces'),
-        foreign('game_id', 'games'), foreign('session_id', 'sessions'), foreign('socket_id', 'sessions')),
+        foreign('game_id', 'games'), foreign('session_id', 'sessions'),
+        foreign('socket_id', 'sessions').onUpdate('CASCADE')),
 
     insert: `INSERT INTO players(game_id, session_id, nsp_id, socket_id, display_name)
                     SELECT (?), session_id, nsp_id, socket_id, display_name
