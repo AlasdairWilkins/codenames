@@ -71,52 +71,61 @@ class DAO {
     }
 
 
-    // } else {
-        //     let params = [];
-        //     for (let i = 2; (hasCB) ? i < arguments.length - 1 : i < arguments.length; i++) {
-        //         if (typeof arguments[i] === 'object') {
-        //             params.push(...Object.values(arguments[i]))
-        //         } else {
-        //             params.push(arguments[i])
-        //         }
-        //     }
+//prep for promises refactoring
 
-
-
-    run(op, query, params, cb) {
+    run(op, query, params, callback) {
 
         this.db[op](query, params, function (err, res) {
-            if (err) {
-                console.log(query, params);
-                console.error("Error:", err.message)
-            } else {
-                if (cb) {
-                    cb(res)
-                }
-            }
+            callback(err, res)
         })
-
     }
 
-    multiple(op, query, params, cb, result) {
+    multiple(op, query, params, callback) {
 
         this.db[op](query, params[0], (err, res) => {
-            if (err) {
-                console.log(query, params);
-                console.error("Error", err.message)
+            if (params.length > 1) {
+                this.multiple(op, query, params.slice(1), callback)
             } else {
-                if (params.length > 1) {
-                    this.multiple(op, query, params.slice(1), cb)
-                } else {
-                    if (cb) {
-                        cb(res)
-                    }
-                }
+                callback(err, res)
             }
         })
 
-        //db.run( sql query , [params], callback)
     }
+
+    // run(op, query, params, callback) {
+    //
+    //     this.db[op](query, params, function (err, res) {
+    //         if (err) {
+    //             console.log(query, params);
+    //             console.error("Error:", err.message)
+    //         } else {
+    //             if (cb) {
+    //                 cb(res)
+    //             }
+    //         }
+    //     })
+    //
+    // }
+    //
+    // multiple(op, query, params, cb, result) {
+    //
+    //     this.db[op](query, params[0], (err, res) => {
+    //         if (err) {
+    //             console.log(query, params);
+    //             console.error("Error", err.message)
+    //         } else {
+    //             if (params.length > 1) {
+    //                 this.multiple(op, query, params.slice(1), cb)
+    //             } else {
+    //                 if (cb) {
+    //                     cb(res)
+    //                 }
+    //             }
+    //         }
+    //     })
+    //
+    //     //db.run( sql query , [params], callback)
+    // }
 
     getOp(type) {
         switch (type) {

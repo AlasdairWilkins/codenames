@@ -1,6 +1,8 @@
 const cookie = require('cookie');
 
-const handle = require('./handlers');
+const Promise = require('bluebird')
+
+const handle = Promise.promisifyAll(require('./handlers'));
 
 const {connection, player, session, message, ready, team, select, disconnect} = require('./constants');
 

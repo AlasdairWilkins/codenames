@@ -7,7 +7,7 @@ const game = require('./game')
 class GameState {
 
     handleUpdatedGameState(nspID, callback) {
-        dao.query('games', get, 'gameState', nspID, (result) => {
+        dao.query('games', get, 'gameState', nspID, (err, result) => {
             if (!result.active) {
                 callback("Handle game over")
                 //handle game over notification
@@ -23,16 +23,16 @@ class GameState {
     
     handleGuess(nspID, type, team, callback) {
         if (type === 'assassin') {
-            dao.query('games', update, "gameOver", 0, 0, nspID, () => {
+            dao.query('games', update, "gameOver", 0, 0, nspID, (err) => {
                 this.handleUpdatedGameState(nspID, callback)
             })
 
         } else if (type === 'decoy') {
-            dao.query('games', update, 'newTurn', nspID, () => {
+            dao.query('games', update, 'newTurn', nspID, (err) => {
                 this.handleUpdatedGameState(nspID, callback)
             })
         } else if (type !== team) {
-            dao.query('games', update, 'newTurn', nspID, () => {
+            dao.query('games', update, 'newTurn', nspID, (err) => {
                 this.handleUpdatedGameState(nspID, callback)
             })
         } else {
@@ -42,16 +42,16 @@ class GameState {
 
     handleMakeTeams(players, count, callback) {
         let sorted = game.makeTeams(players, count);
-        dao.query('players', 'update', 'teams', sorted, () => {
+        dao.query('players', 'update', 'teams', sorted, (err) => {
             callback()
         })
     }
 
     handleMakeBoard(nspID, callback) {
         let [board, first] = game.makeBoard(25);
-        dao.query('words', insert, 'words', board, nspID, () => {
-            dao.query('games', update, 'turn', first, nspID, () => {
-                dao.query('namespaces', update, 'game', nspID, () => {
+        dao.query('words', insert, 'words', board, nspID, (err) => {
+            dao.query('games', update, 'turn', first, nspID, (err) => {
+                dao.query('namespaces', update, 'game', nspID, (err) => {
                     callback()
                 })
             })

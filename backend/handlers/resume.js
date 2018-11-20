@@ -1,7 +1,7 @@
 const dao = require('../dao');
 
 const resume = function(sessionID) {
-    dao.query('namespaces', 'get', 'display', sessionID, (result) => {
+    dao.query('namespaces', 'get', 'display', sessionID, (err, result) => {
         if (result) {
             switch (result.display) {
 
