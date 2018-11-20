@@ -20,13 +20,13 @@ class CodeWord extends Component {
 
     handleSubmit(event) {
 
-        let codeword = event.target.elements.code.value
-        let number =  event.target.elements.number.options[event.target.elements.number.selectedIndex].value
+        let codeword = event.target.elements.code.value;
+        let number =  event.target.elements.number.options[event.target.elements.number.selectedIndex].value;
         // let msg = {code, number}
 
-        api.set('codeword', {codeword, number})
-        this.props.clear('words')
-        api.get('game')
+        api.set('codeword', {codeword, number});
+        this.props.clear('words');
+        api.get('game');
 
 
         this.setState({submitted: true});
@@ -40,7 +40,7 @@ class CodeWord extends Component {
             )
         }
 
-        let choices = []
+        let choices = [];
 
         for (let i = 0; i < this.props.remaining; i++) {
             choices.push(i + 1)
@@ -127,13 +127,13 @@ const mapStateToProps = (state) => {
         codeword: state.codeword,
         number: state.number
     }
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(CodeWord);
 

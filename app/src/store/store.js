@@ -6,7 +6,7 @@ const initialState =
         display: null,
         players: [],
         codemaster: false
-    }
+    };
 
 const store = createStore(rootReducer, initialState);
 

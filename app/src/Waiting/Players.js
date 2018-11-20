@@ -13,7 +13,7 @@ class Players extends Component {
             )
         }
 
-        let finalPlayer = this.props.players.length - 1
+        let finalPlayer = this.props.players.length - 1;
 
         return (
             <div>
@@ -29,7 +29,7 @@ class Players extends Component {
 
     render() {
 
-        let display = this.set()
+        let display = this.set();
 
         return (
             display
@@ -44,10 +44,10 @@ const mapStateToProps = (state, ownProps) => {
         name: state.name,
         players: state.players,
     }
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {}
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Players);

@@ -1,4 +1,4 @@
-const {create, text, int, bool, foreign} = require('./templates')
+const {create, text, int, bool, foreign} = require('./templates');
 
 
 
@@ -31,8 +31,9 @@ const games = {
     },
     get: {
         turn: `SELECT turn FROM games WHERE nsp_id = (?);`,
-        gameState: `SELECT * FROM games WHERE nsp_id = (?);`
+        gameState: `SELECT * FROM games WHERE nsp_id = (?);`,
+        codeword: `SELECT codeword FROM games WHERE nsp_id = (?);`
     }
-}
+};
 
-module.exports = games
+module.exports = games;

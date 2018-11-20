@@ -8,7 +8,7 @@ import connect from "react-redux/es/connect/connect";
 
 class Ready extends Component {
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             ready: false,
@@ -33,7 +33,7 @@ class Ready extends Component {
 
     render() {
 
-        let display = this.props.name ? this.set() : null
+        let display = this.props.name ? this.set() : null;
 
         return (
             display
@@ -47,12 +47,12 @@ const mapStateToProps = (state, ownProps) => {
     return {
         name: state.name,
     }
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Ready);

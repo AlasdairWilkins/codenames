@@ -14,7 +14,7 @@ class Others extends Component {
 
     render() {
 
-        let display = this.set()
+        let display = this.set();
 
         return (
             display
@@ -30,10 +30,10 @@ const mapStateToProps = (state, ownProps) => {
         players: state.players,
         joining: state.joining
     }
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {}
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Others);

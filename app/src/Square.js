@@ -9,7 +9,7 @@ class Square extends Component {
 
     handleClick() {
         api.set('guess', this.props.square.word, (err, msg) => {
-            console.log(msg)
+            console.log(msg);
             this.props.updateWord(this.props.row, this.props.column, msg)
         })
     }
@@ -17,7 +17,7 @@ class Square extends Component {
     set() {
 
         let onClick = (!this.props.codemaster && (this.props.team === this.props.turn)) ?
-            () => this.handleClick() : null
+            () => this.handleClick() : null;
 
         return (
             <div className={this.props.square.type} onClick={onClick}>{this.props.square.word}</div>
@@ -27,7 +27,7 @@ class Square extends Component {
 
     render() {
 
-        let display = this.set()
+        let display = this.set();
 
         return (
             display
@@ -43,13 +43,13 @@ const mapStateToProps = (state, ownProps) => {
         team: state.team,
         turn: state.turn
     }
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
         updateWord: bindActionCreators(updateWord, dispatch)
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Square);

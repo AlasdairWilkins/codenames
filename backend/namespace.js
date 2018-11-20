@@ -1,22 +1,10 @@
-const Player = require('./player');
-const Game = require('./game');
-
-const shortid = require('shortid');
 const cookie = require('cookie');
-const nodemailer = require('nodemailer');
 
-const url = process.env.DEVURL;
+const handle = require('./handlers');
 
-const dao = require('./dao');
-const game = require('./game');
+const {connection, player, session, message, ready, team, select, disconnect} = require('./constants');
 
-const {get, insert, update, all, connection,
-    player, session, displayName, unsorted, waitingReady,
-    message, ready, team, teams, select, disconnect,
-    checkPlayerMax, resetReady, joining, words} = require('./constants');
-
-const guess = require('./guess')
-const gameState = require('./gameState')
+const gameState = require('./gameState');
 
 module.exports = class Namespace {
 
@@ -31,178 +19,119 @@ module.exports = class Namespace {
     setListeners(socket) {
 
         socket.on(session, () => {
-            let sessionID = shortid.generate();
-            dao.query('sessions', insert, sessionID, this.address, () => {
-                dao.query('sessions', get, 'session', sessionID, this.address, (row) => {
-                    if (row.sessionID) {
-                        socket.emit(session, "id=" + sessionID)
-                    } else {
-                        console.log("No session!")
-                    }
-                })
-            });
+            handle.createSession(this.address, sessionID => {
+                socket.emit(session, "id=" + sessionID)
+            })
         });
 
         socket.on(player, msg => {
             if (msg) {
-                dao.query('sessions', update, displayName, msg.name, socket.client.id, cookie.parse(msg.cookie).id, () => {
-                    dao.query('sessions', all, this.address, rows => {
-                        dao.query('sessions', get, joining, this.address, row => {
-                            socket.broadcast.emit(player, {players: rows, joining: row.count, to: 'everyone else'})
-                            socket.emit(player, {players: rows, joining: row.count, name: msg.name, to: 'you'})
+                handle.setDisplayName(msg.name, socket.client.id, cookie.parse(msg.cookie).id, this.address,
+                    (players, joining) => {
+                        handle.getDisplayName(cookie.parse(msg.cookie).id, this.address, name => {
+                            socket.broadcast.emit(player, {players, joining, to: 'everyone else'});
+                            socket.emit(player, {players, joining, name, to: 'you'})
                         })
-                    })
+
                 })
             } else {
-                dao.query('sessions', all, this.address, rows => {
-                    dao.query('sessions', get, joining, this.address, row => {
-                        this.namespace.emit(player, {players: rows, joining: row.count, to: 'all'})
-                    })
+                handle.getAllSessions(this.address, (players, joining) => {
+                    this.namespace.emit(player, {players, joining, to: 'all'})
                 })
             }
         });
 
         socket.on(message, msg => {
-
             if (msg) {
-                dao.query('chats', insert, this.address, msg.entry, msg.name, msg.socketID, msg.socketID, () => {
-                    this.namespace.emit(message, msg)
+                handle.addChat(this.address, msg.entry, msg.name, msg.socketID, () => {
+                    // handle.getChat(, result => {
+                        this.namespace.emit(message, msg)
+                    // })
                 })
             } else {
-                dao.query('chats', all, this.address, rows => {
-                    socket.emit(message, rows)
+                handle.getAllChats(this.address, rows => {
+                    socket.emit('message', rows)
                 })
             }
         });
 
         socket.on(ready, (msg) => {
 
-            if (msg === waitingReady) {
-                dao.query('sessions', update, waitingReady, socket.client.id, () => {
-                    dao.query('sessions', get, waitingReady, this.address, (row) => {
-                        if (!row.count) {
-                            let gameID = shortid.generate()
-                            dao.query('games', insert, gameID, this.address, () => {
-                                dao.query('players', insert, gameID, this.address, () => {
-                                    dao.query('namespaces', update, 'select', this.address, () => {
+            let header = (msg === 'waitingReady') ? 'sessions' : 'players';
+
+            handle.setReady(header, socket.client.id, () => {
+                handle.checkAllReady(header, this.address, count => {
+                    if (!count) {
+                        if (msg === 'waitingReady') {
+                            handle.createGame(this.address, () => {
+                                this.namespace.emit(ready)
+                            })
+                        } else {
+                            handle.getUnsortedPlayers(this.address, (players, count) => {
+                                gameState.handleMakeTeams(players, count, () => {
+                                    gameState.handleMakeBoard(this.address, () => {
                                         this.namespace.emit(ready)
                                     })
                                 })
+
                             })
                         }
-                    })
+                    }
                 })
-            } else {
-                dao.query('players', update, 'selectReady', socket.client.id, () => {
-                    dao.query('players', get, 'selectReady', this.address, (row) => {
-                        if (!row.count) {
-                            dao.query('players', update, 'codemaster', msg, socket.client.id, () => {
-                                dao.query('players', all, unsorted, this.address, players => {
-                                    dao.query('players', get, checkPlayerMax, this.address, count => {
-                                        let sorted = game.makeTeams(players, count)
-                                        dao.query('players', update, teams, sorted, () => {
-                                            let [board, first] = game.makeBoard(25)
-                                            dao.query('words', insert, words, board, this.address, () => {
-                                                dao.query('games', update, 'turn', first, this.address, () => {
-                                                    dao.query('namespaces', update, 'game', this.address, () => {
-                                                        this.namespace.emit(ready)
-                                                    })
-                                                })
-                                            })
-                                        })
-                                    })
-                                })
-                            })
-                        }
-                    })
-                })
-            }
+            })
         });
 
         socket.on(select, (msg) => {
-            dao.query('players', update, team, msg, socket.client.id, () => {
-                dao.query('players', all, team, this.address, rows => {
-                    dao.query('players', get, checkPlayerMax, this.address, row => {
-                        let max = Math.ceil(row.total / 2)
-                        let blueMax = (row.blueCount >= max)
-                        let redMax = (row.redCount >= max)
-                        this.namespace.emit(select, {players: rows, blueMax: blueMax, redMax: redMax})
-                    })
+            handle.updatePlayerTeamSelect(msg, socket.client.id, () => {
+                handle.getAllPlayersTeamSelect(this.address, (players, blueMax, redMax) => {
+                    this.namespace.emit(select, {players, blueMax, redMax})
                 })
             })
         });
 
         socket.on(team, () => {
-            dao.query('players', get, team, socket.client.id, (res) => {
-                socket.join(res.team)
-                socket.emit(team, res)
+            handle.getTeams(socket.client.id, (result, team) => {
+                socket.join(team);
+                socket.emit('team', result)
             })
-        })
+        });
 
         socket.on('game', () => {
-            let words = new Board(socket.client.id, this.address)
-            setTimeout(() => {socket.emit('game', words)}, 1000)
-        })
+            handle.getWords(socket.client.id, this.address, board => {
+                socket.emit('game', board)
+            })
+        });
 
         socket.on('turn', () => {
-            dao.query('games', get, 'turn', this.address, turn => {
-                dao.query('words', get, 'remaining', turn, this.address, remaining => {
-                    socket.emit('turn', {...turn, ...remaining})
-                })
-            })
-        })
+           handle.getTurnAndRemainingWords(this.address, (turn, remaining) => {
+               socket.emit('turn', {...turn, ...remaining})
+           })
+        });
 
         socket.on('guess', msg => {
-            guess(msg, this.address, (result) => {
-                socket.emit('guess', {type: result.type})
+            handle.guess(msg, this.address, (result) => {
+                socket.emit('guess', {type: result.type});
                 gameState.handleGuess(this.address, result.type, result.team, () => {
                     console.log("And done!")
                 })
             })
-        })
+        });
 
 
         socket.on('codeword', msg => {
             if (msg) {
-                dao.query('games', update, 'codeword', msg, this.address, () => {
-                    socket.emit('codeword', msg)
+                handle.updateCodeWord(msg, this.address, () => {
+                    handle.getCodeWord(this.address, codeword => {
+                        socket.emit('codeword', codeword)
+                    })
                 })
             }
-        })
+        });
 
         socket.on(disconnect, () => {
-            dao.query('sessions', update, disconnect, socket.client.id)
-        })
+            handle.removeSocketIDOnDisconnect(socket.client.id)
+        });
 
     }
 
 };
-
-class Board {
-    constructor(socketID, nspID) {
-
-        this[0] = new Row(socketID, 0, nspID)
-        this[1] = new Row(socketID, 1, nspID)
-        this[2] = new Row(socketID, 2, nspID)
-        this[3] = new Row(socketID, 3, nspID)
-        this[4] = new Row(socketID, 4, nspID)
-
-    }
-}
-
-class Row {
-    constructor(socketID, row, nspID) {
-
-        this.setWord(socketID, row, 0, nspID)
-        this.setWord(socketID, row, 1, nspID)
-        this.setWord(socketID, row, 2, nspID)
-        this.setWord(socketID, row, 3, nspID)
-        this.setWord(socketID, row, 4, nspID)
-
-    }
-
-    setWord(socketID, row, column, nspID) {
-        dao.query('words', get, 'column', socketID, row, column, nspID, (word) => this[column] = word)
-    }
-
-}

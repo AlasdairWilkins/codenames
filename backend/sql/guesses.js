@@ -1,4 +1,4 @@
-const {create, text, int, primary, foreign} = require('./templates')
+const {create, text, int, primary, foreign} = require('./templates');
 
 const guesses = {
     create: create('guesses', text('game_id').notNull(), text('team').checkIn('blue', 'red'), int('turn').notNull(),
@@ -15,6 +15,6 @@ const guesses = {
                             AND guess = (SELECT guesses FROM games WHERE game_id =
                                 (SELECT game_id FROM namespaces WHERE nsp_id = (?)));`,
 
-}
+};
 
-module.exports = guesses
+module.exports = guesses;

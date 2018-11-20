@@ -15,7 +15,7 @@ class Startup {
                 }
 
                 //fix this!!!!!!!
-                store.dispatch(set('nsp', msg.namespace))
+                store.dispatch(set('nsp', msg.namespace));
                 store.dispatch(set('display', 'waiting'))
                 // above should become dynamic
             })
@@ -29,12 +29,12 @@ class Startup {
     }
 
     handleParamsCode(params) {
-        let code = params.get('code')
+        let code = params.get('code');
         api.set(namespace, code, (err, status) => {
             if (status) {
                 api.get(session, (err, cookie) => {
-                    document.cookie = cookie
-                    store.dispatch(set('nsp', code))
+                    document.cookie = cookie;
+                    store.dispatch(set('nsp', code));
                     store.dispatch(set('display', 'waiting'))
                 });
             } else {

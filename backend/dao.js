@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 const dbFilePath = './db/sqlite.db';
 
-const sql = require('./sql/')
+const sql = require('./sql/');
 
 const {update, insert, get, all, run, namespace, session, message} = require('./constants');
 
@@ -21,7 +21,7 @@ class DAO {
 
         this.db.serialize(() => {
             for (let table in sql) {
-                this.db.run(sql.drop(table))
+                this.db.run(sql.drop(table));
                 this.db.run(sql[table].create)
             }
         })
@@ -29,21 +29,21 @@ class DAO {
 
     query() {
 
-        let table = arguments[0]
+        let table = arguments[0];
         let type = arguments[1];
         let header = arguments[2];
 
         let [query, hasHeader] = (typeof sql[table][type] === 'object') ?
-            [sql[table][type][arguments[2]], true] : [sql[table][type], false]
+            [sql[table][type][arguments[2]], true] : [sql[table][type], false];
 
-        let paramsStart = (hasHeader) ? 3 : 2
+        let paramsStart = (hasHeader) ? 3 : 2;
 
         let op = this.getOp(type);
         let hasCB = (typeof arguments[arguments.length - 1] === "function");
         let cb = (hasCB) ? arguments[arguments.length - 1] : null;
 
         let [isMultiple, originalParams] = (typeof query === 'function') ?
-            [true, arguments[paramsStart]] : [false, null]
+            [true, arguments[paramsStart]] : [false, null];
 
         if (isMultiple) {
             paramsStart++
@@ -87,6 +87,7 @@ class DAO {
 
         this.db[op](query, params, function (err, res) {
             if (err) {
+                console.log(query, params);
                 console.error("Error:", err.message)
             } else {
                 if (cb) {
@@ -101,6 +102,7 @@ class DAO {
 
         this.db[op](query, params[0], (err, res) => {
             if (err) {
+                console.log(query, params);
                 console.error("Error", err.message)
             } else {
                 if (params.length > 1) {

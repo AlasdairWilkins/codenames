@@ -9,11 +9,11 @@ import Loading from "./Loading";
 
 class Select extends Component {
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             ready: false
-        }
+        };
 
         this.handleClick = this.handleClick.bind(this)
 
@@ -25,8 +25,8 @@ class Select extends Component {
 
     componentDidMount() {
         api.get(select, (err, msg) => {
-            this.props.set('players', msg.players)
-            this.props.set('blueMax', msg.blueMax)
+            this.props.set('players', msg.players);
+            this.props.set('blueMax', msg.blueMax);
             this.props.set('redMax', msg.redMax)
         })
     }
@@ -35,11 +35,11 @@ class Select extends Component {
 
         if (event.target.value === "ready") {
 
-            this.setState({ready: true})
+            this.setState({ready: true});
             api.set(ready, this.props.codemaster, (err) => {
                 // 'selectReady'
                 api.get('team', (err, msg) => {
-                    this.props.set('team', msg.team)
+                    this.props.set('team', msg.team);
                     this.props.set('display', 'game')
                 })
             });
@@ -80,8 +80,8 @@ class Select extends Component {
                     <div key={i} className='red'><button onClick={this.handleClick} >&lt;</button>{player.name}</div>
                 )
             } else {
-                let leftButton = (this.props.blueMax) ? null: <button value="left" onClick={this.handleClick} >&lt;</button>
-                let rightButton = (this.props.redMax) ? null: <button value="right" onClick={this.handleClick} >&gt;</button>
+                let leftButton = (this.props.blueMax) ? null: <button value="left" onClick={this.handleClick} >&lt;</button>;
+                let rightButton = (this.props.redMax) ? null: <button value="right" onClick={this.handleClick} >&gt;</button>;
                 return (
                     <div key={i}>
                         {leftButton}
@@ -101,9 +101,9 @@ class Select extends Component {
                 <p><button value="ready" onClick={this.handleClick}>Click when ready!</button></p>
             </div>
             :
-            <div><p>Great! We're starting soon.</p></div>
-        let blueMax = (this.props.blueMax) ? <p>Blue team is full!</p> : null
-        let redMax = (this.props.redMax) ? <p>Red team is full!</p> : null
+            <div><p>Great! We're starting soon.</p></div>;
+        let blueMax = (this.props.blueMax) ? <p>Blue team is full!</p> : null;
+        let redMax = (this.props.redMax) ? <p>Red team is full!</p> : null;
 
         return (
             <div id="select-container">
@@ -127,7 +127,7 @@ class Select extends Component {
     render() {
 
         let display = (this.props.players) ?
-            this.set() : <Loading/>
+            this.set() : <Loading/>;
 
         return (
             display
@@ -144,13 +144,13 @@ const mapStateToProps = (state, ownProps) => {
         id: state.id,
         codemaster: state.codemaster
     }
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
         clear: bindActionCreators(clear, dispatch)
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Select);

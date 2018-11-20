@@ -1,4 +1,4 @@
-const {create, text, bool, primary, foreign} = require('./templates')
+const {create, text, bool, primary, foreign} = require('./templates');
 
 const players = {
     create: create('players', text('game_id'), text('nsp_id').notNull(), text('session_id'), text('socket_id'),
@@ -11,14 +11,14 @@ const players = {
                     SELECT (?), session_id, nsp_id, socket_id, display_name
                     FROM sessions WHERE nsp_id = (?)`,
     update: {
-        selectReady: `UPDATE players SET ready = 1 WHERE socket_id = ?`,
+        ready: `UPDATE players SET ready = 1 WHERE socket_id = ?`,
         codemaster: `UPDATE players SET codemaster = ? WHERE socket_id = ?`,
         team: `UPDATE players SET team = (?) WHERE socket_id = (?);`,
         teams: (params) => [`UPDATE players SET team = (?) WHERE socket_id = (?);`,
             params.map(param => [param.team, param.socketID])],
     },
     get: {
-        selectReady: `SELECT count(*) count FROM players WHERE 
+        ready: `SELECT count(*) count FROM players WHERE 
             game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?)) AND ready = 0`,
         team: `SELECT team FROM players WHERE socket_id = ?`,
         checkPlayerMax:
@@ -41,6 +41,6 @@ const players = {
                     ORDER BY display_name;`,
     }
 
-}
+};
 
-module.exports = players
+module.exports = players;

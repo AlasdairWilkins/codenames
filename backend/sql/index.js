@@ -6,7 +6,7 @@ const players = require('./players');
 const sessions = require('./sessions');
 const words = require('./words');
 
-const {drop} = require('./templates')
+const {drop} = require('./templates');
 
 class SQL {
     constructor(){
@@ -26,4 +26,4 @@ class SQL {
 
 }
 
-module.exports = new SQL()
+module.exports = new SQL();

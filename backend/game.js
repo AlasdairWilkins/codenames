@@ -1,11 +1,11 @@
 const words = require('./words');
-const { blue, red, decoy, assassin } = require('./constants')
+const { blue, red, decoy, assassin } = require('./constants');
 
 class Game {
 
     makeTeams(players, counts) {
-        let blueCount = counts.blueCount
-        let redCount = counts.redCount
+        let blueCount = counts.blueCount;
+        let redCount = counts.redCount;
 
         let order = this.shuffle(players.length);
         let max = Math.ceil(counts.total / 2);
@@ -13,7 +13,7 @@ class Game {
         for (let i = 0; i < order.length; i++) {
             if (blueCount < max && redCount < max) {
                 let color = (Math.random() < .5) ? blue : red;
-                (color === blue) ? blueCount++ : redCount++
+                (color === blue) ? blueCount++ : redCount++;
                 players[order[i]].team = color;
             } else if (blueCount === max) {
                 players[order[i]].team = red;
@@ -73,14 +73,13 @@ class Game {
         return [arr, first]
     }
 
-};
-
+}
 
 class Word {
     constructor(word, value, index) {
         this.word = word;
-        this.value = value
-        this.row = Math.floor(index / 5)
+        this.value = value;
+        this.row = Math.floor(index / 5);
         this.column = index % 5
     }
 }
@@ -92,6 +91,6 @@ class Team {
     }
 }
 
-module.exports = new Game()
+module.exports = new Game();
 
 

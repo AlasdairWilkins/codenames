@@ -13,22 +13,22 @@ class Game extends Component {
     componentDidMount() {
         api.get('game', (err, msg) => {
             this.props.set('words', msg)
-        })
+        });
 
         api.get('turn', (err, msg) => {
-            console.log(msg)
-            this.props.set('turn', msg.turn)
+            console.log(msg);
+            this.props.set('turn', msg.turn);
 
             //testing only below
-            this.props.set('team', msg.turn)
+            this.props.set('team', msg.turn);
 
             if (msg.remaining) {
                 this.props.set('remaining', msg.remaining)
             }
-        })
+        });
 
         api.get('codeword', (err, msg) => {
-            this.props.set('codeword', msg.codeword)
+            this.props.set('codeword', msg.codeword);
             this.props.set('number', msg.number)
         })
     }
@@ -46,7 +46,7 @@ class Game extends Component {
 
     render() {
 
-        let display = (this.props.words && this.props.turn) ? this.set() : <Loading/>
+        let display = (this.props.words && this.props.turn) ? this.set() : <Loading/>;
 
         return (
             display
@@ -59,12 +59,12 @@ const mapStateToProps = (state) => {
         words: state.words,
         turn: state.turn
     }
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);

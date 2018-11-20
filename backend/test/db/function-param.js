@@ -9,7 +9,7 @@
 // console.log(testObject.b, typeof testObject.b)
 // testObject.b(testObject.a)
 
-const sqlite3 = require('sqlite3')
+const sqlite3 = require('sqlite3');
 
 const db = new sqlite3.Database('./test.db', err => {
     if (err) {

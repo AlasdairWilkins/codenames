@@ -19,7 +19,7 @@ class Messages extends Component {
     }
 
     componentWillUnmount() {
-        api.socket.off(message)
+        api.socket.off(message);
         this.props.clear(messages)
     }
 
@@ -50,7 +50,7 @@ const mapStateToProps = state => {
         id: state.id,
         messages: state.messages
     }
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {
@@ -58,6 +58,6 @@ const mapDispatchToProps = dispatch => {
         clear: bindActionCreators(clear, dispatch),
         update: bindActionCreators(update, dispatch)
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Messages);

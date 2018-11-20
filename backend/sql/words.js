@@ -1,4 +1,4 @@
-const {create, text, int, bool, primary, foreign} = require('./templates')
+const {create, text, int, bool, primary, foreign} = require('./templates');
 
 const words = {
     create: create(
@@ -35,13 +35,20 @@ const words = {
                         game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?));`,
     },
     all: {
-        row:    `SELECT word, type, column
+        row: `SELECT word, type, column
                     FROM words
                     WHERE row = (?) AND game_id IN (SELECT game_id FROM games WHERE nsp_id = (?))`,
         words: `SELECT word, type, row, column
                     FROM words
-                    WHERE game_id = (SELECT game_id FROM games WHERE nsp_id = (?))`
+                    WHERE game_id = (SELECT game_id FROM games WHERE nsp_id = (?))`,
+        board: `SELECT word, 
+                CASE 
+                    WHEN (SELECT codemaster FROM players WHERE socket_id = (?)) = 1 THEN type
+                    ELSE NULL
+                    END AS type,
+                row, column FROM words
+                WHERE game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?))`
     }
-}
+};
 
-module.exports = words
+module.exports = words;

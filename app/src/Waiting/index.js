@@ -18,17 +18,17 @@ class Waiting extends Component {
 
     componentDidMount() {
         api.get(player, (err, msg) => {
-            this.props.set('players', msg.players)
-            this.props.set('joining', msg.joining)
+            this.props.set('players', msg.players);
+            this.props.set('joining', msg.joining);
             if (msg.name) {
-                this.props.set('name', msg.name)
+                this.props.set('name', msg.name);
                 this.props.set('display', 'waiting')
             }
         })
     }
 
     componentWillUnmount() {
-        this.props.clear('players')
+        this.props.clear('players');
         api.socket.off(player)
     }
 
@@ -47,7 +47,7 @@ class Waiting extends Component {
 
     render() {
 
-        let display = (this.props.players) ? this.set() : <Loading/>
+        let display = (this.props.players) ? this.set() : <Loading/>;
 
         return (
             display
@@ -64,13 +64,13 @@ const mapStateToProps = (state, ownProps) => {
         players: state.players,
         joining: state.joining
     }
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
         clear: bindActionCreators(clear, dispatch)
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Waiting);

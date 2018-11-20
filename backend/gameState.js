@@ -2,6 +2,8 @@
 const dao = require('./dao');
 const {get, insert, update} = require('./constants');
 
+const game = require('./game')
+
 class GameState {
 
     handleUpdatedGameState(nspID, callback) {
@@ -37,7 +39,25 @@ class GameState {
             this.handleUpdatedGameState(nspID, callback)
         }
     }
-    
+
+    handleMakeTeams(players, count, callback) {
+        let sorted = game.makeTeams(players, count);
+        dao.query('players', 'update', 'teams', sorted, () => {
+            callback()
+        })
+    }
+
+    handleMakeBoard(nspID, callback) {
+        let [board, first] = game.makeBoard(25);
+        dao.query('words', insert, 'words', board, nspID, () => {
+            dao.query('games', update, 'turn', first, nspID, () => {
+                dao.query('namespaces', update, 'game', nspID, () => {
+                    callback()
+                })
+            })
+        })
+    }
+
 }
 
-module.exports = new GameState()
+module.exports = new GameState();

@@ -15,10 +15,10 @@ class Welcome extends Component {
         this.state = {
             existing: false,
             code: null
-        }
+        };
 
-        this.onClick = this.onClick.bind(this)
-        this.onChange = this.onChange.bind(this)
+        this.onClick = this.onClick.bind(this);
+        this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this)
     }
 
@@ -26,9 +26,9 @@ class Welcome extends Component {
         if (event.target.value === "new") {
             // this.props.clear('display')
             api.get(namespace, (err, msg) => {
-                this.props.set('nsp', msg.namespace)
+                this.props.set('nsp', msg.namespace);
                 api.get(session, (err, msg) => {
-                    document.cookie = msg
+                    document.cookie = msg;
                     this.props.set('display', 'waiting')
                 })
             })
@@ -38,12 +38,12 @@ class Welcome extends Component {
     }
 
     onSubmit(event) {
-        event.preventDefault()
+        event.preventDefault();
         api.set(namespace, this.state.code, (err, msg) => {
             if (msg) {
-                this.props.set('nsp', this.state.code)
+                this.props.set('nsp', this.state.code);
                 api.get(session, (err, msg) => {
-                    document.cookie = msg
+                    document.cookie = msg;
                     this.props.set('display', 'waiting')
                 });
             } else {
@@ -99,13 +99,13 @@ class Welcome extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     return {}
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {
         set: bindActionCreators(set, dispatch),
         clear: bindActionCreators(clear, dispatch)
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Welcome);

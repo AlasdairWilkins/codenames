@@ -24,7 +24,7 @@ class Invite extends Component {
         if (event.target.value === 'plus') {
             this.setState({invites: [...this.state.invites, ""]})
         } else {
-            let remove = this.findLastBlank()
+            let remove = this.findLastBlank();
             this.setState({invites: [...this.state.invites.slice(0, remove), ...this.state.invites.slice(remove + 1)]})
         }
     }
@@ -41,7 +41,7 @@ class Invite extends Component {
 
 
     setInvites() {
-        let inviteMax = this.state.invites.length - 1
+        let inviteMax = this.state.invites.length - 1;
         return this.state.invites.map((invite, i) => {
             let input = this.setInput(invite, i);
             let button = this.setButton(i, inviteMax);
@@ -90,7 +90,7 @@ class Invite extends Component {
 
     render() {
 
-        let display = this.props.name ? this.set() : null
+        let display = this.props.name ? this.set() : null;
 
         return (
             display
@@ -105,6 +105,6 @@ const mapStateToProps = state => {
     return {
         name: state.name
     }
-}
+};
 
 export default connect(mapStateToProps)(Invite);

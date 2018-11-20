@@ -1,4 +1,4 @@
-const {create, text, primary} = require('./templates')
+const {create, text, primary} = require('./templates');
 
 const namespaces = {
     create: create('namespaces', text('nsp_id'), text('display').default('waiting'), primary('nsp_id')),
@@ -9,6 +9,6 @@ const namespaces = {
         display: `SELECT display FROM namespaces WHERE nsp_id = (SELECT nsp_id FROM sessions WHERE session_id = ?)`,
         namespace: `SELECT nsp_id nspID FROM namespaces WHERE nsp_id = ?`,
     }
-}
+};
 
-module.exports = namespaces
+module.exports = namespaces;

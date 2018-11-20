@@ -20,8 +20,8 @@ class Name extends Component {
     }
 
     handleSubmit(event) {
-        api.set(player, {name: this.state.name, cookie: document.cookie})
-        this.props.clear('players')
+        api.set(player, {name: this.state.name, cookie: document.cookie});
+        this.props.clear('players');
         event.preventDefault()
     }
 
@@ -50,7 +50,7 @@ class Name extends Component {
 
     render() {
 
-        let display = this.set()
+        let display = this.set();
 
         return (
             display
@@ -64,12 +64,12 @@ const mapStateToProps = (state, ownProps) => {
     return {
         name: state.name,
     }
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {
         clear: bindActionCreators(clear, dispatch)
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Name);

@@ -11,7 +11,7 @@ class API {
         this.socket = io(url);
 
         this.socket.on('connect', () => {
-            store.dispatch(set('id', this.socket.id))
+            store.dispatch(set('id', this.socket.id));
             store.dispatch(set('display', 'welcome'))
         })
 

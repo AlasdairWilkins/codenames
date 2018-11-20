@@ -1,4 +1,4 @@
-const {create, int, text, foreign} = require('./templates')
+const {create, int, text, foreign} = require('./templates');
 
 const chats = {
     create: create('chats', int('chat_id').primary(), text('nsp_id').notNull(), text('session_id'),
@@ -13,6 +13,6 @@ const chats = {
                         display_name name
                         FROM chats
                         WHERE nsp_id = ?;`,
-}
+};
 
-module.exports = chats
+module.exports = chats;

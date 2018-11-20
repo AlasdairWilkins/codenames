@@ -47,7 +47,7 @@ class App extends Component {
                         <Game/>
                         <Chat/>
                     </div>
-                )
+                );
 
             default:
                 return (
@@ -73,7 +73,7 @@ const mapStateToProps = (state) => {
         display: state.display,
         players: state.players
     }
-}
+};
 
 
 export default connect(mapStateToProps)(App);
