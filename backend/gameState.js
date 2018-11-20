@@ -42,6 +42,7 @@ class GameState {
 
     handleMakeTeams(players, count, callback) {
         let sorted = game.makeTeams(players, count);
+        console.log(sorted)
         dao.query('players', 'update', 'teams', sorted, (err) => {
             callback()
         })
@@ -56,6 +57,24 @@ class GameState {
                 })
             })
         })
+    }
+
+    handleSetCodemaster(nspID, callback) {
+        dao.query('players', 'all', 'teamColor', 'blue', nspID, (err, teamBlue) => {
+            dao.query('players', 'all', 'teamColor', 'red', nspID, (err, teamRed) => {
+                console.log(teamBlue, teamRed)
+                let blueCodemasterIndex = Math.floor(Math.random()*teamBlue.length)
+                let redCodemasterIndex = Math.floor(Math.random()*teamRed.length)
+                let blueCodemaster = teamBlue[blueCodemasterIndex].sessionID
+                let redCodemaster = teamRed[redCodemasterIndex].sessionID
+                dao.query('players', 'update', 'codemaster', true, blueCodemaster, (err) => {
+                    dao.query('players', 'update', 'codemaster', true, redCodemaster, (err) => {
+                        callback()
+                    })
+                })
+            })
+        })
+        // let blueCodemaster =
     }
 
 }

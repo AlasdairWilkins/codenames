@@ -18,7 +18,7 @@ const updateCodeword = function(codeword, nspID, callback) {
     })
 };
 
-const getCodeword = function(callback) {
+const getCodeword = function(nspID, callback) {
     dao.query('games', 'get', 'codeword', nspID, (err, codeword) => {
         callback(codeword)
     })

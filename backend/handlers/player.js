@@ -18,8 +18,8 @@ const getAllPlayersTeamSelect = function(nspID, callback) {
 };
 
 const getUnsortedPlayers = function(nspID, callback) {
-    dao.query('players', 'all', 'unsorted', this.address, (err, players) => {
-        dao.query('players', 'get', 'checkPlayerMax', this.address, (err, count) => {
+    dao.query('players', 'all', 'unsorted', nspID, (err, players) => {
+        dao.query('players', 'get', 'checkPlayerMax', nspID, (err, count) => {
             callback(players, count)
         })
     })

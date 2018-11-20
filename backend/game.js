@@ -73,6 +73,10 @@ class Game {
         return [arr, first]
     }
 
+    setCodemaster(team) {
+
+    }
+
 }
 
 class Word {

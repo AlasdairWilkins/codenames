@@ -72,7 +72,9 @@ module.exports = class Namespace {
                             handle.getUnsortedPlayers(this.address, (players, count) => {
                                 gameState.handleMakeTeams(players, count, () => {
                                     gameState.handleMakeBoard(this.address, () => {
-                                        this.namespace.emit(ready)
+                                        gameState.handleSetCodemaster(this.address, () => {
+                                            this.namespace.emit(ready)
+                                        })
                                     })
                                 })
 
