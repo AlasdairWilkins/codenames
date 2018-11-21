@@ -106,9 +106,16 @@ module.exports = class Namespace {
             })
         });
 
+        socket.on('teamAndCodemaster', () => {
+            handle.getTeamAndCodemaster(socket.client.id, this.address, (team, codemaster) => {
+                socket.emit('teamAndCodemaster', {team, codemaster})
+            })
+        })
+
         socket.on('turn', () => {
            handle.getTurnAndRemainingWords(this.address, (turn, remaining) => {
-               socket.emit('turn', {...turn, ...remaining})
+               console.log("Ahoy hoy", turn, remaining)
+               socket.emit('turn', {turn, remaining})
            })
         });
 

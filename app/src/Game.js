@@ -19,13 +19,16 @@ class Game extends Component {
             console.log(msg);
             this.props.set('turn', msg.turn);
 
-            //testing only below
-            this.props.set('team', msg.turn);
-
             if (msg.remaining) {
                 this.props.set('remaining', msg.remaining)
             }
         });
+
+        api.get('teamAndCodemaster', (err, msg) => {
+            console.log(msg)
+            this.props.set('team', msg.team)
+            this.props.set('codemaster', msg.codemaster)
+        })
 
         api.get('codeword', (err, msg) => {
             this.props.set('codeword', msg.codeword);

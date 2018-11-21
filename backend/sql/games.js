@@ -30,7 +30,7 @@ const games = {
                         WHERE nsp_id = (?)`
     },
     get: {
-        turn: `SELECT turn FROM games WHERE nsp_id = (?);`,
+        turn: `SELECT turn, team FROM games WHERE nsp_id = (?);`,
         gameState: `SELECT * FROM games WHERE nsp_id = (?);`,
         codeword: `SELECT codeword FROM games WHERE nsp_id = (?);`
     }

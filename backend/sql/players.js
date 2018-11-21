@@ -19,8 +19,10 @@ const players = {
     },
     get: {
         ready: `SELECT count(*) count FROM players WHERE 
-            game_id IN (SELECT game_id FROM namespaces WHERE nsp_id = (?)) AND ready = 0`,
+            game_id IN (SELECT game_id FROM games WHERE nsp_id = (?)) AND ready = 0`,
         team: `SELECT team FROM players WHERE socket_id = ?`,
+        teamAndCodemaster: `SELECT team, codemaster FROM players WHERE socket_id = (?)
+                            AND game_id = (SELECT game_id FROM games WHERE nsp_id = (?));`,
         checkPlayerMax:
             `SELECT count(*) total,
                 sum(case when team = 'blue' then 1 else 0 end) blueCount,
@@ -37,11 +39,11 @@ const players = {
                         socket_id socketID,
                         team
                     FROM players
-                    WHERE game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?)) AND team IS NULL
+                    WHERE game_id = (SELECT game_id FROM games WHERE nsp_id = (?)) AND team IS NULL
                     ORDER BY display_name;`,
         teamColor: `SELECT session_id sessionID
                     FROM players
-                    WHERE team = (?) AND game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?));`
+                    WHERE team = (?) AND game_id = (SELECT game_id FROM games WHERE nsp_id = (?));`
     }
 
 };
