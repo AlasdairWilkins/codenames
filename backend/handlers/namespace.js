@@ -1,6 +1,6 @@
 const Promise = require('bluebird')
 
-const dao = Promise.promisifyAll(require('../dao'));
+const dao = require('../dao');
 const shortid = require('shortid');
 
 const joinNamespace = function(namespace, callback) {
@@ -13,17 +13,34 @@ const joinNamespace = function(namespace, callback) {
     })
 };
 
-const createNamespace = function(callback) {
-    let nsp = shortid.generate();
-    dao.query('namespaces', 'insert', nsp, (err) => {
-        dao.query('namespaces', 'get', 'namespace', nsp, (err, row) => {
-            if (row) {
-                callback(row.nspID)
-            } else {
-                callback(false)
-            }
-        })
+const createNamespace = function() {
+    let nspID = shortid.generate();
+    return new Promise((resolve, reject) => {
+        dao.query('namespaces', 'insert', nspID)
+            .then(function() {
+                return dao.query('namespaces', 'get', 'namespace', nspID)
+            })
+            .then(function(result) {
+                resolve(result.nspID)
+            })
+            .catch(function(err) {
+                reject(err)
+            })
+
     })
+
+
+
+
+    //     (err) => {
+    //      (err, row) => {
+    //         if (row) {
+    //             callback(row.nspID)
+    //         } else {
+    //             callback(false)
+    //         }
+    //     })
+    // })
 };
 
 module.exports = {joinNamespace, createNamespace};

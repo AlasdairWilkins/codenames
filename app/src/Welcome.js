@@ -22,21 +22,8 @@ class Welcome extends Component {
 
     onClick(event) {
         if (event.target.value === "new") {
-            // this.props.clear('display')
             api.get('namespace', (err, nspID) => {
-                if (err) {
-                    //handle error
-                } else {
-                    this.props.set('nsp', nspID);
-                    api.get(session, (err, cookie) => {
-                        if (err) {
-                            //handle error
-                        } else {
-                            document.cookie = cookie;
-                            this.props.set('display', 'waiting')
-                        }
-                    })
-                }
+                this.handleNamespace(err, nspID)
             })
         } else if (event.target.value === "existing") {
             this.setState({existing: true})
@@ -46,20 +33,25 @@ class Welcome extends Component {
     onSubmit(event) {
         event.preventDefault();
         api.set('namespace', event.target.elements.code.value, (err, nspID) => {
-            if (err) {
-                //handle error
-            } else {
-                this.props.set('nsp', nspID);
-                api.get(session, (err, cookie) => {
-                    if (err) {
-                        //handle error
-                    } else {
-                        document.cookie = cookie;
-                        this.props.set('display', 'waiting')
-                    }
-                });
-            }
+            this.handleNamespace(err, nspID)
         })
+    }
+
+    handleNamespace(err, nspID) {
+        if (err) {
+            //handle error
+        } else {
+            api.address = nspID
+            this.props.set('nsp', nspID);
+            api.get(session, (err, cookie) => {
+                if (err) {
+                    //handle error
+                } else {
+                    document.cookie = cookie;
+                    this.props.set('display', 'waiting')
+                }
+            })
+        }
     }
 
     set() {

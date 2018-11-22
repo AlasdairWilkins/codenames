@@ -65,7 +65,7 @@ class DAO {
             let [newQuery, newParams] = query(originalParams, ...params);
             this.multiple(op, newQuery, newParams, cb)
         } else {
-            this.run(op, query, params, cb)
+            return this.run(op, query, params, cb)
         }
 
     }
@@ -75,8 +75,17 @@ class DAO {
 
     run(op, query, params, callback) {
 
-        this.db[op](query, params, function (err, res) {
-            callback(err, res)
+        return new Promise((resolve, reject) => {
+            console.log("Hiya", this, op, query, params, callback)
+            this.db[op](query, params, function (err, res) {
+                if (err) {
+                    console.log("Error!", err)
+                    reject(err)
+                } else {
+                    console.log("Got it!", res)
+                    resolve(res)
+                }
+            })
         })
     }
 

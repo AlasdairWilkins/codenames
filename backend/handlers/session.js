@@ -2,17 +2,19 @@ const dao = require('../dao');
 const shortid = require('shortid');
 
 const createSession = function(nspID, callback) {
-    let sessionID = shortid.generate();
-    dao.query('sessions', 'insert', sessionID, nspID, (err) => {
-        dao.query('sessions', 'get', 'session', sessionID, nspID, (err, row) => {
-            if (row) {
-                console.log(row, row.sessionID)
-                callback(row.sessionID)
-            } else {
-                console.log("No session!")
-            }
-        })
-    });
+    return new Promise((resolve, reject) => {
+        let sessionID = shortid.generate();
+        dao.query('sessions', 'insert', sessionID, nspID)
+            .then(function () {
+                return dao.query('sessions', 'get', 'session', sessionID, nspID)
+            })
+            .then(function (row) {
+                resolve(row.sessionID)
+            })
+            .catch(function (err) {
+                reject(err)
+            })
+    })
 };
 
 const setDisplayName = function(name, clientID, cookie, nspID, callback) {

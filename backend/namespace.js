@@ -20,10 +20,19 @@ module.exports = class Namespace {
 
     setListeners(socket) {
 
+        console.log("Executing!")
+
         socket.on(session, () => {
-            handle.createSession(this.address, sessionID => {
-                socket.emit(session, "id=" + sessionID)
-            })
+            console.log("Allo allo")
+            handle.createSession(this.address)
+                .then(function(sessionID) {
+                    console.log("Here!", sessionID)
+                    socket.emit(session, "id=" + sessionID)
+                })
+                .catch(function(err) {
+                    console.error(err.message)
+                }
+            )
         });
 
         socket.on(player, msg => {
