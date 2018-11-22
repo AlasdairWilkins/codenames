@@ -14,23 +14,29 @@ class Welcome extends Component {
 
         this.state = {
             existing: false,
-            code: null
         };
 
         this.onClick = this.onClick.bind(this);
-        this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this)
     }
 
     onClick(event) {
         if (event.target.value === "new") {
             // this.props.clear('display')
-            api.get(namespace, (err, msg) => {
-                this.props.set('nsp', msg.namespace);
-                api.get(session, (err, msg) => {
-                    document.cookie = msg;
-                    this.props.set('display', 'waiting')
-                })
+            api.get('namespace', (err, nspID) => {
+                if (err) {
+                    //handle error
+                } else {
+                    this.props.set('nsp', nspID);
+                    api.get(session, (err, cookie) => {
+                        if (err) {
+                            //handle error
+                        } else {
+                            document.cookie = cookie;
+                            this.props.set('display', 'waiting')
+                        }
+                    })
+                }
             })
         } else if (event.target.value === "existing") {
             this.setState({existing: true})
@@ -39,21 +45,21 @@ class Welcome extends Component {
 
     onSubmit(event) {
         event.preventDefault();
-        api.set(namespace, this.state.code, (err, msg) => {
-            if (msg) {
-                this.props.set('nsp', this.state.code);
-                api.get(session, (err, msg) => {
-                    document.cookie = msg;
-                    this.props.set('display', 'waiting')
-                });
+        api.set('namespace', event.target.elements.code.value, (err, nspID) => {
+            if (err) {
+                //handle error
             } else {
-                console.log("Whoops")
+                this.props.set('nsp', nspID);
+                api.get(session, (err, cookie) => {
+                    if (err) {
+                        //handle error
+                    } else {
+                        document.cookie = cookie;
+                        this.props.set('display', 'waiting')
+                    }
+                });
             }
         })
-    }
-
-    onChange(event) {
-        this.setState({code: event.target.value})
     }
 
     set() {
@@ -64,7 +70,7 @@ class Welcome extends Component {
                     <p>Enter your game code below!</p>
                     <form onSubmit={this.onSubmit}>
                         <label htmlFor="code">
-                            <input onChange={this.onChange} placeholder="Game Code" type="text" />
+                            <input id="code" placeholder="Game Code" type="text" />
                         </label>
                         <input type="submit" value="Submit" />
                     </form>

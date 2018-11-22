@@ -18,6 +18,7 @@ class Waiting extends Component {
 
     componentDidMount() {
         api.get(player, (err, msg) => {
+            console.log(msg)
             this.props.set('players', msg.players);
             this.props.set('joining', msg.joining);
             if (msg.name) {
