@@ -93,6 +93,7 @@ module.exports = class Namespace {
         socket.on('selectReady', () => {
             handle.setSelectReady(socket.client.id, this.address)
                 .then(ready => {
+                    console.log("And done!", ready)
                     socket.emit('selectReady')
                     if (ready) {
                         this.namespace.emit('ready')

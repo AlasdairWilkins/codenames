@@ -4,7 +4,6 @@ import './App.css';
 import {api} from "./Api";
 import {bindActionCreators} from "redux";
 import {set, clear} from "./store/actions";
-import {player, ready, select} from "./constants";
 import Loading from "./Loading";
 
 class Select extends Component {
@@ -29,9 +28,8 @@ class Select extends Component {
         api.request('initialSelect')
 
         api.subscribe('ready', (err, res) => {
-            console.log(err, res)
+            console.log("Ready here!")
             this.props.set('display', 'game')
-
         })
 
     }
@@ -53,11 +51,11 @@ class Select extends Component {
             let currentTeam = event.target.parentNode.className;
             let click = event.target.value;
             if (currentTeam === 'blue' || currentTeam === 'red') {
-                api.send(select, null)
+                api.send('select', null)
             } else if (click === 'left') {
-                api.send(select, 'blue')
+                api.send('select', 'blue')
             } else {
-                api.send(select, 'red')
+                api.send('select', 'red')
             }
 
         }

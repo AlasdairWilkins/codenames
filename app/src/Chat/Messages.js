@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import '../App.css';
 import { api } from "../Api";
-import {message, messages} from "../constants"
 import connect from "react-redux/es/connect/connect";
 import {bindActionCreators} from "redux";
 import {clear, set, update} from "../store/actions";

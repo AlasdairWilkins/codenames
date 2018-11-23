@@ -11,6 +11,9 @@ import Loading from "./Loading";
 class Game extends Component {
 
     componentDidMount() {
+
+        console.log("Made it to game!!")
+
         api.get('game', (err, msg) => {
             this.props.set('words', msg)
         });

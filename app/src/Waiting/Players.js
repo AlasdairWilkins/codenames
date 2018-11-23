@@ -13,8 +13,6 @@ class Players extends Component {
             )
         }
 
-        let finalPlayer = this.props.players.length - 1;
-
         return (
             <div>
                 Here's who's playing: {this.props.players.join(", ")}

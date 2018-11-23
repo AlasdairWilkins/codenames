@@ -1,5 +1,4 @@
 import {api} from "../Api";
-import {player} from "../constants";
 import React, { Component } from "react";
 import {bindActionCreators} from "redux";
 import {set, clear} from "../store/actions";

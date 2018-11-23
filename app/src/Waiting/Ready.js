@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import {api} from "../Api";
-import {ready} from "../constants";
 import {bindActionCreators} from "redux";
 import {set} from "../store/actions";
 import connect from "react-redux/es/connect/connect";

@@ -71,6 +71,7 @@ const setSelectReady = function(clientID, nspID) {
                 }
             })
             .then(result => {
+                console.log("After", result)
                 resolve(result)
             })
             .catch(err => {
@@ -82,10 +83,11 @@ const setSelectReady = function(clientID, nspID) {
 const buildGame = function(nspID) {
     return Promise.all([makeTeams(nspID), makeBoard(nspID)])
         .then(() => {
-            Promise.resolve(true)
+            let result = true
+            return Promise.resolve(result)
         })
         .catch(err => {
-            Promise.reject(err)
+            return Promise.reject(err)
         })
 }
 
@@ -113,17 +115,17 @@ const makeBoard = function(nspID) {
         [dao.query('words', 'insert', 'words', board, nspID), dao.query('games', 'update', 'turn', first, nspID),
             dao.query('namespaces', 'update', 'game', nspID)])
         .then(() => {
-            Promise.resolve()
+            return Promise.resolve()
         })
         .catch((err) => {
-            Promise.reject(err)
+            return Promise.reject(err)
         })
 }
 
 const setCodemasters = function(nspID) {
     return Promise.all([setCodemaster(nspID, 'blue'), setCodemaster(nspID, 'red')])
         .then(() => {
-            return null
+            return Promise.resolve()
         })
         .catch(err => {
             return Promise.reject(err)

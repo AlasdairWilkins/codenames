@@ -4,7 +4,6 @@ import {api} from "./Api";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {set, clear} from './store/actions'
-import {namespace, session} from "./constants"
 import Loading from './Loading'
 
 
@@ -47,7 +46,7 @@ class Welcome extends Component {
         } else {
             api.address = nspID
             this.props.set('nsp', nspID);
-            api.get(session, (err, cookie) => {
+            api.get('session', (err, cookie) => {
                 if (err) {
                     //handle error
                 } else {
