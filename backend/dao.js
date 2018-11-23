@@ -38,7 +38,7 @@ class DAO {
 
         let paramsStart = (hasHeader) ? 3 : 2;
 
-        let op = this.getOp(type);
+        let op = getOp(type);
         let hasCB = (typeof arguments[arguments.length - 1] === "function");
         let cb = (hasCB) ? arguments[arguments.length - 1] : null;
 
@@ -70,9 +70,6 @@ class DAO {
 
     }
 
-
-//prep for promises refactoring
-
     run(op, query, params) {
 
         return new Promise((resolve, reject) => {
@@ -100,24 +97,23 @@ class DAO {
                 console.error(err.message)
             })
     }
+}
 
-    getOp(type) {
-        switch (type) {
-            case get:
-                return get;
-            case all:
-                return all;
-            default:
-                return run
-        }
+const getOp = function(type) {
+    switch (type) {
+        case get:
+            return get;
+        case all:
+            return all;
+        default:
+            return run
     }
-
 }
 
 const makeFinal = function(res) {
     if (Array.isArray(res) && res.length && checkLength(res)) {
         return res.map(item => Object.values(item)[0])
-    } else if (Object.values(res).length === 1) {
+    } else if (Object.values(res).length === 1 && typeof res[0] !== 'object') {
         return Object.values(res)[0]
     } else {
         return res

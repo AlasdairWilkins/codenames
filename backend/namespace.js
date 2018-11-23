@@ -73,37 +73,54 @@ module.exports = class Namespace {
         socket.on('messages', msg => {
             handle.getAllChats(this.address)
                 .then(messages => {
-                    this.namespace.emit('messages', messages)
+                    socket.emit('messages', messages)
                 })
         })
 
-        socket.on(ready, (msg) => {
-
-            let header = (msg === 'waitingReady') ? 'sessions' : 'players';
-
-            handle.setReady(header, socket.client.id, () => {
-                handle.checkAllReady(header, this.address, count => {
-                    if (!count) {
-                        if (msg === 'waitingReady') {
-                            handle.createGame(this.address, () => {
-                                this.namespace.emit(ready)
-                            })
-                        } else {
-                            handle.getUnsortedPlayers(this.address, (players, count) => {
-                                gameState.handleMakeTeams(players, count, () => {
-                                    gameState.handleMakeBoard(this.address, () => {
-                                        gameState.handleSetCodemaster(this.address, () => {
-                                            this.namespace.emit(ready)
-                                        })
-                                    })
-                                })
-
-                            })
-                        }
+        socket.on('waitingReady', () => {
+            handle.setWaitingReady(socket.client.id, this.address)
+                .then(ready => {
+                    socket.emit('waitingReady')
+                    if (ready) {
+                        this.namespace.emit('ready')
                     }
                 })
-            })
-        });
+                .catch(err => {
+                    console.error(err.message)
+                })
+        })
+
+        socket.on('selectReady', () => {
+
+        })
+
+        // socket.on(ready, (msg) => {
+        //
+        //     let header = (msg === 'waitingReady') ? 'sessions' : 'players';
+        //
+        //     handle.setReady(header, socket.client.id, () => {
+        //         handle.checkAllReady(header, this.address, count => {
+        //             if (!count) {
+        //                 if (msg === 'waitingReady') {
+        //                     handle.createGame(this.address, () => {
+        //                         this.namespace.emit(ready)
+        //                     })
+        //                 } else {
+        //                     handle.getUnsortedPlayers(this.address, (players, count) => {
+        //                         gameState.handleMakeTeams(players, count, () => {
+        //                             gameState.handleMakeBoard(this.address, () => {
+        //                                 gameState.handleSetCodemaster(this.address, () => {
+        //                                     this.namespace.emit(ready)
+        //                                 })
+        //                             })
+        //                         })
+        //
+        //                     })
+        //                 }
+        //             }
+        //         })
+        //     })
+        // });
 
         socket.on(select, (msg) => {
             handle.updatePlayerTeamSelect(msg, socket.client.id, () => {

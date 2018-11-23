@@ -19,8 +19,10 @@ class Ready extends Component {
     }
 
     handleClick(event) {
-        this.setState({ready: true});
-        api.set(ready, 'waitingReady', (err) => this.props.set('display', 'select'));
+        api.ping('waitingReady', (err) => {
+            console.log("here!")
+            this.setState({ready: true})
+        });
         event.preventDefault()
     }
 

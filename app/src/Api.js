@@ -16,6 +16,14 @@ class API {
 
     }
 
+    ping(header, callback) {
+        this.socket.on(header, () => {
+            this.socket.off(header)
+            callback(null)
+        })
+        this.socket.emit(header)
+    }
+
     send(header, payload) {
         this.socket.emit(header, payload)
     }
@@ -36,11 +44,14 @@ class API {
         this.socket.emit(header)
     }
 
+    request(header) {
+        this.socket.emit(header)
+    }
+
     subscribe(header, callback) {
         this.socket.on(header, res => {
             callback(null, res)
         });
-        this.socket.emit(header)
     }
 
     unsubscribe(header) {

@@ -1,16 +1,4 @@
 const dao = require('../dao');
-const shortid = require('shortid');
-
-const createGame = function(nspID, callback) {
-    let gameID = shortid.generate();
-    dao.query('games', 'insert', gameID, nspID, (err) => {
-        dao.query('players', 'insert', gameID, nspID, (err) => {
-            dao.query('namespaces', 'update', 'select', nspID, (err) => {
-                callback()
-            })
-        })
-    })
-};
 
 const updateCodeword = function(codeword, nspID, callback) {
     dao.query('games', 'update', 'codeword', codeword, nspID, (err) => {
@@ -24,4 +12,4 @@ const getCodeword = function(nspID, callback) {
     })
 };
 
-module.exports = {createGame, updateCodeword, getCodeword};
+module.exports = {updateCodeword, getCodeword};

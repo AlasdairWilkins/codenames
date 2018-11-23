@@ -6,6 +6,8 @@ const chats = {
         foreign('session_id', 'sessions'), foreign('display_name', 'sessions'),
         foreign('socket_id', 'sessions').onUpdateCascade()),
 
+    get: `SELECT message entry, socket_id socketID, display_name name FROM chats WHERE rowid = (?);`,
+
     insert: `INSERT INTO chats(nsp_id, message, display_name, socket_id, session_id) 
                     SELECT (?), (?), (?), (?), session_id FROM sessions WHERE socket_id = (?);`,
     all: `SELECT message entry,

@@ -1,15 +1,64 @@
 const dao = require('../dao');
+const shortid = require('shortid');
 
-const setReady = function(header, clientID, callback) {
-    dao.query(header, 'update', 'ready', clientID, (err) => {
-        callback()
+
+const setWaitingReady = function(clientID, nspID) {
+    return new Promise((resolve, reject) => {
+        setReady('sessions', clientID, nspID)
+            .then(count => {
+                if (!count) {
+                    return createGame(nspID)
+                } else {
+                    return false
+                }
+            })
+            .then(result => {
+                resolve(result)
+            })
+            .catch(err => {
+                reject(err)
+            })
+    })
+}
+
+const createGame = function(nspID) {
+    let gameID = shortid.generate()
+    return Promise.all([dao.query('games', 'insert', gameID, nspID),
+        dao.query('players', 'insert', gameID, nspID), dao.query('namespaces', 'update', 'select', nspID)])
+        .then((result) => {
+            return true
+        })
+        .catch(err => {
+            console.error(err.message)
+        })
+};
+
+const setReady = function(header, clientID, nspID) {
+    return new Promise((resolve, reject) => {
+        dao.query(header, 'update', 'ready', clientID)
+            .then(() => {
+                return checkAllReady(header, nspID)
+            })
+            .then(count => {
+                resolve(count)
+            })
+            .catch(err => {
+                reject(err)
+            })
+    })
+
+};
+
+const checkAllReady = function(header, nspID) {
+    return new Promise((resolve, reject) => {
+        dao.query(header, 'get', 'ready', nspID)
+            .then(count => {
+                resolve(count)
+            })
+            .catch(err => {
+                reject(err)
+            })
     })
 };
 
-const checkAllReady = function(header, nspID, callback) {
-    dao.query(header, 'get', 'ready', nspID, (err, row) => {
-        callback(row.count)
-    })
-};
-
-module.exports = {setReady, checkAllReady};
+module.exports = {setWaitingReady};
