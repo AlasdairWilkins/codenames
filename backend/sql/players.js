@@ -12,7 +12,7 @@ const players = {
                     FROM sessions WHERE nsp_id = (?)`,
     update: {
         ready: `UPDATE players SET ready = 1 WHERE socket_id = ?`,
-        codemaster: `UPDATE players SET codemaster = ? WHERE session_id = ?`,
+        codemaster: `UPDATE players SET codemaster = ? WHERE socket_id = ?`,
         team: `UPDATE players SET team = (?) WHERE socket_id = (?);`,
         teams: (params) => [`UPDATE players SET team = (?) WHERE socket_id = (?);`,
             params.map(param => [param.team, param.socketID])],
@@ -41,7 +41,7 @@ const players = {
                     FROM players
                     WHERE game_id = (SELECT game_id FROM games WHERE nsp_id = (?)) AND team IS NULL
                     ORDER BY display_name;`,
-        teamColor: `SELECT session_id sessionID
+        teamColor: `SELECT socket_id
                     FROM players
                     WHERE team = (?) AND game_id = (SELECT game_id FROM games WHERE nsp_id = (?));`
     }

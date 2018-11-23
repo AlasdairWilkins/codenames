@@ -20,7 +20,6 @@ class Ready extends Component {
 
     handleClick(event) {
         api.ping('waitingReady', (err) => {
-            console.log("here!")
             this.setState({ready: true})
         });
         event.preventDefault()

@@ -6,7 +6,7 @@ const handle = Promise.promisifyAll(require('./handlers'));
 
 const {connection, player, session, message, ready, team, select, disconnect} = require('./constants');
 
-const gameState = require('./gameState');
+const gameState = require('./handlers/gameState');
 
 module.exports = class Namespace {
 
@@ -91,44 +91,37 @@ module.exports = class Namespace {
         })
 
         socket.on('selectReady', () => {
-
+            handle.setSelectReady(socket.client.id, this.address)
+                .then(ready => {
+                    socket.emit('selectReady')
+                    if (ready) {
+                        this.namespace.emit('ready')
+                    }
+                })
+                .catch(err => {
+                    console.error(err.message)
+                })
         })
 
-        // socket.on(ready, (msg) => {
-        //
-        //     let header = (msg === 'waitingReady') ? 'sessions' : 'players';
-        //
-        //     handle.setReady(header, socket.client.id, () => {
-        //         handle.checkAllReady(header, this.address, count => {
-        //             if (!count) {
-        //                 if (msg === 'waitingReady') {
-        //                     handle.createGame(this.address, () => {
-        //                         this.namespace.emit(ready)
-        //                     })
-        //                 } else {
-        //                     handle.getUnsortedPlayers(this.address, (players, count) => {
-        //                         gameState.handleMakeTeams(players, count, () => {
-        //                             gameState.handleMakeBoard(this.address, () => {
-        //                                 gameState.handleSetCodemaster(this.address, () => {
-        //                                     this.namespace.emit(ready)
-        //                                 })
-        //                             })
-        //                         })
-        //
-        //                     })
-        //                 }
-        //             }
-        //         })
-        //     })
-        // });
-
-        socket.on(select, (msg) => {
-            handle.updatePlayerTeamSelect(msg, socket.client.id, () => {
-                handle.getAllPlayersTeamSelect(this.address, (players, blueMax, redMax) => {
-                    this.namespace.emit(select, {players, blueMax, redMax})
+        socket.on('select', (msg) => {
+            handle.updatePlayerTeamSelect(msg, socket.client.id, this.address)
+                .then(values => {
+                    this.namespace.emit(select, values)
                 })
-            })
+                .catch(err => {
+                    console.error(err.message)
+                })
         });
+
+        socket.on('initialSelect', () => {
+            handle.getAllPlayersTeamSelect(this.address)
+                .then(values => {
+                    socket.emit('select', values)
+                })
+                .catch(err => {
+                    console.error(err.message)
+                })
+        })
 
         socket.on(team, () => {
             handle.getTeams(socket.client.id, (result, team) => {

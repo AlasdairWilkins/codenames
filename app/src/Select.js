@@ -19,42 +19,45 @@ class Select extends Component {
 
     }
 
-    componentWillUnmount() {
-        api.socket.off(player)
-    }
-
     componentDidMount() {
-        api.get(select, (err, msg) => {
+
+        api.subscribe('select', (err, msg) => {
             this.props.set('players', msg.players);
             this.props.set('blueMax', msg.blueMax);
             this.props.set('redMax', msg.redMax)
         })
+        api.request('initialSelect')
+
+        api.subscribe('ready', (err, res) => {
+            console.log(err, res)
+            this.props.set('display', 'game')
+
+        })
+
+    }
+
+    componentWillUnmount() {
+        api.unsubscribe('select')
+        api.unsubscribe('ready')
     }
 
     handleClick(event) {
 
         if (event.target.value === "ready") {
-
-            this.setState({ready: true});
-            api.set(ready, this.props.codemaster, (err) => {
-                // 'selectReady'
-                api.get('team', (err, msg) => {
-                    this.props.set('team', msg.team);
-                    this.props.set('display', 'game')
-                })
+            api.ping('selectReady', (err) => {
+                this.setState({ready: true});
             });
-            this.props.clear('display')
 
         } else {
 
             let currentTeam = event.target.parentNode.className;
             let click = event.target.value;
             if (currentTeam === 'blue' || currentTeam === 'red') {
-                api.set(select, null)
+                api.send(select, null)
             } else if (click === 'left') {
-                api.set(select, 'blue')
+                api.send(select, 'blue')
             } else {
-                api.set(select, 'red')
+                api.send(select, 'red')
             }
 
         }

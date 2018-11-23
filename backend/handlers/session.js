@@ -21,7 +21,6 @@ const createSession = function(clientID, nspID) {
 const newDisplayName = function(nameMSG, clientID, nspID) {
     return Promise.all([setDisplayName(nameMSG, clientID, nspID), getAllSessions(nspID), getJoining(nspID)])
         .then(([name, players, joining]) => {
-            console.log(name, players, joining)
             return {name, players, joining}
         })
         .catch(err => {

@@ -1,28 +1,34 @@
 const dao = require('../dao');
 
-const updatePlayerTeamSelect = function(team, clientID, callback) {
-    dao.query('players', 'update', 'team', team, clientID, (err) => {
-        callback()
-    })
+const updatePlayerTeamSelect = function(team, clientID, nspID) {
+    return new Promise((resolve, reject) => {
+        dao.query('players', 'update', 'team', team, clientID)
+            .then(() => {
+                return getAllPlayersTeamSelect(nspID)
+            })
+            .then(values => {
+                resolve(values)
+            })
+            .catch(err => {
+                console.error(err.message)
+            })
+        })
 };
 
-const getAllPlayersTeamSelect = function(nspID, callback) {
-    dao.query('players', 'all', 'team', nspID, (err, rows) => {
-        dao.query('players', 'get', 'checkPlayerMax', nspID, (err, row) => {
+const getAllPlayersTeamSelect = function(nspID) {
+    console.log(nspID)
+    return Promise.all([dao.query('players', 'all', 'team', nspID),
+        dao.query('players', 'get', 'checkPlayerMax', nspID)])
+        .then(([players, row]) => {
+            console.log("Result", players, row)
             let max = Math.ceil(row.total / 2);
             let blueMax = (row.blueCount >= max);
             let redMax = (row.redCount >= max);
-            callback(rows, blueMax, redMax)
+            return {players, blueMax, redMax}
         })
-    })
-};
-
-const getUnsortedPlayers = function(nspID, callback) {
-    dao.query('players', 'all', 'unsorted', nspID, (err, players) => {
-        dao.query('players', 'get', 'checkPlayerMax', nspID, (err, count) => {
-            callback(players, count)
+        .catch(err => {
+            console.error(err.message)
         })
-    })
 };
 
 const getTeams = function(clientID, callback) {
@@ -39,4 +45,4 @@ const getTeamAndCodemaster = function(clientID, nspID, callback) {
 }
 
 module.exports =
-    {updatePlayerTeamSelect, getAllPlayersTeamSelect, getUnsortedPlayers, getTeams, getTeamAndCodemaster};
+    {updatePlayerTeamSelect, getAllPlayersTeamSelect, getTeams, getTeamAndCodemaster};

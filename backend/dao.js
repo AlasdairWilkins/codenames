@@ -90,7 +90,6 @@ class DAO {
     multiple(op, query, params) {
         return Promise.all(params.map(param => this.run(op, query, param)))
             .then(values => {
-                console.log(values)
                 return values
             })
             .catch(err => {
