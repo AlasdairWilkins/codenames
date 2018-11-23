@@ -17,15 +17,25 @@ import Loading from "../Loading";
 class Waiting extends Component {
 
     componentDidMount() {
-        api.get(player, (err, msg) => {
-            console.log(msg)
-            this.props.set('players', msg.players);
-            this.props.set('joining', msg.joining);
-            if (msg.name) {
-                this.props.set('name', msg.name);
-                this.props.set('display', 'waiting')
+
+        api.subscribe('players', (err, players) => {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log("players received", players)
+                this.props.set('players', players)
             }
         })
+
+        api.subscribe('joining', (err, joining) => {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log("Joining received", joining)
+                this.props.set('joining', joining)
+            }
+        })
+
     }
 
     componentWillUnmount() {

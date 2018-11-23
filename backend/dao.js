@@ -63,7 +63,7 @@ class DAO {
 
         if (isMultiple) {
             let [newQuery, newParams] = query(originalParams, ...params);
-            this.multiple(op, newQuery, newParams, cb)
+            return this.multiple(op, newQuery, newParams, cb)
         } else {
             return this.run(op, query, params, cb)
         }
@@ -73,68 +73,33 @@ class DAO {
 
 //prep for promises refactoring
 
-    run(op, query, params, callback) {
+    run(op, query, params) {
 
         return new Promise((resolve, reject) => {
-            console.log("Hiya", this, op, query, params, callback)
             this.db[op](query, params, function (err, res) {
                 if (err) {
-                    console.log("Error!", err)
                     reject(err)
                 } else {
-                    console.log("Got it!", res)
-                    resolve(res)
+                    if (this.lastID) {
+                        resolve(this)
+                    } else {
+                       resolve(makeFinal(res))
+                    }
                 }
             })
         })
     }
 
-    multiple(op, query, params, callback) {
-
-        this.db[op](query, params[0], (err, res) => {
-            if (params.length > 1) {
-                this.multiple(op, query, params.slice(1), callback)
-            } else {
-                callback(err, res)
-            }
-        })
-
+    multiple(op, query, params) {
+        return Promise.all(params.map(param => this.run(op, query, param)))
+            .then(values => {
+                console.log(values)
+                return values
+            })
+            .catch(err => {
+                console.error(err.message)
+            })
     }
-
-    // run(op, query, params, callback) {
-    //
-    //     this.db[op](query, params, function (err, res) {
-    //         if (err) {
-    //             console.log(query, params);
-    //             console.error("Error:", err.message)
-    //         } else {
-    //             if (cb) {
-    //                 cb(res)
-    //             }
-    //         }
-    //     })
-    //
-    // }
-    //
-    // multiple(op, query, params, cb, result) {
-    //
-    //     this.db[op](query, params[0], (err, res) => {
-    //         if (err) {
-    //             console.log(query, params);
-    //             console.error("Error", err.message)
-    //         } else {
-    //             if (params.length > 1) {
-    //                 this.multiple(op, query, params.slice(1), cb)
-    //             } else {
-    //                 if (cb) {
-    //                     cb(res)
-    //                 }
-    //             }
-    //         }
-    //     })
-    //
-    //     //db.run( sql query , [params], callback)
-    // }
 
     getOp(type) {
         switch (type) {
@@ -147,6 +112,25 @@ class DAO {
         }
     }
 
+}
+
+const makeFinal = function(res) {
+    if (Array.isArray(res) && res.length && checkLength(res)) {
+        return res.map(item => Object.values(item)[0])
+    } else if (Object.values(res).length === 1) {
+        return Object.values(res)[0]
+    } else {
+        return res
+    }
+}
+
+const checkLength = function(res) {
+    for (let i = 0; i < res.length; i++) {
+        if (Object.values(res[i]).length !== 1) {
+            return false
+        }
+    }
+    return true
 }
 
 module.exports = new DAO(dbFilePath);

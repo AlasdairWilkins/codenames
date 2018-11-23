@@ -9,7 +9,7 @@ const Namespace = require('./namespace');
 
 const handle = require('./handlers');
 
-const {get, insert, update, connection, namespace, resume, socketID} = require('./constants');
+const {connection, namespace, resume, socketID} = require('./constants');
 
 
 
@@ -27,18 +27,22 @@ io.on(connection, function(socket) {
     //     })
     // }
 
-    socket.on(namespace, msg => {
-        if (msg) {
-            handle.joinNamespace(msg, result => {
-                socket.emit(namespace, result)
-            })
+    socket.on('namespace', nspID => {
+        if (nspID) {
+            handle.getNamespace(nspID)
+                .then(namespace => {
+                    socket.emit('namespace', namespace)
+                })
+                .catch(err => {
+                    console.error(err.message)
+                })
         } else {
             handle.createNamespace()
-                .then(function(namespace) {
+                .then(namespace => {
                     new Namespace(io, namespace, socket);
                     socket.emit('namespace', namespace)
                 })
-                .catch(function(err) {
+                .catch(err => {
                     console.error(err.message)
                 })
         }

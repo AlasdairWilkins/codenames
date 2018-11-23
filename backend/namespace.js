@@ -20,51 +20,62 @@ module.exports = class Namespace {
 
     setListeners(socket) {
 
-        console.log("Executing!")
-
         socket.on(session, () => {
-            console.log("Allo allo")
-            handle.createSession(this.address)
-                .then(function(sessionID) {
-                    console.log("Here!", sessionID)
+            handle.createSession(socket.client.id, this.address)
+                .then(sessionID => {
                     socket.emit(session, "id=" + sessionID)
                 })
-                .catch(function(err) {
+                .catch(err => {
                     console.error(err.message)
                 }
             )
         });
 
-        socket.on(player, msg => {
-            if (msg) {
-                handle.setDisplayName(msg.name, socket.client.id, cookie.parse(msg.cookie).id, this.address,
-                    (players, joining) => {
-                        handle.getDisplayName(cookie.parse(msg.cookie).id, this.address, name => {
-                            socket.broadcast.emit(player, {players, joining, to: 'everyone else'});
-                            socket.emit(player, {players, joining, name, to: 'you'})
-                        })
-
+        socket.on('displayName', nameMsg => {
+            handle.newDisplayName(nameMsg, socket.client.id, this.address)
+                .then(values => {
+                    socket.emit('displayName', values.name)
+                    this.namespace.emit('players', values.players)
+                    this.namespace.emit('joining', values.joining)
                 })
-            } else {
-                handle.getAllSessions(this.address, (players, joining) => {
-                    this.namespace.emit(player, {players, joining, to: 'all'})
+                .catch(err => {
+                    console.error(err.message)
                 })
-            }
         });
 
-        socket.on(message, msg => {
-            if (msg) {
-                handle.addChat(this.address, msg.entry, msg.name, msg.socketID, () => {
-                    // handle.getChat(, result => {
-                        this.namespace.emit(message, msg)
-                    // })
+        socket.on('players', () => {
+            handle.getAllSessions(this.address)
+                .then(players => {
+                    this.namespace.emit('players', players)
                 })
-            } else {
-                handle.getAllChats(this.address, rows => {
-                    socket.emit('message', rows)
+                .catch(err => {
+                    console.error(err.message)
                 })
-            }
+        })
+
+        socket.on('joining', () => {
+            handle.getJoining(this.address)
+                .then(joining => {
+                    this.namespace.emit('joining', joining)
+                })
+                .catch(err => {
+                    console.error(err.message)
+                })
+        })
+
+        socket.on('message', msg => {
+                handle.addChat(this.address, msg.entry, msg.name, msg.socketID)
+                    .then(message => {
+                        this.namespace.emit('messages', message)
+                })
         });
+
+        socket.on('messages', msg => {
+            handle.getAllChats(this.address)
+                .then(messages => {
+                    this.namespace.emit('messages', messages)
+                })
+        })
 
         socket.on(ready, (msg) => {
 

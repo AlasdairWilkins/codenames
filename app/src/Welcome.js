@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {set, clear} from './store/actions'
 import {namespace, session} from "./constants"
+import Loading from './Loading'
 
 
 class Welcome extends Component {
@@ -14,6 +15,7 @@ class Welcome extends Component {
 
         this.state = {
             existing: false,
+            loading: false
         };
 
         this.onClick = this.onClick.bind(this);
@@ -22,6 +24,7 @@ class Welcome extends Component {
 
     onClick(event) {
         if (event.target.value === "new") {
+            this.setState({loading: true})
             api.get('namespace', (err, nspID) => {
                 this.handleNamespace(err, nspID)
             })
@@ -32,6 +35,7 @@ class Welcome extends Component {
 
     onSubmit(event) {
         event.preventDefault();
+        this.setState({loading: true})
         api.set('namespace', event.target.elements.code.value, (err, nspID) => {
             this.handleNamespace(err, nspID)
         })
@@ -55,6 +59,10 @@ class Welcome extends Component {
     }
 
     set() {
+
+        if (this.state.loading) {
+            return <Loading />
+        }
 
         if (this.state.existing) {
             return (

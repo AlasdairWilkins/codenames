@@ -2,7 +2,7 @@ import {api} from "../Api";
 import {player} from "../constants";
 import React, { Component } from "react";
 import {bindActionCreators} from "redux";
-import {clear} from "../store/actions";
+import {set, clear} from "../store/actions";
 import connect from "react-redux/es/connect/connect";
 
 
@@ -20,8 +20,11 @@ class Name extends Component {
     }
 
     handleSubmit(event) {
-        api.set(player, {name: this.state.name, cookie: document.cookie});
-        this.props.clear('players');
+        api.set('displayName', this.state.name, (err, name) => {
+            this.props.set('name', name);
+            this.props.set('display', 'waiting')
+        });
+        // this.props.clear('players');
         event.preventDefault()
     }
 
@@ -68,6 +71,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        set: bindActionCreators(set, dispatch),
         clear: bindActionCreators(clear, dispatch)
     }
 };

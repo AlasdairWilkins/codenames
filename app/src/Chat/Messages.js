@@ -9,18 +9,22 @@ import {clear, set, update} from "../store/actions";
 class Messages extends Component {
 
     componentDidMount() {
-        api.get(message, (err, msg) => {
-            if (!this.props.messages) {
-                this.props.set(messages, msg)
+        api.subscribe('messages', (err, msg) => {
+            if (err) {
+                console.log(err)
             } else {
-                this.props.update(messages, msg)
+                if (!this.props.messages) {
+                    this.props.set('messages', msg)
+                } else {
+                    this.props.update('messages', msg)
+                }
             }
         });
     }
 
     componentWillUnmount() {
-        api.socket.off(message);
-        this.props.clear(messages)
+        api.unsubscribe('messages')
+        this.props.clear('messages')
     }
 
     set() {

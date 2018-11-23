@@ -17,12 +17,7 @@ class Players extends Component {
 
         return (
             <div>
-                Here's who's playing: {this.props.players.map((player, i) => {
-                if (i === finalPlayer) {
-                    return player.name
-                }
-                return player.name + ", "
-            })}
+                Here's who's playing: {this.props.players.join(", ")}
             </div>
         )
     }

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import '../App.css';
 import { api } from "../Api";
-import { message } from "../constants"
 import connect from "react-redux/es/connect/connect";
 
 class Entry extends Component {
@@ -23,7 +22,7 @@ class Entry extends Component {
 
     handleSubmit(event) {
         if (this.state.entry.length) {
-            api.set(message, new Message(this.state.entry, this.props.id, this.props.name));
+            api.send('message', new Message(this.state.entry, this.props.id, this.props.name));
             this.setState({entry: ""})
         }
         event.preventDefault()

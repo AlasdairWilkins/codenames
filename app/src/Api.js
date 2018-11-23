@@ -14,30 +14,33 @@ class API {
             store.dispatch(set('display', 'welcome'))
         })
 
-
     }
 
-    set(header, payload, cb) {
+    send(header, payload) {
+        this.socket.emit(header, payload)
+    }
+
+    set(header, payload, callback) {
         this.socket.on(header, res => {
             this.socket.off(header);
-            cb(null, res)
+            callback(null, res)
         });
         this.socket.emit(header, payload)
     }
 
-    get(header, cb) {
+    get(header, callback) {
         this.socket.on(header, res => {
-            socket.off(header);
-            cb(null, res)
+            this.socket.off(header);
+            callback(null, res)
         });
         this.socket.emit(header)
     }
 
-    subscribe(header) {
+    subscribe(header, callback) {
         this.socket.on(header, res => {
-            cb(null, res)
+            callback(null, res)
         });
-        socket.emit(header)
+        this.socket.emit(header)
     }
 
     unsubscribe(header) {
