@@ -22,7 +22,7 @@ class Messages extends Component {
     }
 
     componentWillUnmount() {
-        api.unsubscribe('messages')
+        api.unsubscribe('messages');
         this.props.clear('messages')
     }
 

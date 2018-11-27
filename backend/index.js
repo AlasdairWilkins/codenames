@@ -28,7 +28,7 @@ io.on(connection, function(socket) {
     // }
 
     socket.on('namespace/post', nspID => {
-        console.log("Hey hey!")
+        console.log("Hey hey!");
         handle.getNamespace(nspID)
             .then(namespace => {
                 socket.emit('namespace/post', namespace)
@@ -36,11 +36,11 @@ io.on(connection, function(socket) {
             .catch(err => {
                 console.error(err.message)
             })
-    })
+    });
 
     socket.on('namespace/get', () => {
-        console.log("Yo", socket.id)
-        console.log("Ahoy hoy", socket.client.id)
+        console.log("Yo", socket.id);
+        console.log("Ahoy hoy", socket.client.id);
         handle.createNamespace()
             .then(namespace => {
                 new Namespace(io, namespace, socket);

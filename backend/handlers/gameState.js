@@ -2,7 +2,7 @@
 const dao = require('../dao');
 const {get, insert, update} = require('../constants');
 
-const game = require('../game')
+const game = require('../game');
 
 class GameState {
 

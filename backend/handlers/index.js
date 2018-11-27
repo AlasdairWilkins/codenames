@@ -8,7 +8,7 @@ const ready = require('./ready');
 const resume = require('./resume');
 const session = require('./session');
 const turn = require('./turn');
-const words = require('./words')
+const words = require('./words');
 
 module.exports =
     {...chat, ...game, ...gamecode, ...guess, ...namespace, ...player,

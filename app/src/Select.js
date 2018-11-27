@@ -24,18 +24,18 @@ class Select extends Component {
             this.props.set('players', msg.players);
             this.props.set('blueMax', msg.blueMax);
             this.props.set('redMax', msg.redMax)
-        })
-        api.request('initialSelect')
+        });
+        api.request('initialSelect');
 
         api.subscribe('ready', (err, res) => {
-            console.log("Ready here!")
+            console.log("Ready here!");
             this.props.set('display', 'game')
         })
 
     }
 
     componentWillUnmount() {
-        api.unsubscribe('select')
+        api.unsubscribe('select');
         api.unsubscribe('ready')
     }
 

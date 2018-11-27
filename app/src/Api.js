@@ -12,7 +12,7 @@ class API {
         this.socket.on('connect', () => {
             store.dispatch(set('id', this.socket.id));
             store.dispatch(set('display', 'welcome'))
-        })
+        });
 
         this.socket.on('hey', msg => {
             console.log(msg)
@@ -22,9 +22,9 @@ class API {
 
     ping(header, callback) {
         this.socket.on(header, () => {
-            this.socket.off(header)
+            this.socket.off(header);
             callback(null)
-        })
+        });
         this.socket.emit(header)
     }
 
@@ -54,7 +54,7 @@ class API {
 
     receive(header, callback) {
         this.socket.on(header, res => {
-            this.socket.off(header)
+            this.socket.off(header);
             callback(null, res)
         })
     }

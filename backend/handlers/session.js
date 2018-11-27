@@ -4,7 +4,7 @@ const shortid = require('shortid');
 const createSession = function(clientID, nspID) {
     return new Promise((resolve, reject) => {
         let sessionID = shortid.generate();
-        console.log(sessionID)
+        console.log(sessionID);
         dao.query('sessions', 'insert', sessionID, clientID, nspID)
             .then(() => {
                 return dao.query('sessions', 'get', 'session', clientID, nspID)
@@ -27,7 +27,7 @@ const newDisplayName = function(nameMSG, clientID, nspID) {
         .catch(err => {
             console.error(err.message)
         })
-}
+};
 
 const setDisplayName = function(name, clientID, nspID) {
     return new Promise((resolve, reject) => {
@@ -79,7 +79,7 @@ const getJoining = function(clientID, nspID) {
                 reject(err)
             })
     })
-}
+};
 
 const removeSocketIDOnDisconnect = function(clientID) {
     dao.query('sessions', 'update', 'disconnect', clientID, (err) => {

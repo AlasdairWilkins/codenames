@@ -16,11 +16,11 @@ const updatePlayerTeamSelect = function(team, clientID, nspID) {
 };
 
 const getAllPlayersTeamSelect = function(nspID) {
-    console.log(nspID)
+    console.log(nspID);
     return Promise.all([dao.query('players', 'all', 'team', nspID),
         dao.query('players', 'get', 'checkPlayerMax', nspID)])
         .then(([players, row]) => {
-            console.log("Result", players, row)
+            console.log("Result", players, row);
             let max = Math.ceil(row.total / 2);
             let blueMax = (row.blueCount >= max);
             let redMax = (row.redCount >= max);
@@ -35,14 +35,14 @@ const getTeams = function(clientID, callback) {
     dao.query('players', 'get', 'team', clientID, (err, result) => {
         callback(result, result.team)
     })
-}
+};
 
 const getTeamAndCodemaster = function(clientID, nspID, callback) {
     dao.query('players', 'get', 'teamAndCodemaster', clientID, nspID, (err, result) => {
-        console.log(result)
+        console.log(result);
         callback(result.team, !!(result.codemaster))
     })
-}
+};
 
 module.exports =
     {updatePlayerTeamSelect, getAllPlayersTeamSelect, getTeams, getTeamAndCodemaster};

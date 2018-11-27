@@ -18,11 +18,11 @@ class Game extends Component {
 
         api.receive('team', (err, msg) => {
             this.props.set('team', msg)
-        })
+        });
 
         api.receive('codemaster', (err, msg) => {
             this.props.set('codemaster', msg)
-        })
+        });
 
         // api.get('turn', (err, msg) => {
         //     console.log(msg);
@@ -42,7 +42,7 @@ class Game extends Component {
         api.subscribe('codeword', (err, msg) => {
             this.props.set('codeword', msg.codeword);
             this.props.set('number', msg.number)
-        })
+        });
 
         api.request('gameInfo')
 

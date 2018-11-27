@@ -16,7 +16,7 @@ module.exports = class Namespace {
 
         this.address = nsp;
         this.namespace = io.of("/" + nsp);
-        this.io = io
+        this.io = io;
 
         this.namespace.on(connection, this.setListeners.bind(this))
 
@@ -27,8 +27,6 @@ module.exports = class Namespace {
     setListeners(socket) {
 
         socket.on(session, () => {
-            console.log("Yo", socket.id)
-            console.log("Ahoy hoy", socket.client.id)
             handle.createSession(socket.client.id, this.address)
                 .then(sessionID => {
                     socket.emit(session, "id=" + sessionID)
@@ -42,8 +40,8 @@ module.exports = class Namespace {
         socket.on('displayName', nameMsg => {
             handle.newDisplayName(nameMsg, socket.client.id, this.address)
                 .then(values => {
-                    socket.emit('displayName', values.name)
-                    this.namespace.emit('players', values.players)
+                    socket.emit('displayName', values.name);
+                    this.namespace.emit('players', values.players);
                     this.namespace.emit('joining', values.joining)
                 })
                 .catch(err => {
@@ -59,7 +57,7 @@ module.exports = class Namespace {
                 .catch(err => {
                     logger.log(err)
                 })
-        })
+        });
 
         socket.on('joining', () => {
             handle.getJoining(this.address)
@@ -69,7 +67,7 @@ module.exports = class Namespace {
                 .catch(err => {
                     logger.log(err)
                 })
-        })
+        });
 
         socket.on('message', msg => {
                 handle.addChat(this.address, msg.entry, msg.name, msg.socketID)
@@ -83,13 +81,12 @@ module.exports = class Namespace {
                 .then(messages => {
                     socket.emit('messages', messages)
                 })
-        })
+        });
 
         socket.on('waitingReady', () => {
             handle.setWaitingReady(socket.client.id, this.address)
                 .then(ready => {
-                    socket.emit('waitingReady')
-                    // this.namespace.to(`${socket.client.id}`).emit('ready', "hey hey")
+                    socket.emit('waitingReady');
                     if (ready) {
                         this.namespace.emit('ready')
                     }
@@ -97,20 +94,27 @@ module.exports = class Namespace {
                 .catch(err => {
                     logger.log(err)
                 })
-        })
+        });
 
         socket.on('selectReady', () => {
             handle.setSelectReady(socket.client.id, this.address)
                 .then(ready => {
-                    socket.emit('selectReady')
+                    socket.emit('selectReady');
                     if (ready) {
+                        return handle.buildGame(this.address)
+                    } else {
+                        return false
+                    }
+                })
+                .then(start => {
+                    if (start) {
                         this.namespace.emit('ready')
                     }
                 })
                 .catch(err => {
                     logger.log(err)
                 })
-        })
+        });
 
         socket.on('select', (msg) => {
             handle.updatePlayerTeamSelect(msg, socket.client.id, this.address)
@@ -130,7 +134,7 @@ module.exports = class Namespace {
                 .catch(err => {
                     logger.log(err)
                 })
-        })
+        });
 
         // socket.on(team, () => {
         //     handle.getTeams(socket.client.id, (result, team) => {
@@ -140,7 +144,7 @@ module.exports = class Namespace {
         // });
 
         socket.on('gameInfo', () => {
-            handle.getGameInfo()
+            handle.getGameInfo();
             handle.getWords(socket.client.id, this.address)
                 .then(board => {
                     socket.emit('game', board)
@@ -158,7 +162,7 @@ module.exports = class Namespace {
 
         socket.on('turn', () => {
            handle.getTurnAndRemainingWords(this.address, (turn, remaining) => {
-               console.log("Ahoy hoy", turn, remaining)
+               console.log("Ahoy hoy", turn, remaining);
                socket.emit('turn', {turn, remaining})
            })
         });

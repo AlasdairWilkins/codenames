@@ -31,7 +31,7 @@ const getAllChats = function(nspID, callback) {
     return new Promise((resolve, reject) => {
         dao.query('chats', 'all', nspID)
             .then(rows => {
-                console.log(rows)
+                console.log(rows);
                 resolve(rows)
             })
             .catch(err => {

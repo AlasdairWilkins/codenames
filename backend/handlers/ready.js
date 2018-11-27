@@ -1,6 +1,6 @@
 const dao = require('../dao');
 const shortid = require('shortid');
-const game = require('../game')
+const game = require('../game');
 
 const setReady = function(header, clientID, nspID) {
     return new Promise((resolve, reject) => {
@@ -34,10 +34,10 @@ const setWaitingReady = function(clientID, nspID) {
                 reject(err)
             })
     })
-}
+};
 
 const createGameInstance = function(nspID) {
-    let gameID = shortid.generate()
+    let gameID = shortid.generate();
     return Promise.all([dao.query('games', 'insert', gameID, nspID),
         dao.query('players', 'insert', gameID, nspID), dao.query('namespaces', 'update', 'select', nspID)])
         .then(() => {
@@ -65,9 +65,9 @@ const setSelectReady = function(clientID, nspID) {
         setReady('players', clientID, nspID)
             .then(count => {
                 if (!count) {
-                    return buildGame(nspID)
+                    resolve(true)
                 } else {
-                    return false
+                    resolve(false)
                 }
             })
             .then(result => {
@@ -77,18 +77,17 @@ const setSelectReady = function(clientID, nspID) {
                 reject(err)
             })
     })
-}
+};
 
 const buildGame = function(nspID) {
     return Promise.all([makeTeams(nspID), makeBoard(nspID)])
         .then(() => {
-            let result = true
-            return Promise.resolve(result)
+            return Promise.resolve(true)
         })
         .catch(err => {
             return Promise.reject(err)
         })
-}
+};
 
 const makeTeams = function(nspID) {
     return Promise.all(
@@ -119,7 +118,7 @@ const makeBoard = function(nspID) {
         .catch((err) => {
             return Promise.reject(err)
         })
-}
+};
 
 const setCodemasters = function(nspID) {
     return Promise.all([setCodemaster(nspID, 'blue'), setCodemaster(nspID, 'red')])
@@ -129,14 +128,14 @@ const setCodemasters = function(nspID) {
         .catch(err => {
             return Promise.reject(err)
         })
-}
+};
 
 const setCodemaster = function(nspID, color) {
     return new Promise((resolve, reject) => {
         dao.query('players', 'all', 'teamColor', color, nspID)
             .then(team => {
                 if (team.length) {
-                    let codemasterIndex = Math.floor(Math.random() * team.length)
+                    let codemasterIndex = Math.floor(Math.random() * team.length);
                     return dao.query('players', 'update', 'codemaster', true, team[codemasterIndex])
                 }
                 return null
@@ -148,6 +147,6 @@ const setCodemaster = function(nspID, color) {
                 reject(err)
             })
     })
-}
+};
 
-module.exports = {setWaitingReady, setSelectReady};
+module.exports = {setWaitingReady, setSelectReady, buildGame};

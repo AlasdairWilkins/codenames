@@ -23,32 +23,31 @@ class Waiting extends Component {
             } else {
                 this.props.set('players', players)
             }
-        })
+        });
 
         api.subscribe('joining', (err, joining) => {
             if (err) {
                 console.log(err)
             } else {
-                console.log("Joining received", joining)
                 this.props.set('joining', joining)
             }
-        })
+        });
 
         api.subscribe('ready', (err, res) => {
-            console.log("Ready message", err, res)
+            console.log("Ready message", err, res);
             this.props.set('display', 'select')
-        })
+        });
 
-        api.request('players')
+        api.request('players');
         api.request('joining')
 
     }
 
     componentWillUnmount() {
         this.props.clear('players');
-        this.props.clear('joining')
-        api.unsubscribe('players')
-        api.unsubscribe('joining')
+        this.props.clear('joining');
+        api.unsubscribe('players');
+        api.unsubscribe('joining');
         api.unsubscribe('ready')
     }
 

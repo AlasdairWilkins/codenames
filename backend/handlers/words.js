@@ -1,4 +1,4 @@
-const dao = require('../dao')
+const dao = require('../dao');
 
 const getWords = function(clientID, nspID, callback) {
     return new Promise((resolve, reject) => {
@@ -10,7 +10,7 @@ const getWords = function(clientID, nspID, callback) {
                 reject(err)
             })
     })
-}
+};
 
 class Board {
     constructor(words) {
@@ -33,4 +33,4 @@ class Row {
 
 }
 
-module.exports = {getWords}
+module.exports = {getWords};

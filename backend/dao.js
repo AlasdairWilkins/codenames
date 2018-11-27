@@ -107,7 +107,7 @@ const getOp = function(type) {
         default:
             return run
     }
-}
+};
 
 const makeFinal = function(res) {
     if (Array.isArray(res) && res.length && checkLength(res)) {
@@ -117,7 +117,7 @@ const makeFinal = function(res) {
     } else {
         return res
     }
-}
+};
 
 const checkLength = function(res) {
     for (let i = 0; i < res.length; i++) {
@@ -126,6 +126,6 @@ const checkLength = function(res) {
         }
     }
     return true
-}
+};
 
 module.exports = new DAO(dbFilePath);
