@@ -15,7 +15,7 @@ const sessions = {
     get: {
         displayName: `SELECT display_name name FROM sessions WHERE socket_id = (?) AND nsp_id = (?)`,
         session: `SELECT session_id sessionID FROM sessions WHERE socket_id = (?) AND nsp_id = (?)`,
-        joining: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND display_name IS NULL`,
+        joining: `SELECT count(*) count FROM sessions WHERE socket_id != (?) AND nsp_id = (?) AND display_name IS NULL`,
         ready: `SELECT count(*) count FROM sessions WHERE nsp_id = (?) AND ready = 0`,
         resume: `SELECT nsp_id nspID, display_name displayName FROM sessions WHERE session_id = ?`,
     },

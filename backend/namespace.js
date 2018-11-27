@@ -1,8 +1,10 @@
 const cookie = require('cookie');
 
-const Promise = require('bluebird')
+const Promise = require('bluebird');
 
 const handle = Promise.promisifyAll(require('./handlers'));
+
+const logger = require('tracer').console();
 
 const {connection, player, session, message, ready, team, select, disconnect} = require('./constants');
 
@@ -14,19 +16,25 @@ module.exports = class Namespace {
 
         this.address = nsp;
         this.namespace = io.of("/" + nsp);
+        this.io = io
+
         this.namespace.on(connection, this.setListeners.bind(this))
 
     }
 
+    // set rooms()
+
     setListeners(socket) {
 
         socket.on(session, () => {
+            console.log("Yo", socket.id)
+            console.log("Ahoy hoy", socket.client.id)
             handle.createSession(socket.client.id, this.address)
                 .then(sessionID => {
                     socket.emit(session, "id=" + sessionID)
                 })
                 .catch(err => {
-                    console.error(err.message)
+                    logger.log(err)
                 }
             )
         });
@@ -39,7 +47,7 @@ module.exports = class Namespace {
                     this.namespace.emit('joining', values.joining)
                 })
                 .catch(err => {
-                    console.error(err.message)
+                    logger.log(err)
                 })
         });
 
@@ -49,7 +57,7 @@ module.exports = class Namespace {
                     this.namespace.emit('players', players)
                 })
                 .catch(err => {
-                    console.error(err.message)
+                    logger.log(err)
                 })
         })
 
@@ -59,7 +67,7 @@ module.exports = class Namespace {
                     this.namespace.emit('joining', joining)
                 })
                 .catch(err => {
-                    console.error(err.message)
+                    logger.log(err)
                 })
         })
 
@@ -81,26 +89,26 @@ module.exports = class Namespace {
             handle.setWaitingReady(socket.client.id, this.address)
                 .then(ready => {
                     socket.emit('waitingReady')
+                    // this.namespace.to(`${socket.client.id}`).emit('ready', "hey hey")
                     if (ready) {
                         this.namespace.emit('ready')
                     }
                 })
                 .catch(err => {
-                    console.error(err.message)
+                    logger.log(err)
                 })
         })
 
         socket.on('selectReady', () => {
             handle.setSelectReady(socket.client.id, this.address)
                 .then(ready => {
-                    console.log("And done!", ready)
                     socket.emit('selectReady')
                     if (ready) {
                         this.namespace.emit('ready')
                     }
                 })
                 .catch(err => {
-                    console.error(err.message)
+                    logger.log(err)
                 })
         })
 
@@ -110,7 +118,7 @@ module.exports = class Namespace {
                     this.namespace.emit(select, values)
                 })
                 .catch(err => {
-                    console.error(err.message)
+                    logger.log(err)
                 })
         });
 
@@ -120,28 +128,33 @@ module.exports = class Namespace {
                     socket.emit('select', values)
                 })
                 .catch(err => {
-                    console.error(err.message)
+                    logger.log(err)
                 })
         })
 
-        socket.on(team, () => {
-            handle.getTeams(socket.client.id, (result, team) => {
-                socket.join(team);
-                socket.emit('team', result)
-            })
-        });
+        // socket.on(team, () => {
+        //     handle.getTeams(socket.client.id, (result, team) => {
+        //         socket.join(team);
+        //         socket.emit('team', result)
+        //     })
+        // });
 
-        socket.on('game', () => {
-            handle.getWords(socket.client.id, this.address, board => {
-                socket.emit('game', board)
-            })
+        socket.on('gameInfo', () => {
+            handle.getGameInfo()
+            handle.getWords(socket.client.id, this.address)
+                .then(board => {
+                    socket.emit('game', board)
+                })
+                .catch(err => {
+                    logger.log(err)
+                })
         });
 
         socket.on('teamAndCodemaster', () => {
             handle.getTeamAndCodemaster(socket.client.id, this.address, (team, codemaster) => {
                 socket.emit('teamAndCodemaster', {team, codemaster})
             })
-        })
+        });
 
         socket.on('turn', () => {
            handle.getTurnAndRemainingWords(this.address, (turn, remaining) => {
@@ -149,6 +162,8 @@ module.exports = class Namespace {
                socket.emit('turn', {turn, remaining})
            })
         });
+
+
 
         socket.on('guess', msg => {
             handle.guess(msg, this.address, (result) => {

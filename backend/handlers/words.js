@@ -1,8 +1,14 @@
 const dao = require('../dao')
 
 const getWords = function(clientID, nspID, callback) {
-    dao.query('words', 'all', 'board', clientID, nspID, (err, board) => {
-        callback(new Board(board))
+    return new Promise((resolve, reject) => {
+        dao.query('words', 'all', 'board', clientID, nspID)
+            .then(words => {
+                resolve(new Board(words))
+            })
+            .catch(err => {
+                reject(err)
+            })
     })
 }
 

@@ -35,7 +35,7 @@ class Waiting extends Component {
         })
 
         api.subscribe('ready', (err, res) => {
-            console.log(err, res)
+            console.log("Ready message", err, res)
             this.props.set('display', 'select')
         })
 

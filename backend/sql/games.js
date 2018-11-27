@@ -11,7 +11,8 @@ const games = {
     update: {
         codeword: `UPDATE games SET codeword = ?, number = ? WHERE
                       game_id = (SELECT game_id FROM namespaces WHERE nsp_id = (?))`,
-        turn: `UPDATE games SET team = ?, turn = 1, codeword = "hey", guesses = 0, of = 3 WHERE nsp_id = ?;`,
+        newGame: `UPDATE games SET team = (?), turn = 1 WHERE nsp_id = (?);`,
+        turnTEST: `UPDATE games SET team = ?, turn = 1, codeword = "hey", guesses = 0, of = 3 WHERE nsp_id = ?;`,
         guessEntered: `UPDATE games SET guesses = guesses + 1 WHERE nsp_id = ?;`,
         gameOver: `UPDATE games SET active = 0, winner = 
                         (CASE 

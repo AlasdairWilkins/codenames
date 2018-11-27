@@ -12,31 +12,41 @@ class Game extends Component {
 
     componentDidMount() {
 
-        console.log("Made it to game!!")
-
-        api.get('game', (err, msg) => {
+        api.receive('game', (err, msg) => {
             this.props.set('words', msg)
         });
 
-        api.get('turn', (err, msg) => {
-            console.log(msg);
-            this.props.set('turn', msg.turn);
-
-            if (msg.remaining) {
-                this.props.set('remaining', msg.remaining)
-            }
-        });
-
-        api.get('teamAndCodemaster', (err, msg) => {
-            console.log(msg)
-            this.props.set('team', msg.team)
-            this.props.set('codemaster', msg.codemaster)
+        api.receive('team', (err, msg) => {
+            this.props.set('team', msg)
         })
 
-        api.get('codeword', (err, msg) => {
+        api.receive('codemaster', (err, msg) => {
+            this.props.set('codemaster', msg)
+        })
+
+        // api.get('turn', (err, msg) => {
+        //     console.log(msg);
+        //     this.props.set('turn', msg.turn);
+        //
+        //     if (msg.remaining) {
+        //         this.props.set('remaining', msg.remaining)
+        //     }
+        // });
+
+        // api.get('teamAndCodemaster', (err, msg) => {
+        //     console.log(msg)
+        //     this.props.set('team', msg.team)
+        //     this.props.set('codemaster', msg.codemaster)
+        // })
+
+        api.subscribe('codeword', (err, msg) => {
             this.props.set('codeword', msg.codeword);
             this.props.set('number', msg.number)
         })
+
+        api.request('gameInfo')
+
+
     }
 
     set() {

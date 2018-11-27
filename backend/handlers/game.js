@@ -1,5 +1,9 @@
 const dao = require('../dao');
 
+const getGameInfo = function() {
+
+}
+
 const updateCodeword = function(codeword, nspID, callback) {
     dao.query('games', 'update', 'codeword', codeword, nspID, (err) => {
         callback()

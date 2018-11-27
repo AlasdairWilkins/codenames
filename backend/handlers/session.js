@@ -19,7 +19,8 @@ const createSession = function(clientID, nspID) {
 };
 
 const newDisplayName = function(nameMSG, clientID, nspID) {
-    return Promise.all([setDisplayName(nameMSG, clientID, nspID), getAllSessions(nspID), getJoining(nspID)])
+    return Promise.all(
+        [setDisplayName(nameMSG, clientID, nspID), getAllSessions(nspID), getJoining(clientID, nspID)])
         .then(([name, players, joining]) => {
             return {name, players, joining}
         })
@@ -68,9 +69,9 @@ const getAllSessions = function(nspID) {
     })
 };
 
-const getJoining = function(nspID) {
+const getJoining = function(clientID, nspID) {
     return new Promise((resolve, reject) => {
-        dao.query('sessions', 'get', 'joining', nspID)
+        dao.query('sessions', 'get', 'joining', clientID, nspID)
             .then(joining => {
                 resolve(joining)
             })

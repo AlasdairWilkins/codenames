@@ -71,7 +71,6 @@ const setSelectReady = function(clientID, nspID) {
                 }
             })
             .then(result => {
-                console.log("After", result)
                 resolve(result)
             })
             .catch(err => {
@@ -112,7 +111,7 @@ const makeTeams = function(nspID) {
 const makeBoard = function(nspID) {
     let [board, first] = game.makeBoard(25);
     return Promise.all(
-        [dao.query('words', 'insert', 'words', board, nspID), dao.query('games', 'update', 'turn', first, nspID),
+        [dao.query('words', 'insert', 'words', board, nspID), dao.query('games', 'update', 'newGame', first, nspID),
             dao.query('namespaces', 'update', 'game', nspID)])
         .then(() => {
             return Promise.resolve()

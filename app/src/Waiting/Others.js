@@ -5,9 +5,8 @@ import connect from "react-redux/es/connect/connect";
 class Others extends Component {
 
     set() {
-        let others = (this.props.name) ? this.props.joining : this.props.joining - 1;
-        if (others > 0) {
-            return <div><p><Pluralize singular="other player" count={others}/> joining!</p></div>
+        if (this.props.joining > 0) {
+            return <div><p><Pluralize singular="other player" count={this.props.joining}/> joining!</p></div>
         }
         return null
     }

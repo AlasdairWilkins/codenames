@@ -5,6 +5,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {set, clear} from './store/actions'
 import Loading from './Loading'
+import Header from './header'
+
+const session = new Header('session')
+const namespace = new Header('namespace')
 
 
 class Welcome extends Component {
@@ -24,7 +28,7 @@ class Welcome extends Component {
     onClick(event) {
         if (event.target.value === "new") {
             this.setState({loading: true})
-            api.get('namespace', (err, nspID) => {
+            api.get(namespace.get, (err, nspID) => {
                 this.handleNamespace(err, nspID)
             })
         } else if (event.target.value === "existing") {
@@ -35,7 +39,7 @@ class Welcome extends Component {
     onSubmit(event) {
         event.preventDefault();
         this.setState({loading: true})
-        api.set('namespace', event.target.elements.code.value, (err, nspID) => {
+        api.set(namespace.post, event.target.elements.code.value, (err, nspID) => {
             this.handleNamespace(err, nspID)
         })
     }
@@ -44,7 +48,7 @@ class Welcome extends Component {
         if (err) {
             //handle error
         } else {
-            api.address = nspID
+            api.address = nspID;
             this.props.set('nsp', nspID);
             api.get('session', (err, cookie) => {
                 if (err) {

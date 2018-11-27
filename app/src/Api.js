@@ -14,6 +14,10 @@ class API {
             store.dispatch(set('display', 'welcome'))
         })
 
+        this.socket.on('hey', msg => {
+            console.log(msg)
+        })
+
     }
 
     ping(header, callback) {
@@ -46,6 +50,13 @@ class API {
 
     request(header) {
         this.socket.emit(header)
+    }
+
+    receive(header, callback) {
+        this.socket.on(header, res => {
+            this.socket.off(header)
+            callback(null, res)
+        })
     }
 
     subscribe(header, callback) {
