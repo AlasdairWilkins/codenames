@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Board from './Board';
-import CodeWord from './CodeWord';
+import Codeword from './Codeword';
 import {api} from './Api';
 import {bindActionCreators} from "redux";
 import {set} from "./store/actions";
@@ -12,7 +12,7 @@ class Game extends Component {
 
     componentDidMount() {
 
-        api.receive('game', (err, msg) => {
+        api.receive('words', (err, msg) => {
             this.props.set('words', msg)
         });
 
@@ -24,20 +24,9 @@ class Game extends Component {
             this.props.set('codemaster', msg)
         });
 
-        // api.get('turn', (err, msg) => {
-        //     console.log(msg);
-        //     this.props.set('turn', msg.turn);
-        //
-        //     if (msg.remaining) {
-        //         this.props.set('remaining', msg.remaining)
-        //     }
-        // });
-
-        // api.get('teamAndCodemaster', (err, msg) => {
-        //     console.log(msg)
-        //     this.props.set('team', msg.team)
-        //     this.props.set('codemaster', msg.codemaster)
-        // })
+        api.subscribe('active', (err, msg) => {
+            console.log(msg)
+        });
 
         api.subscribe('codeword', (err, msg) => {
             this.props.set('codeword', msg.codeword);
@@ -50,12 +39,11 @@ class Game extends Component {
     }
 
     set() {
+
         return (
             <div>
                 <Board/>
-                <div>
-                    <CodeWord/>
-                </div>
+                <Codeword/>
             </div>
         )
     }
@@ -73,7 +61,8 @@ class Game extends Component {
 const mapStateToProps = (state) => {
     return {
         words: state.words,
-        turn: state.turn
+        turn: state.turn,
+        codemaster: state.codemaster
     }
 };
 

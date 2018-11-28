@@ -4,7 +4,7 @@ const {create, text, int, bool, foreign} = require('./templates');
 
 const games = {
     create: create('games', text('game_id').primary(), text('nsp_id').notNull(),
-        text('team').checkIn(null, 'blue', 'red'), int('turn'), text('codeword'), int('guesses'), int('of'),
+        text('team').checkIn(null, 'blue', 'red'), int('turn'), text('codeword'), bool('approved', true), int('guesses'), int('of'),
         bool('active', true), text('winner').checkIn(null, 'blue', 'red'), foreign('nsp_id', 'namespaces')),
 
     insert: `INSERT INTO games(game_id, nsp_id) VALUES (?, ?)`,
@@ -31,6 +31,7 @@ const games = {
                         WHERE nsp_id = (?)`
     },
     get: {
+        active: `SELECT `,
         turn: `SELECT turn, team FROM games WHERE nsp_id = (?);`,
         gameState: `SELECT * FROM games WHERE nsp_id = (?);`,
         codeword: `SELECT codeword FROM games WHERE nsp_id = (?);`

@@ -7,7 +7,7 @@ import {set, clear} from './store/actions'
 import Loading from './Loading'
 import Header from './header'
 
-const session = new Header('session');
+// const session = new Header('session');
 const namespace = new Header('namespace');
 
 

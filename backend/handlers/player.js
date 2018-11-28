@@ -31,18 +31,7 @@ const getAllPlayersTeamSelect = function(nspID) {
         })
 };
 
-const getTeams = function(clientID, callback) {
-    dao.query('players', 'get', 'team', clientID, (err, result) => {
-        callback(result, result.team)
-    })
-};
 
-const getTeamAndCodemaster = function(clientID, nspID, callback) {
-    dao.query('players', 'get', 'teamAndCodemaster', clientID, nspID, (err, result) => {
-        console.log(result);
-        callback(result.team, !!(result.codemaster))
-    })
-};
 
 module.exports =
-    {updatePlayerTeamSelect, getAllPlayersTeamSelect, getTeams, getTeamAndCodemaster};
+    {updatePlayerTeamSelect, getAllPlayersTeamSelect};

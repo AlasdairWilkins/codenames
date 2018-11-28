@@ -137,8 +137,9 @@ const setCodemaster = function(nspID, color) {
                 if (team.length) {
                     let codemasterIndex = Math.floor(Math.random() * team.length);
                     return dao.query('players', 'update', 'codemaster', true, team[codemasterIndex])
+                } else {
+                    return null
                 }
-                return null
             })
             .then(() => {
                 resolve()

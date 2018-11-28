@@ -1,6 +1,6 @@
 const dao = require('../dao');
 
-const getWords = function(clientID, nspID, callback) {
+const getWords = function(clientID, nspID) {
     return new Promise((resolve, reject) => {
         dao.query('words', 'all', 'board', clientID, nspID)
             .then(words => {

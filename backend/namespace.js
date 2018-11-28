@@ -144,21 +144,23 @@ module.exports = class Namespace {
         // });
 
         socket.on('gameInfo', () => {
-            handle.getGameInfo();
-            handle.getWords(socket.client.id, this.address)
-                .then(board => {
-                    socket.emit('game', board)
+            handle.getGameInfo(socket.client.id, this.address)
+                .then(result => {
+                    getRoom(result.team, result.codemaster).map(room => socket.join(room))
+                    socket.emit('words', result.words)
+                    socket.emit('team', result.team)
+                    socket.emit('codemaster', result.codemaster)
                 })
                 .catch(err => {
                     logger.log(err)
-                })
+                });
         });
 
-        socket.on('teamAndCodemaster', () => {
-            handle.getTeamAndCodemaster(socket.client.id, this.address, (team, codemaster) => {
-                socket.emit('teamAndCodemaster', {team, codemaster})
-            })
-        });
+        // socket.on('teamAndCodemaster', () => {
+        //     handle.getTeamAndCodemaster(socket.client.id, this.address, (team, codemaster) => {
+        //         socket.emit('teamAndCodemaster', {team, codemaster})
+        //     })
+        // });
 
         socket.on('turn', () => {
            handle.getTurnAndRemainingWords(this.address, (turn, remaining) => {
@@ -196,3 +198,10 @@ module.exports = class Namespace {
     }
 
 };
+
+const getRoom = function(color, codemaster) {
+    if (codemaster) {
+        return [`${color}Codemaster`, 'codemasters']
+    }
+    return [`${color}Team`]
+}

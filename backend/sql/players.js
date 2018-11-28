@@ -20,8 +20,9 @@ const players = {
     get: {
         ready: `SELECT count(*) count FROM players WHERE 
             game_id IN (SELECT game_id FROM games WHERE nsp_id = (?)) AND ready = 0`,
-        team: `SELECT team FROM players WHERE socket_id = ?`,
-        teamAndCodemaster: `SELECT team, codemaster FROM players WHERE socket_id = (?)
+        team: `SELECT team FROM players WHERE socket_id = ? 
+               AND game_id = (SELECT game_id FROM games WHERE nsp_id = (?));`,
+        codemaster: `SELECT codemaster FROM players WHERE socket_id = (?)
                             AND game_id = (SELECT game_id FROM games WHERE nsp_id = (?));`,
         checkPlayerMax:
             `SELECT count(*) total,

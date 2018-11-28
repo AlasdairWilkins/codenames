@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
-import './App.css';
+import '../../App.css';
 import {bindActionCreators} from "redux";
-import {set} from "./store/actions";
+import {set} from "../../store/actions";
 import connect from "react-redux/es/connect/connect";
-import {api} from "./Api"
+import {api} from "../../Api"
 
-class CodeWord extends Component {
+class Active extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            // code: null,
-            // number: null,
             submitted: false
         };
 
@@ -33,7 +31,7 @@ class CodeWord extends Component {
         event.preventDefault()
     }
 
-    activeCodeMaster() {
+    set() {
         if (this.props.codeword && this.props.number) {
             return (
                 <p>The hint is '{this.props.codeword}' for {this.props.number} words.</p>
@@ -62,57 +60,13 @@ class CodeWord extends Component {
         )
     }
 
-    inactiveCodeMaster() {
-        return (
-            <p>Waiting for the other Code Master!</p>
-        )
-    }
-
-    activeTeam() {
-        if (this.props.codeword && this.props.number) {
-            return (
-                <p>The hint is '{this.props.codeword}' for {this.props.number} words.</p>
-            )
-        }
-
-        return (
-            <p>Waiting for your Code Master!</p>
-        )
-    }
-
-    inactiveTeam() {
-        if (this.props.codeword && this.props.number) {
-            return (
-                <p>The other team's hint is '{this.props.codeword}' for {this.props.number} words.</p>
-            )
-        }
-        return (
-            <p>Sit tight!</p>
-        )
-    }
-
-    setDisplay() {
-        if (this.props.codemaster && this.props.team === this.props.turn) {
-            return this.activeCodeMaster()
-        }
-        if (this.props.codemaster) {
-            return this.inactiveCodeMaster()
-        }
-        if (this.props.team === this.props.turn) {
-            return this.activeTeam()
-        }
-        return this.inactiveTeam()
-    }
-
     render() {
 
-        let codeWord = this.setDisplay();
+        let display = this.set();
 
         return (
-            <div>
-                {codeWord}
-            </div>
-            )
+            display
+        )
 
     }
 
@@ -120,10 +74,7 @@ class CodeWord extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        codemaster: state.codemaster,
         remaining: state.remaining,
-        team: state.team,
-        turn: state.turn,
         codeword: state.codeword,
         number: state.number
     }
@@ -135,5 +86,5 @@ const mapDispatchToProps = dispatch => {
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CodeWord);
+export default connect(mapStateToProps, mapDispatchToProps)(Active);
 
